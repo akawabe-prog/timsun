@@ -224,14 +224,16 @@ mountFitSelect(document.querySelector('[data-fitselect]'));
   } catch (e) { /* 既定の表示のまま */ }
 })();
 
-// ── ムービー: 高さの低い列から順に積む石畳(Pinterest 風)。画面に入っている間だけ無音で再生する ──
+// ── ムービー: 各段の高さをそろえ、横幅いっぱいに敷き詰める(横長は大きく、縦長は同じ高さで細く)。
+// 画面に入っている間だけ無音で再生する ──
 function renderMovies() {
   const grid = document.getElementById('movieGrid');
+  const ar = (m) => (m.v ? 9 / 16 : 16 / 9);
   const card = (m) => {
     const ext = /^https?:/.test(m.u);
     return `
-    <a class="mv${m.v ? ' tall' : ''}" href="${esc(m.u)}"${ext ? ' target="_blank" rel="noopener"' : ''}>
-      <span class="mv-media">
+    <a class="mv${m.v ? ' tall' : ''}" href="${esc(m.u)}"${ext ? ' target="_blank" rel="noopener"' : ''} style="flex:${ar(m).toFixed(4)} 1 0">
+      <span class="mv-media" style="aspect-ratio:${m.v ? '9/16' : '16/9'}">
         <video src="/assets/video/movies/${m.id}.mp4" poster="/assets/video/movies/${m.id}.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
         <span class="mv-tag">${esc(m.tag)}</span>
         <span class="mv-play" aria-hidden="true"></span>
@@ -239,13 +241,28 @@ function renderMovies() {
       <span class="mv-cap"><b>${esc(m.t)}</b><span class="mv-go">${ext ? 'Instagramで見る' : '音声つきで見る'}</span></span>
     </a>`;
   };
-  let cols = 0;
+  let lastW = 0;
   const layout = () => {
-    const n = innerWidth > 900 ? 3 : 2;
-    if (n === cols) return; cols = n;
-    const h = Array(n).fill(0), out = Array.from({ length: n }, () => []);
-    MOVIES.forEach((m) => { const c = h.indexOf(Math.min(...h)); out[c].push(card(m)); h[c] += m.v ? 16 / 9 : 9 / 16; });
-    grid.innerHTML = out.map((c) => `<div class="mv-col">${c.join('')}</div>`).join('');
+    const w = grid.clientWidth;
+    if (!w || Math.abs(w - lastW) < 2) return; lastW = w;
+    const target = w > 900 ? 300 : w > 600 ? 240 : 250; // 1段の目安の高さ(px)
+    const rows = []; let row = [], sum = 0;
+    if (w <= 600) {
+      // スマホ: 横長は1本ずつ全幅、縦長は2本並べて1段に(細くなりすぎないように)
+      const tall = MOVIES.filter((m) => m.v);
+      MOVIES.forEach((m) => { if (!m.v) rows.push([m]); else if (m === tall[0]) rows.push(tall); });
+    } else {
+      MOVIES.forEach((m) => {
+        row.push(m); sum += ar(m);
+        if (sum * target >= w * 0.92) { rows.push(row); row = []; sum = 0; }
+      });
+      if (row.length) rows.push(row);
+    }
+    grid.innerHTML = rows.map((r) => {
+      const s = r.reduce((a, m) => a + ar(m), 0);
+      const full = w / s <= target * (r.every((m) => m.v) ? 1 : 1.3); // 本数が少ない段・縦長だけの段は引き伸ばさない
+      return `<div class="mv-row"${full ? '' : ` style="max-width:${Math.round(s * target)}px"`}>${r.map(card).join('')}</div>`;
+    }).join('');
     watch();
   };
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
