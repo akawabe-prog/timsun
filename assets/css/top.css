@@ -192,7 +192,8 @@
 .about2-vis{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:3fr 2fr;gap:12px}
 .about2-vis img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius)}
 .about2-vis .v1{grid-column:1/-1}
-.about2-vis .v3{object-position:30% 50%}
+.about2-vis .v1{object-position:center 40%}
+.about2-vis .v2{object-position:70% 50%}
 .discover{gap:12px}
 .discover .lcard{padding:16px;border-color:transparent}
 .discover .lcard img{width:132px;height:110px}
