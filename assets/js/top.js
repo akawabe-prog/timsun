@@ -1,5 +1,5 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ一覧・注目製品・使い方から選ぶ・取扱店数・ニュース・読みもの
-import { fetchCatalog, dataAsOf } from './cj-api.js';
+import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
 import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
 import { esc, yen, reveal, IMG } from './site.js';
 import { mountFitSelect } from './fitselect.js';
@@ -177,3 +177,15 @@ renderShops();
 renderNews();
 renderHeroNews();
 mountFitSelect(document.querySelector('[data-fitselect]'));
+
+// 適合データのある車種数(バナーの数字を実データで更新。100単位で切り捨て)
+(async () => {
+  try {
+    const set = new Set();
+    for (const h of await fetchFitmentIndex()) {
+      for (const [m, gs] of Object.entries(h.moto?.body?.facet || {})) for (const [g, list] of Object.entries(gs || {})) (list || []).forEach((v) => set.add(`${m}:${g}:${v.split('||')[1]}`));
+    }
+    const f = Math.floor(set.size / 100) * 100;
+    if (f) document.querySelectorAll('.js-fit').forEach((e) => { e.textContent = f.toLocaleString('ja-JP'); });
+  } catch (e) { /* 既定の表示のまま */ }
+})();
