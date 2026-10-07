@@ -31,7 +31,7 @@ function renderItems(pats) {
   }).join('');
 }
 document.querySelectorAll('.rail-btn').forEach((b) => b.addEventListener('click', () => {
-  const r = document.getElementById('itemsRail'); r.scrollBy({ left: Number(b.dataset.dir) * r.clientWidth * 0.75, behavior: 'smooth' });
+  const r = document.getElementById(b.dataset.rail || 'itemsRail'); r.scrollBy({ left: Number(b.dataset.dir) * r.clientWidth * 0.75, behavior: 'smooth' });
 }));
 
 // ── STREET HIGH GRIP のラインアップ(上位グレードの全パターン) ──
@@ -62,18 +62,18 @@ function renderMagazine() {
     <a class="mcard" href="/magazine?a=${a.slug}"><span class="tag${a.tag === '製品' ? ' shg' : ' muted'}">${esc(a.tag)}</span><b>${esc(a.title)}</b><small>${esc(a.lead)}</small></a>`).join('');
 }
 
+// シリーズ: 大きな縦長のパネルを横に並べる(横スクロール)
 function renderSeries(counts) {
   document.getElementById('seriesGrid').innerHTML = SERIES.map((s, i) => `
-    <a class="sr-card rv" href="/products#${s.id}">
-      <span class="ph${s.img ? '' : ' biz'}">${s.img ? `<img src="${s.img}" alt="" width="346" height="500" loading="lazy">` : 'JAPAN<br>ONLY'}</span>
-      <span>
-        <span class="no">${String(i + 1).padStart(2, '0')}</span>
-        <h3>${esc(s.en)}</h3>
-        <span class="ja">${esc(s.ja)}</span>
-        <span class="cnt">${counts ? `${counts[s.id] || 0}パターン` : ''}</span>
+    <a class="stile" href="/products#${s.id}">
+      <img src="${s.img}" alt="" width="346" height="500" loading="lazy">
+      <span class="stile-body">
+        <span class="stile-no en">${String(i + 1).padStart(2, '0')}</span>
+        <b class="stile-en en">${esc(s.en)}</b>
+        <span class="stile-ja">${esc(s.ja)}</span>
+        <span class="stile-cnt">${counts ? `${counts[s.id] || 0}パターン` : ''}</span>
       </span>
     </a>`).join('');
-  reveal(document.querySelectorAll('#seriesGrid .rv'));
 }
 
 async function renderCatalogParts() {
