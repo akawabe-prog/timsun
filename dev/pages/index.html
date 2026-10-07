@@ -1,0 +1,229 @@
+<!--title: TIMSUN(ティムソン)日本公式サイト|毎日を、もっと先へ。二輪用タイヤ-->
+<!--desc: 2006年創業、60以上の国と地域で使われる二輪タイヤブランドTIMSUN(ティムソン)の日本公式サイト。お乗りのバイクに合うタイヤを車種・型式・サイズから探せます。日本総代理店 株式会社カスタムジャパン。-->
+<!--anchors: #find タイヤを探す | #lineup シリーズ | #new 新製品 | #philosophy ヤモリの設計思想 | #quality 技術と品質 | #shop 取扱店 | #news ニュース-->
+<!--css: /assets/css/top.css-->
+<!--js: /assets/js/top.js-->
+<!-- HERO: 本国の映像だけで見せる(文字は重ねない) -->
+<section class="hero" aria-label="TIMSUNの映像">
+  <h1 class="sr">TIMSUN(ティムソン)日本公式サイト 毎日を、もっと先へ。</h1>
+  <video class="hero-video" src="/assets/video/hero.mp4" poster="/assets/video/hero-poster.webp" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
+  <button class="hero-pause" type="button" aria-label="映像を一時停止" aria-pressed="false"><span></span></button>
+  <!-- 映像下部の帯: 最新ニュース1件(左)と SNS(右) -->
+  <div class="hero-bar">
+    <div class="hero-bar-in">
+      <a class="hb-news" id="heroNews" href="/news"><span class="hb-label mono">NEWS</span><time></time><span class="hb-title">ニュース&amp;イベント</span></a>
+      <ul class="hb-sns" aria-label="公式SNS">
+        <li><a href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener" aria-label="Instagram(新しいタブで開く)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg><span>Instagram</span></a></li>
+        <li><a href="https://www.facebook.com/timsunjapan/" target="_blank" rel="noopener" aria-label="Facebook(新しいタブで開く)"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21z"/></svg><span>Facebook</span></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!--ANCHOR-->
+
+<!-- フルサイズバナー(ブリヂストン二輪サイトのカルーセルに倣う。背景は本国映像のコマ) -->
+<section class="banners" aria-roledescription="カルーセル" aria-label="おすすめ情報">
+  <div class="bn-track" id="bnTrack">
+    <a class="bn bn-dark" href="/products?p=TS720" role="group" aria-roledescription="スライド" aria-label="1 / 5">
+      <img class="bn-bg" src="/assets/img/banner/tread.webp" alt="" width="2000" height="640">
+      <span class="bn-body wrap">
+        <span class="bn-eyebrow mono">NEW — STREET HIGH GRIP</span>
+        <span class="bn-title en">TS720 GECKO</span>
+        <span class="bn-text">小径タイヤのために、コンパウンドとパターンを専用設計。</span>
+        <span class="bn-more">詳しく見る</span>
+      </span>
+    </a>
+    <a class="bn bn-light" href="/fitment?q=%E3%83%A2%E3%83%B3%E3%82%AD%E3%83%BC125" role="group" aria-roledescription="スライド" aria-label="2 / 5">
+      <span class="bn-body wrap">
+        <span class="bn-eyebrow mono">NEW SIZE</span>
+        <span class="bn-title">モンキー125に、<br>人気パターンの新サイズ。</span>
+        <span class="bn-text">JB02 / JB03 / JB05 対応 ― TS880・TS720 120/80-12</span>
+        <span class="bn-more">適合タイヤを見る</span>
+      </span>
+      <span class="bn-items" aria-hidden="true">
+        <img src="https://img.customjapan.net/items/29496082_1.jpg" alt="" width="500" height="500" loading="lazy">
+        <img src="https://img.customjapan.net/items/29496105_1.jpg" alt="" width="500" height="500" loading="lazy">
+      </span>
+    </a>
+    <a class="bn bn-dark" href="/fitment" role="group" aria-roledescription="スライド" aria-label="3 / 5">
+      <img class="bn-bg" src="/assets/img/banner/ride.webp" alt="" width="2000" height="640" loading="lazy">
+      <span class="bn-body wrap">
+        <span class="bn-eyebrow mono">FITMENT SEARCH</span>
+        <span class="bn-title">あなたのバイクに合うタイヤを、<br>すぐに。</span>
+        <span class="bn-text">車種・型式、またはサイズから。<span id="bnFit">1,100車種以上</span>に対応。</span>
+        <span class="bn-more">適合タイヤ検索</span>
+      </span>
+    </a>
+    <a class="bn bn-dark" href="/technology" role="group" aria-roledescription="スライド" aria-label="4 / 5">
+      <img class="bn-bg" src="/assets/img/banner/factory.webp" alt="" width="2000" height="640" loading="lazy">
+      <span class="bn-body wrap">
+        <span class="bn-eyebrow mono">TECHNOLOGY &amp; QUALITY</span>
+        <span class="bn-title">国が認めた技術で、<br>二輪タイヤだけをつくる。</span>
+        <span class="bn-text">国家企業技術センター / IATF 16949 / JIS・DOT・Eマーク</span>
+        <span class="bn-more">テクノロジー&amp;品質</span>
+      </span>
+    </a>
+    <a class="bn bn-dark bn-tread" href="/shops" role="group" aria-roledescription="スライド" aria-label="5 / 5">
+      <span class="bn-body wrap">
+        <span class="bn-eyebrow mono">SHOPS</span>
+        <span class="bn-title">全国<span class="en" id="bnShops">790</span>店以上の取扱店で。</span>
+        <span class="bn-text">タイヤ選びや取り付けは、お近くの取扱店にご相談ください。</span>
+        <span class="bn-more">取扱店を探す</span>
+      </span>
+    </a>
+  </div>
+  <div class="bn-ctrl wrap">
+    <button class="bn-prev" type="button" aria-label="前のスライド"></button>
+    <div class="bn-dots" id="bnDots" role="group" aria-label="スライドを選ぶ"></div>
+    <button class="bn-next" type="button" aria-label="次のスライド"></button>
+    <button class="bn-pause" type="button" aria-label="自動再生を停止" aria-pressed="false"><span></span></button>
+  </div>
+</section>
+
+<!-- タイヤを探す -->
+<section class="finder-sec" id="find">
+  <div class="wrap">
+    <div class="finder" role="search">
+      <div class="finder-tabs" role="tablist">
+        <button role="tab" aria-selected="true" aria-controls="fBody" id="tBody">車種から探す</button>
+        <button role="tab" aria-selected="false" aria-controls="fSize" id="tSize">サイズから探す</button>
+      </div>
+      <form class="finder-panel" id="fBody" role="tabpanel" aria-labelledby="tBody" action="/fitment" method="get">
+        <label class="sr" for="hq">車種名・型式</label>
+        <input id="hq" name="q" type="search" placeholder="車種名・型式を入力(例)PCX、AF61、モンキー125" autocomplete="off">
+        <button class="btn no-arrow" type="submit">検索</button>
+        <p class="finder-links"><a class="link" href="/fitment">メーカー・排気量から選ぶ</a></p>
+      </form>
+      <form class="finder-panel size" id="fSize" role="tabpanel" aria-labelledby="tSize" action="/fitment" method="get" hidden>
+        <input type="hidden" name="tab" value="size">
+        <label><span>タイヤ幅</span><select name="w" id="sw"><option value="">選択</option></select></label>
+        <span class="slash" aria-hidden="true">/</span>
+        <label><span>扁平率</span><select name="a" id="sa"><option value="">選択</option></select></label>
+        <span class="slash" aria-hidden="true">-</span>
+        <label><span>リム径(インチ)</span><select name="r" id="sr"><option value="">選択</option></select></label>
+        <button class="btn no-arrow" type="submit">検索</button>
+        <p class="finder-links"><span class="note">サイズはタイヤのサイドウォールに「120/70-12」のように表示されています。</span></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- シリーズから選ぶ -->
+<section class="sec" id="lineup">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Product Series</p>
+        <h2 class="h2">走るシーンから選ぶ。</h2>
+        <p class="lead">世界共通のシリーズ体系に、日本独自の「ビジネス」を加えた9シリーズ。上位グレード「ストリートハイグリップ」と、毎日の足元を支える「スタンダード」をそろえています。</p>
+      </div>
+      <a class="btn btn-ghost" href="/products">すべての製品</a>
+    </div>
+    <div class="series" id="seriesGrid"></div>
+  </div>
+</section>
+
+<!-- 注目の新製品 -->
+<section class="sec alt" id="new">
+  <div class="wrap feature">
+    <div class="feature-vis rv">
+      <img src="https://img.customjapan.net/items/29090884_1.jpg" alt="TIMSUN TS720F GECKO" width="500" height="500" loading="lazy">
+    </div>
+    <div class="feature-copy rv">
+      <p class="eyebrow">New — 2025</p>
+      <img class="shg-logo" src="/assets/img/shg-logo.webp" alt="STREET HIGH GRIP ストリートハイグリップ" width="640" height="87" loading="lazy">
+      <h2 class="h2"><span class="en">TS720 GECKO</span></h2>
+      <p class="lead">スクーターなど小径タイヤのために、コンパウンドとパターンを専用に設計しました。名前の「GECKO」は、TIMSUNのシンボルであるヤモリから。</p>
+      <dl class="mini-spec" id="tsSpec">
+        <div><dt>シリーズ</dt><dd>スクーター</dd></div>
+        <div><dt>グレード</dt><dd>ストリートハイグリップ</dd></div>
+        <div><dt>サイズ</dt><dd class="en" data-k="sizes">—</dd></div>
+        <div><dt>価格</dt><dd class="en" data-k="price">—</dd></div>
+      </dl>
+      <p class="feature-links"><a class="btn" href="/products?p=TS720">サイズと価格を見る</a><a class="link" href="/fitment?q=%E3%83%A2%E3%83%B3%E3%82%AD%E3%83%BC125">モンキー125(JB02/03/05)対応サイズ</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ヤモリの設計思想 -->
+<section class="sec dark tread" id="philosophy">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Design Philosophy</p>
+        <h2 class="h2">ヤモリに学ぶ、良いタイヤの条件。</h2>
+        <p class="lead">TIMSUNのシンボルはヤモリ。壁に張りつく手、鋭いものに負けない足、切れても再生する尾。良いタイヤに必要な性能を、すべて備えた生きものです。</p>
+      </div>
+      <a class="btn btn-ghost" href="/brand#gecko">ミスターティムソンについて</a>
+    </div>
+    <div class="gecko3">
+      <div class="card rv">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="24" cy="31" r="6"/><path d="M24 25V12M19.5 27 11 17M28.5 27 37 17M18.5 33 8 31M29.5 33 40 31"/><circle cx="24" cy="9" r="3"/><circle cx="9" cy="15" r="3"/><circle cx="39" cy="15" r="3"/><circle cx="5.5" cy="30.5" r="3"/><circle cx="42.5" cy="30.5" r="3"/></svg>
+        <span class="part">01 — HAND</span>
+        <h3 class="h3">手:グリップ</h3>
+        <p class="note">壁に張りつく手は、路面をとらえるグリップ力の象徴です。</p>
+      </div>
+      <div class="card rv">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 39 10v12c0 10-6.5 17-15 21C15.5 39 9 32 9 22V10z"/><path d="M24 14v13M20 27h8l-4 7z"/></svg>
+        <span class="part">02 — FOOT</span>
+        <h3 class="h3">足:耐パンク性</h3>
+        <p class="note">クギを踏んでも大丈夫な足は、パンクに強いタイヤの象徴です。</p>
+      </div>
+      <div class="card rv">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 24c0-9.9 8.1-18 18-18s18 8.1 18 18-7.2 14-14 14-11-4.9-11-11 4-8 8-8 6 2.7 6 6-2.2 4-4 4"/></svg>
+        <span class="part">03 — TAIL</span>
+        <h3 class="h3">尾:ロングライフ</h3>
+        <p class="note">切れてもすぐ再生する尾は、長く使えるタイヤの象徴です。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 工場・品質 -->
+<section class="sec" id="quality">
+  <div class="wrap quality">
+    <div class="quality-vis rv">
+      <img src="/assets/video/factory-poster.webp" alt="TIMSUN威海工場の製造ライン" width="1280" height="720" loading="lazy">
+    </div>
+    <div class="quality-copy rv">
+      <p class="eyebrow">Technology &amp; Quality</p>
+      <h2 class="h2">国が認めた技術センターで、<br>開発から製造まで。</h2>
+      <p class="lead">TIMSUNは中国の「国家企業技術センター」に認定された開発拠点を持ち、自動車業界の品質規格IATF 16949のもとでタイヤを製造しています。高性能な二輪ラジアルタイヤのスマート製造にも取り組んでいます。</p>
+      <p><a class="btn" href="/technology">テクノロジー&amp;品質</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- 取扱店 -->
+<section class="sec-tight alt" id="shop">
+  <div class="wrap shopfind">
+    <div>
+      <p class="eyebrow">Shops</p>
+      <h2 class="h2">全国の取扱店で、相談して選べる。</h2>
+      <p class="lead">タイヤ選びや取り付けは、お近くの取扱店にご相談ください。</p>
+    </div>
+    <form class="shopq" action="/shops" method="get">
+      <label class="sr" for="pref">都道府県</label>
+      <select id="pref" name="pref" required>
+        <option value="">都道府県を選択</option>
+      </select>
+      <button class="btn no-arrow" type="submit">取扱店を探す</button>
+    </form>
+  </div>
+</section>
+
+<!-- ニュース -->
+<section class="sec" id="news">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">News &amp; Events</p>
+        <h2 class="h2">ニュース&amp;イベント</h2>
+      </div>
+      <a class="btn btn-ghost" href="/news">ニュース一覧</a>
+    </div>
+    <ul class="newslist" id="newsList"></ul>
+    <p class="ig"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagramをフォロー @timsun_japan_gram</a></p>
+  </div>
+</section>

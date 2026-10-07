@@ -1,0 +1,37 @@
+<!--nav: /news-->
+<!--title: ニュース&イベント|TIMSUN(ティムソン)日本公式サイト-->
+<!--desc: TIMSUN(ティムソン)日本のニュース、新製品、イベント出展、メディア掲載情報。-->
+<!--css: /assets/css/pages.css-->
+<section class="phero dark tread">
+  <div class="wrap">
+    <ol class="crumb"><li><a href="/">TOP</a></li><li>ニュース&amp;イベント</li></ol>
+    <h1 class="h1">ニュース&amp;イベント</h1>
+    <p class="lead">新製品、モーターサイクルショーなどのイベント出展、メディア掲載のお知らせ。</p>
+  </div>
+</section>
+
+<section class="sec-tight">
+  <div class="wrap">
+    <div class="filters" id="filters" role="group" aria-label="カテゴリで絞り込み">
+      <button type="button" data-c="" aria-pressed="true">すべて</button>
+      <button type="button" data-c="product" aria-pressed="false">製品</button>
+      <button type="button" data-c="event" aria-pressed="false">イベント</button>
+      <button type="button" data-c="media" aria-pressed="false">メディア</button>
+    </div>
+    <ul class="newslist" id="news"></ul>
+    <p class="mt-m"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">最新情報はInstagramで @timsun_japan_gram</a></p>
+  </div>
+</section>
+<script type="module">
+import { NEWS, NEWS_CAT } from '/assets/js/data.js';
+import { esc } from '/assets/js/site.js';
+const list = document.getElementById('news');
+const render = (c) => { list.innerHTML = NEWS.filter((n) => !c || n.c === c).map((n) => `
+  <li><a href="${esc(n.u)}" target="_blank" rel="noopener"><time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span></a></li>`).join(''); };
+document.getElementById('filters').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#filters button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  render(b.dataset.c);
+});
+render('');
+</script>

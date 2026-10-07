@@ -1,0 +1,68 @@
+<!--title: 適合タイヤ検索|TIMSUN(ティムソン)日本公式サイト-->
+<!--desc: お乗りのバイクのメーカー・車種・型式、またはタイヤサイズから、適合するTIMSUN(ティムソン)タイヤを探せます。スクーター・ビジネスからスポーツ、オフロードまで。-->
+<!--nav: /fitment-->
+<!--css: /assets/css/fitment.css-->
+<!--js: /assets/js/fitment.js-->
+<section class="phero dark tread">
+  <div class="wrap">
+    <ol class="crumb"><li><a href="/">TOP</a></li><li>タイヤを探す</li></ol>
+    <h1 class="h1">あなたのバイクに合う<br>タイヤを探す。</h1>
+    <p class="lead">車種・型式、またはタイヤサイズから、適合するTIMSUNタイヤをフロント・リア別にご案内します。<span class="count" id="count"></span></p>
+  </div>
+</section>
+
+<section class="fit-sec">
+  <div class="wrap">
+    <div class="fit-tabs" role="tablist">
+      <button role="tab" id="tabBody" aria-controls="pBody" aria-selected="true">車種から探す</button>
+      <button role="tab" id="tabSize" aria-controls="pSize" aria-selected="false">サイズから探す</button>
+    </div>
+
+    <!-- 車種から -->
+    <div id="pBody" role="tabpanel" aria-labelledby="tabBody">
+      <div class="qbox">
+        <label class="sr" for="q">車種名・型式で検索</label>
+        <input id="q" type="search" placeholder="車種名・型式を入力(例)PCX、AF61、モンキー125" autocomplete="off">
+        <div id="suggest" class="suggest" hidden></div>
+      </div>
+      <div class="steps">
+        <p class="step-t"><span>1</span>車両メーカーを選択</p>
+        <div id="makers" class="makers"><p class="loading">適合データを読み込んでいます</p></div>
+        <div id="groups" class="step" hidden></div>
+        <div id="bodies" class="step" hidden></div>
+        <div id="frames" class="step" hidden></div>
+      </div>
+    </div>
+
+    <!-- サイズから -->
+    <div id="pSize" role="tabpanel" aria-labelledby="tabSize" hidden>
+      <form class="sizebox" id="sizeForm">
+        <label><span>タイヤ幅</span><select name="w" id="sw"><option value="">すべて</option></select></label>
+        <span class="slash" aria-hidden="true">/</span>
+        <label><span>扁平率</span><select name="a" id="sa"><option value="">すべて</option></select></label>
+        <span class="slash" aria-hidden="true">-</span>
+        <label><span>リム径(インチ)</span><select name="r" id="sr"><option value="">すべて</option></select></label>
+        <button class="btn no-arrow" type="submit">検索</button>
+      </form>
+      <figure class="size-howto">
+        <svg viewBox="0 0 360 64" aria-hidden="true"><text x="0" y="40" class="sz-big">120</text><text x="84" y="40" class="sz-sep">/</text><text x="104" y="40" class="sz-big">70</text><text x="158" y="40" class="sz-sep">-</text><text x="178" y="40" class="sz-big">12</text><text x="234" y="40" class="sz-sm">51P TL</text><text x="0" y="60" class="sz-lb">タイヤ幅(mm)</text><text x="104" y="60" class="sz-lb">扁平率(%)</text><text x="178" y="60" class="sz-lb">リム径(インチ)</text></svg>
+        <figcaption class="note">サイズはタイヤのサイドウォールに表示されています。バイアスタイヤは「2.50-17」のように幅とリム径で表します。</figcaption>
+      </figure>
+    </div>
+
+    <section id="results" class="results" aria-live="polite" hidden></section>
+  </div>
+</section>
+
+<section class="sec-tight">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <p class="eyebrow">Shops</p>
+        <h2 class="h2">取り付けは、お近くの取扱店へ。</h2>
+        <p class="note">タイヤ選びに迷ったときも、取扱店にご相談ください。</p>
+      </div>
+      <div class="btns"><a class="btn" href="/shops">取扱店を探す</a></div>
+    </div>
+  </div>
+</section>

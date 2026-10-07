@@ -1,0 +1,59 @@
+/* TIMSUN 製品(共通スタイルは site.css) */
+[hidden]{display:none!important}
+
+/* シリーズのナビ(スクロールで上に固定) */
+.snav{position:sticky;top:68px;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.snav-in{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
+.snav-in::-webkit-scrollbar{display:none}
+.snav a{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap}
+.snav a:hover{background:var(--paper-2)}
+.snav small{font-family:var(--en);color:var(--sub);font-weight:500}
+
+/* グレード */
+.grades-in{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grade{padding:24px 28px;border-radius:var(--radius);border:1px solid var(--line);display:grid;gap:12px;align-content:start}
+.grade img{width:min(100%,300px)}
+.grade p{font-size:14px;color:var(--sub)}
+.grade-name{font-weight:800;font-size:24px;letter-spacing:.06em;color:var(--ink)!important}
+@media(max-width:720px){.grades-in{grid-template-columns:1fr}}
+
+/* シリーズ */
+.series-sec{padding:clamp(56px,7vw,88px) 0;scroll-margin-top:124px}
+.series-head{display:grid;grid-template-columns:120px 1fr;gap:28px;align-items:center;margin-bottom:32px}
+.series-head img,.series-head .biz{width:120px;height:160px;border-radius:12px;object-fit:cover}
+.series-head .biz{display:grid;place-items:center;text-align:center;background:var(--ink);color:var(--g-glow);font-weight:800;letter-spacing:.1em;font-size:13px}
+.series-head .h2{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:8px 0 8px}
+.series-head .h2 .en{font-weight:800}
+.series-head .h2 small{font-size:15px;color:var(--sub);font-weight:700}
+@media(max-width:620px){.series-head{grid-template-columns:80px 1fr;gap:16px}.series-head img,.series-head .biz{width:80px;height:107px}}
+
+.pts{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.pt{display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;transition:border-color .2s,transform .25s var(--ease),box-shadow .25s}
+.pt:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-shadow:0 18px 40px -28px rgba(15,17,14,.45)}
+.pt .ph{aspect-ratio:1;padding:14px;border-bottom:1px solid var(--line);background:#fff}
+.pt .ph img{width:100%;height:100%;object-fit:contain}
+.pt .meta{display:grid;align-content:start;gap:6px;padding:16px}
+.pt .nm{font-size:22px;font-weight:800;line-height:1.1}
+.pt .vars{font-size:12px;color:var(--sub)}
+.pt .d{font-size:13px;line-height:1.7}
+.pt .foot{display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
+.pt .foot .en{color:var(--ink);font-weight:700}
+
+/* 詳細 */
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,72px);align-items:center;margin-bottom:56px}
+.detail-vis{aspect-ratio:1;border:1px solid var(--line);border-radius:20px;padding:8%;display:grid;place-items:center;background:#fff}
+.detail-vis img{width:100%;height:100%;object-fit:contain}
+.detail-info{display:grid;gap:20px}
+.detail-info .shg-logo{width:min(100%,320px)}
+.detail-info .spec small{font-size:11px;color:var(--sub);margin-left:4px}
+.detail-links{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px}
+@media(max-width:820px){.detail{grid-template-columns:1fr}.detail-vis{max-width:420px}}
+.sizes-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.sizes-h .en{font-size:14px;color:var(--sub)}
+.sizes-wrap{overflow-x:auto}
+.sizes{min-width:760px}
+.sizes thead th{width:auto;font-family:var(--mono);font-size:11px;letter-spacing:.06em;font-weight:500;border-bottom:1px solid var(--ink)}
+.sizes td{font-size:13px}
+.sizes .st{color:var(--sub);white-space:nowrap}
+.sizes-note{margin-top:14px}
+.detail-eyebrow{margin-top:16px}

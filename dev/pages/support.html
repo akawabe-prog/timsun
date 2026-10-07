@@ -1,0 +1,85 @@
+<!--title: サポート・FAQ|TIMSUN(ティムソン)日本公式サイト-->
+<!--desc: TIMSUN(ティムソン)タイヤのよくあるご質問、タイヤの基礎知識、カタログのダウンロード、お問い合わせ。-->
+<!--nav: /support-->
+<!--anchors: #faq よくあるご質問 | #basics タイヤの基礎知識 | #catalog カタログ | #contact お問い合わせ-->
+<!--css: /assets/css/pages.css-->
+<section class="phero dark tread">
+  <div class="wrap">
+    <ol class="crumb"><li><a href="/">TOP</a></li><li>サポート</li></ol>
+    <h1 class="h1">サポート</h1>
+    <p class="lead">よくあるご質問、タイヤの基礎知識、カタログ、お問い合わせ。</p>
+  </div>
+</section>
+<!--ANCHOR-->
+
+<!-- FAQ -->
+<section class="sec" id="faq">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">FAQ</p>
+      <h2 class="h2">よくあるご質問</h2>
+    </div>
+    <div class="faq" id="faqList"></div>
+  </div>
+</section>
+
+<!-- 基礎知識 -->
+<section class="sec alt" id="basics">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Basics</p>
+        <h2 class="h2">タイヤの基礎知識</h2>
+      </div>
+    </div>
+    <div class="reasons">
+      <div class="card">
+        <h3 class="h3">サイズの読み方</h3>
+        <p>「120/70-12」は、タイヤ幅120mm、扁平率70%、リム径12インチを表します。バイアスタイヤは「2.50-17」のように、幅(インチ)とリム径で表します。</p>
+      </div>
+      <div class="card">
+        <h3 class="h3">製造時期の見方</h3>
+        <p>サイドウォールの4桁の刻印で確認できます。「0619」は2019年の第6週に製造されたことを示します。</p>
+      </div>
+      <div class="card">
+        <h3 class="h3">交換の目安</h3>
+        <p>スリップサインは使用限度の目印です。スリップサインが出る前に交換しましょう。溝が残っていても、経年によるゴムの劣化に注意してください。</p>
+      </div>
+      <div class="card">
+        <h3 class="h3">空気圧</h3>
+        <p>車両の指定空気圧を基準にしてください。純正と異なるサイズに変更する場合は、取扱店にご相談ください。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- カタログ -->
+<section class="sec-tight" id="catalog">
+  <div class="wrap">
+    <p class="eyebrow">Catalog</p>
+    <h2 class="h2">カタログ</h2>
+    <div class="dl mt-m">
+      <div><b>TIMSUN 総合カタログ 2025</b><span>PDF・約9.6MB</span></div>
+      <a class="btn" href="https://cdn.customjapan.net/catalog/490_timsun_catalog_2025.pdf" target="_blank" rel="noopener">PDFを開く</a>
+    </div>
+  </div>
+</section>
+
+<!-- お問い合わせ -->
+<section class="sec-tight" id="contact">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 class="h2">お問い合わせ</h2>
+        <p class="note">ご回答はTIMSUN日本総代理店 株式会社カスタムジャパンからお送りします。ご購入済み商品の不具合・返品交換は、ご購入店舗にお問い合わせください。</p>
+      </div>
+      <div class="btns"><a class="btn" href="https://www.timsun-japan.com/contact" target="_blank" rel="noopener">お問い合わせフォーム</a></div>
+    </div>
+  </div>
+</section>
+<script type="module">
+import { FAQ } from '/assets/js/data.js';
+import { esc } from '/assets/js/site.js';
+document.getElementById('faqList').innerHTML = FAQ.map((f) => `<details><summary><span>${esc(f.q)}</span></summary><p class="a">${esc(f.a)}</p></details>`).join('');
+</script>

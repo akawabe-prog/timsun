@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ニュース&イベント|TIMSUN(ティムソン)日本公式サイト</title>
+<meta name="description" content="TIMSUN(ティムソン)日本のニュース、新製品、イベント出展、メディア掲載情報。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TIMSUN(ティムソン)日本公式サイト">
+<meta property="og:title" content="ニュース&イベント|TIMSUN(ティムソン)日本公式サイト">
+<meta property="og:description" content="TIMSUN(ティムソン)日本のニュース、新製品、イベント出展、メディア掲載情報。">
+<!-- og:url / og:image / canonical は公開ドメイン確定後に絶対URLで追加する -->
+<meta name="theme-color" content="#0f110e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/pages.css">
+</head>
+<body>
+<a class="sr" href="#main">本文へ移動</a>
+<header class="hd">
+  <div class="hd-in">
+    <a class="logo" href="/" aria-label="TIMSUN トップへ"><img src="https://cdn.customjapan.net/logo/maker/m490_timsun.webp" alt="TIMSUN Excel Beyond" width="500" height="150"></a>
+    <nav class="gnav" id="gnav" aria-label="メイン">
+      <a href="/fitment">タイヤを探す</a>
+      <a href="/products">製品</a>
+      <a href="/technology">テクノロジー</a>
+      <a href="/brand">ブランド</a>
+      <a href="/shops">取扱店</a>
+      <a href="/support">サポート</a>
+    </nav>
+    <a class="btn btn-sm no-arrow hd-cta" href="/fitment">適合検索</a>
+    <button class="menu" type="button" aria-expanded="false" aria-controls="gnav" aria-label="メニュー"><span></span></button>
+  </div>
+</header>
+<main id="main">
+<section class="phero dark tread">
+  <div class="wrap">
+    <ol class="crumb"><li><a href="/">TOP</a></li><li>ニュース&amp;イベント</li></ol>
+    <h1 class="h1">ニュース&amp;イベント</h1>
+    <p class="lead">新製品、モーターサイクルショーなどのイベント出展、メディア掲載のお知らせ。</p>
+  </div>
+</section>
+
+<section class="sec-tight">
+  <div class="wrap">
+    <div class="filters" id="filters" role="group" aria-label="カテゴリで絞り込み">
+      <button type="button" data-c="" aria-pressed="true">すべて</button>
+      <button type="button" data-c="product" aria-pressed="false">製品</button>
+      <button type="button" data-c="event" aria-pressed="false">イベント</button>
+      <button type="button" data-c="media" aria-pressed="false">メディア</button>
+    </div>
+    <ul class="newslist" id="news"></ul>
+    <p class="mt-m"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">最新情報はInstagramで @timsun_japan_gram</a></p>
+  </div>
+</section>
+<script type="module">
+import { NEWS, NEWS_CAT } from '/assets/js/data.js';
+import { esc } from '/assets/js/site.js';
+const list = document.getElementById('news');
+const render = (c) => { list.innerHTML = NEWS.filter((n) => !c || n.c === c).map((n) => `
+  <li><a href="${esc(n.u)}" target="_blank" rel="noopener"><time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span></a></li>`).join(''); };
+document.getElementById('filters').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#filters button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  render(b.dataset.c);
+});
+render('');
+</script>
+</main>
+<footer class="ft">
+  <div class="wrap ft-top">
+    <div class="ft-brand">
+      <img src="https://cdn.customjapan.net/logo/maker/m490_timsun.webp" alt="TIMSUN" width="500" height="150" loading="lazy">
+      <p>TIMSUN(ティムソン)日本総代理店<br>株式会社カスタムジャパン</p>
+    </div>
+    <div class="ft-cols">
+      <div><h4>Products</h4><a href="/fitment">適合タイヤ検索</a><a href="/products">製品一覧</a><a href="/technology">テクノロジー&amp;品質</a></div>
+      <div><h4>Brand</h4><a href="/brand">ブランド</a><a href="/brand#gecko">ミスターティムソン</a><a href="/news">ニュース&amp;イベント</a></div>
+      <div><h4>Support</h4><a href="/shops">取扱店</a><a href="/support">FAQ・お問い合わせ</a><a href="/dealers">販売店の方へ</a><a href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagram</a></div>
+    </div>
+  </div>
+  <div class="wrap ft-bottom">
+    <span>© TIMSUN Japan / Custom Japan Co., Ltd.</span>
+    <span><a href="https://timsun.cn/" target="_blank" rel="noopener">TIMSUN Global(本国サイト)</a></span>
+  </div>
+</footer>
+<script type="module" src="/assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+
+# 社内APIの取得スクリプトと取得データは公開リポジトリに含めない(手元のみ)
+dev/refresh-snapshot.py
+dev/fitment-snapshot.json
+# ローカルのプレビュー設定(PCのパスを含む)
+.claude/

@@ -1,0 +1,97 @@
+<!--title: 販売店の方へ|TIMSUN(ティムソン)日本公式サイト-->
+<!--desc: TIMSUN(ティムソン)タイヤの取り扱いをご検討の販売店さまへ。お客さまにおすすめできる理由、日本総代理店カスタムジャパンのサポート、カタログ、取扱開始のご相談。-->
+<!--anchors: #why 勧められる理由 | #voice 取扱店さまの声 | #dealer-support 総代理店のサポート | #start 取扱開始のご相談-->
+<!--css: /assets/css/pages.css-->
+<section class="phero dark tread">
+  <div class="wrap">
+    <ol class="crumb"><li><a href="/">TOP</a></li><li>販売店の方へ</li></ol>
+    <h1 class="h1">お客さまに、<br>自信をもって勧められるタイヤを。</h1>
+    <p class="lead">TIMSUNの取り扱いをご検討の販売店さまへ。品質の根拠、ラインアップ、日本総代理店のサポートをご紹介します。</p>
+  </div>
+</section>
+<!--ANCHOR-->
+
+<!-- 勧められる理由 -->
+<section class="sec" id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Why TIMSUN</p>
+        <h2 class="h2">お客さまに説明できる、4つの理由。</h2>
+      </div>
+    </div>
+    <div class="reasons">
+      <div class="card">
+        <h3 class="h3">品質の根拠がある</h3>
+        <p>自動車業界の品質規格IATF 16949のもとで製造。日本のJIS、米国のDOT、欧州のEマークなどの製品認証を取得しています。</p>
+        <a class="link" href="/technology">テクノロジー&amp;品質</a>
+      </div>
+      <div class="card">
+        <h3 class="h3">日常の車種に強い</h3>
+        <p>スクーター、カブ、ジャイロなどのビジネス車から、ミドルクラスのスポーツ、オフロードまで。毎日走るバイクのサイズを幅広くそろえています。</p>
+        <a class="link" href="/products">製品一覧</a>
+      </div>
+      <div class="card">
+        <h3 class="h3">適合をすぐ調べられる</h3>
+        <p>車種・型式、またはサイズから、適合するTIMSUNタイヤを検索できます。店頭でのご案内にもお使いください。</p>
+        <a class="link" href="/fitment">適合タイヤ検索</a>
+      </div>
+      <div class="card">
+        <h3 class="h3">上位グレードで提案できる</h3>
+        <p>グリップ力・耐摩耗性・ウェットグリップを追求した「ストリートハイグリップ」で、ワンランク上の提案ができます。</p>
+        <a class="link" href="/products">ストリートハイグリップ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 声 -->
+<section class="sec alt" id="voice">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Voice</p>
+        <h2 class="h2">取扱店さまの声</h2>
+        <p class="lead">バイクショップにお勤めの方へのアンケートでいただいた回答です。</p>
+      </div>
+    </div>
+    <ul class="voices" id="voices"></ul>
+  </div>
+</section>
+
+<!-- サポート -->
+<section class="sec" id="dealer-support">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Support</p>
+      <h2 class="h2">日本総代理店が、<br>販売を支えます。</h2>
+    </div>
+    <div>
+      <div class="prose">
+        <p>株式会社カスタムジャパンが日本総代理店として、TIMSUNタイヤの供給、適合データの整備、販促のご相談に対応します。モーターサイクルショーなどのイベント出展や、販売店さまとの工場視察も行ってきました。</p>
+      </div>
+      <div class="dl mt-m">
+        <div><b>TIMSUN 総合カタログ 2025</b><span>PDF・約9.6MB</span></div>
+        <a class="btn" href="https://cdn.customjapan.net/catalog/490_timsun_catalog_2025.pdf" target="_blank" rel="noopener">PDFを開く</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-tight" id="start">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 class="h2">取扱開始のご相談</h2>
+        <p class="note">お問い合わせフォームの件名に「取扱開始の相談」とご記入ください。</p>
+      </div>
+      <div class="btns"><a class="btn" href="https://www.timsun-japan.com/contact" target="_blank" rel="noopener">お問い合わせフォーム</a></div>
+    </div>
+  </div>
+</section>
+<script type="module">
+import { VOICES } from '/assets/js/data.js';
+import { esc } from '/assets/js/site.js';
+document.getElementById('voices').innerHTML = VOICES.map((v) => `<li>${esc(v)}</li>`).join('');
+</script>
