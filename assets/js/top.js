@@ -34,6 +34,21 @@ document.querySelectorAll('.rail-btn').forEach((b) => b.addEventListener('click'
   const r = document.getElementById('itemsRail'); r.scrollBy({ left: Number(b.dataset.dir) * r.clientWidth * 0.75, behavior: 'smooth' });
 }));
 
+// ── STREET HIGH GRIP のラインアップ(上位グレードの全パターン) ──
+function renderShg(pats) {
+  const list = [...pats.values()].filter((p) => p.shg)
+    .sort((a, b) => Number(NEW_PATTERNS.includes(b.id)) - Number(NEW_PATTERNS.includes(a.id)) || SERIES.findIndex((s) => s.id === a.s) - SERIES.findIndex((s) => s.id === b.s));
+  const sizes = list.reduce((n, p) => n + p.sizes, 0);
+  document.getElementById('shgCount').textContent = `${list.length}パターン・${sizes}サイズ`;
+  document.getElementById('shgRail').innerHTML = list.map((p) => {
+    const s = SERIES.find((x) => x.id === p.s);
+    return `<a class="icard" href="/products?p=${p.id}">
+      <span class="ph"><img src="${IMG}${esc(p.img)}" alt="TIMSUN ${p.id}" width="320" height="320" loading="lazy" decoding="async"><span class="badges">${NEW_PATTERNS.includes(p.id) ? '<span class="tag badge-new">NEW</span>' : ''}</span></span>
+      <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr">${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
+    </a>`;
+  }).join('');
+}
+
 // ── 使い方から選ぶ(By Riding Style) ──
 function renderUsecases() {
   document.getElementById('usecases').innerHTML = USECASES.map((u) => `
@@ -57,7 +72,6 @@ function renderSeries(counts) {
         <span class="ja">${esc(s.ja)}</span>
         <span class="cnt">${counts ? `${counts[s.id] || 0}パターン` : ''}</span>
       </span>
-      ${s.jpOnly ? '<span class="tag jp">日本独自</span>' : ''}
     </a>`).join('');
   reveal(document.querySelectorAll('#seriesGrid .rv'));
 }
@@ -74,7 +88,9 @@ async function renderCatalogParts() {
     }
     renderSeries(Object.fromEntries(Object.entries(pats).map(([k, v]) => [k, v.size])));
     fillSizeSelects(items);
-    renderItems(patternsOf(items));
+    const pmap = patternsOf(items);
+    renderItems(pmap);
+    renderShg(pmap);
     const asof = await dataAsOf();
     if (asof) { const n = document.getElementById('itemsAsof'); n.hidden = false; n.textContent = `価格は${fmtDate(asof)}時点のものです。`; }
     // 注目製品(TS720)のサイズ数と価格帯

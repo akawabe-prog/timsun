@@ -19,7 +19,7 @@ export const SERIES = [
     lead: '旧車やクラシックスタイルに似合う、縦溝とトレールのパターン。' },
   { id: 'cruising', en: 'Cruising', ja: 'クルーザー', img: '/assets/img/series/cruising.webp',
     lead: 'クルーザー向けの大径サイズ。安定した乗り心地で、長い旅を快適に。' },
-  { id: 'business', en: 'Business', ja: 'ビジネス', img: null, jpOnly: true,
+  { id: 'business', en: 'Business', ja: 'ビジネス', img: '/assets/img/series/business.webp', jpOnly: true,
     lead: 'カブやジャイロなど、仕事で毎日走るバイクのために。耐久性と直進安定性を重視。' },
   { id: 'snow', en: 'Snow', ja: 'スノー', img: '/assets/img/series/snow.webp',
     lead: '冬の路面に。ビジネス車や小径スクーター向けの深溝スノーパターン。' },
@@ -161,7 +161,7 @@ export const NEW_PATTERNS = ['TS720'];   // 新着(2025年8月発売)
 // ── トップ「使い方から選ぶ」 ──
 export const USECASES = [
   { id: 'commute', title: '通勤・通学', text: '毎日のスクーターに。晴れの日も雨の日も。', series: 'scooter', img: '/assets/img/series/scooter.webp' },
-  { id: 'work', title: '仕事のバイク', text: 'カブ・ジャイロ・ビジネス車の足元に。', series: 'business', img: null },
+  { id: 'work', title: '仕事のバイク', text: 'カブ・ジャイロ・ビジネス車の足元に。', series: 'business', img: '/assets/img/series/business.webp' },
   { id: 'touring', title: 'ツーリング', text: '長い距離を、安心して走るために。', series: 'touring-sport', img: '/assets/img/series/touring-sport.webp' },
   { id: 'offroad', title: 'オフロード', text: 'トレールからモトクロスまで。', series: 'adventure', img: '/assets/img/series/adventure.webp' },
 ];
