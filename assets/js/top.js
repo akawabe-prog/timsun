@@ -234,6 +234,9 @@ function renderReels() {
       <span class="reel-play" aria-hidden="true"></span>
       <b class="reel-t">${esc(r.t)}</b>
     </a>`).join('');
+  // 本数が少なく横に余るときは矢印を出さない
+  const fit = () => rail.parentElement.querySelectorAll('.rail-btn').forEach((b) => { b.hidden = rail.scrollWidth <= rail.clientWidth + 1; });
+  fit(); addEventListener('resize', fit);
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (still || !('IntersectionObserver' in window)) return;
   const io = new IntersectionObserver((es) => es.forEach((e) => {

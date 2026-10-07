@@ -231,19 +231,9 @@ export const ARTICLES = [
   },
 ];
 
-// ── Instagram のリール(@timsun_japan_gram)。動画は冒頭12秒の無音プレビューを縦長9:16にしたもの(/assets/video/reels/)。
+// ── Instagram のリール(@timsun_japan_gram)。縦長で撮られたものだけを使う。動画は冒頭12秒の無音プレビュー(/assets/video/reels/)。
 // 押すと Instagram の元のリール(音声つき・全編)を開く。題は各投稿の見出しから
 export const REELS = [
-  { id: 'Dd8PxwpDlPT', t: 'CIMAMotor 2026 アフタームービー' },
   { id: 'Dd5Wu92FKN9', t: 'CIMAMotor 2026 TIMSUNブース' },
-  { id: 'Dd3XXxmihW7', t: 'スタント競技大会 TIMSUN CUP' },
   { id: 'Ddc_zVzCQGZ', t: 'TIMSUN CUPの審査員たち' },
-  { id: 'DdbEGPJDNEj', t: 'Mr.TIMSUNと一緒に、TIMSUN CUPへ' },
-  { id: 'DbNw_leDNHq', t: '夏空の下、どこまでも。' },
-  { id: 'Da7vZSIDSDm', t: '世界60ヶ国以上で愛される、グローバルクオリティ' },
-  { id: 'DaFj3UrFZoh', t: '過酷な道があるから、挑戦は終わらない' },
-  { id: 'DZziSw5iAp1', t: 'タイヤの向きが前後で逆な理由' },
-  { id: 'DZZ5TMjFIG6', t: 'Mr.TIMSUNの一日' },
-  { id: 'DZNBUOODbPN', t: '実は、特別なレース用タイヤじゃありません' },
-  { id: 'DWoBlNngX_J', t: '東京モーターサイクルショー2026 御礼' },
 ];
