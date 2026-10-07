@@ -110,7 +110,6 @@ main{display:block}
   .gitem{display:block}
   .gtop{padding:14px 4px;border-bottom:1px solid var(--line)}
   .gtop::after,.has-mega > .gtop::before{display:none}
-  .mega{display:none!important}
   .hd-cta{margin-left:auto}
   .menu{display:block}
 }
@@ -249,9 +248,10 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .hd:has(.gitem:hover > .mega)::before{opacity:0}
 .mega-in{max-width:var(--wrap);margin:0 auto;padding:28px 16px 30px}
 .mega-label{margin-bottom:14px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--sub)}
-.mega-tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
-.mega-tiles.n5{grid-template-columns:repeat(5,1fr)}
-.mega-tiles.n9{grid-template-columns:repeat(9,1fr)}
+/* タイル1枚の最大幅をそろえる(項目数が違ってもタイルの大きさは同じ)。狭い画面では列数を保ったまま縮める */
+.mega-tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;max-width:calc(6 * 150px + 5 * 12px)}
+.mega-tiles.n5{grid-template-columns:repeat(5,minmax(0,1fr));max-width:calc(5 * 150px + 4 * 12px)}
+.mega-tiles.n9{grid-template-columns:repeat(9,minmax(0,1fr));max-width:none}
 .mt{display:grid;gap:10px;justify-items:center;text-align:center}
 .mt-ph{display:grid;place-items:center;width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--r-sm);background:var(--paper-2);transition:box-shadow .2s}
 .mt-ph img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
@@ -260,11 +260,11 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .mt-mascot .mt-ph img{width:78%;height:88%;object-fit:contain}
 .mt-dark .mt-ph{background:var(--ink);color:var(--g-glow);font-family:var(--en);font-weight:800;font-size:12px;letter-spacing:.12em}
 .mt-icon .mt-ph svg{width:38%;height:38%;color:var(--g-ink)}
-.mt-name{font-size:12px;font-weight:700;line-height:1.4}
+.mt-name{font-size:12px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
 .mt:hover .mt-ph{box-shadow:inset 0 0 0 2px var(--g)}
 .mt:hover .mt-ph img{transform:scale(1.05)}
 .mt:hover .mt-name{color:var(--g-ink)}
-.mega-banners{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.mega-banners{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;max-width:960px}
 .mb{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;aspect-ratio:3/1;padding:16px 20px;overflow:hidden;border-radius:var(--r-sm);color:#fff;isolation:isolate}
 .mb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s var(--ease)}
 .mb::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(10,12,9,.82),rgba(10,12,9,.15) 70%)}
@@ -274,7 +274,6 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .mega-all{margin-top:18px;text-align:center}
 .mega-all a{font-size:12px;font-weight:700;letter-spacing:.06em;border-bottom:1px solid currentColor;padding-bottom:2px}
 .mega-all a:hover{color:var(--g-ink)}
-@media(max-width:1100px){.mega-tiles.n9{grid-template-columns:repeat(5,1fr)}}
 
 /* ── プルダウン式の車種検索(参考: shad-japan.com「車種から探す」) ── */
 .fsel{display:grid;gap:14px;width:100%}
@@ -296,3 +295,6 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .fsel-title.sub{margin-top:36px;padding-top:28px;border-top:1px solid var(--line)}
 @media(max-width:900px){.fsel-row{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.fsel-row{grid-template-columns:1fr}.fsel-go{width:100%;justify-content:center}}
+
+/* スマホではパネルを出さず、メニュー一覧のみ(パネルの指定より後ろに置く) */
+@media(max-width:960px){.mega{display:none}}
