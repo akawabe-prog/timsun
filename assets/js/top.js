@@ -1,6 +1,6 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ一覧・注目製品・使い方から選ぶ・取扱店数・ニュース・読みもの
 import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
-import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
+import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, REELS, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
 import { esc, yen, reveal, IMG, eventCard } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
@@ -208,6 +208,7 @@ renderUsecases();
 renderMagazine();
 renderShops();
 renderNews();
+renderReels();
 renderHeroNews();
 mountFitSelect(document.querySelector('[data-fitselect]'));
 
@@ -222,3 +223,22 @@ mountFitSelect(document.querySelector('[data-fitselect]'));
     if (f) document.querySelectorAll('.js-fit').forEach((e) => { e.textContent = f.toLocaleString('ja-JP'); });
   } catch (e) { /* 既定の表示のまま */ }
 })();
+
+// ── リール: 画面に入っている間だけ無音で再生する ──
+function renderReels() {
+  const rail = document.getElementById('reelRail');
+  rail.innerHTML = REELS.map((r) => `
+    <a class="reel" href="https://www.instagram.com/reel/${r.id}/" target="_blank" rel="noopener">
+      <video src="/assets/video/reels/${r.id}.mp4" poster="/assets/video/reels/${r.id}.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
+      <span class="reel-ig" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></span>
+      <span class="reel-play" aria-hidden="true"></span>
+      <b class="reel-t">${esc(r.t)}</b>
+    </a>`).join('');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (still || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    const v = e.target.querySelector('video');
+    if (e.isIntersecting) v.play().catch(() => {}); else v.pause();
+  }), { threshold: 0.6 });
+  rail.querySelectorAll('.reel').forEach((el) => io.observe(el));
+}
