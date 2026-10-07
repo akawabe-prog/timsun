@@ -124,3 +124,21 @@
 .mr-movie{margin-top:clamp(40px,5vw,64px)}
 .mr-movie video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:20px;background:var(--ink)}
 .mr-movie .note{margin-top:10px}
+
+/* JIS認証工場: 何がすごいのかを伝えるブロック */
+.jis{display:grid;grid-template-columns:5fr 7fr;gap:16px;margin-top:8px}
+.jis-mark{position:relative;overflow:hidden;display:grid;align-content:start;gap:10px;padding:clamp(28px,3.4vw,44px);border-radius:var(--radius);background:var(--ink);color:#fff}
+.jis-mark::after{content:"";position:absolute;right:-60px;bottom:-60px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(79,224,141,.25);box-shadow:0 0 0 28px rgba(79,224,141,.05)}
+.jis-k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--g-glow)}
+.jis-big{font-weight:800;font-size:clamp(72px,9vw,120px);line-height:.9;letter-spacing:-.02em}
+.jis-t{font-weight:800;font-size:clamp(18px,1.8vw,22px);line-height:1.55}
+.jis-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;padding-top:16px;border-top:1px solid var(--line-d)}
+.jis-facts dt{font-size:12px;color:var(--sub-d)}
+.jis-facts dd{font-weight:700;font-size:14px}
+.jis-facts dd .en{font-size:30px;font-weight:800;color:var(--g-glow);margin-right:2px}
+.jis-points{list-style:none;counter-reset:j;display:grid;border-top:1px solid var(--line)}
+.jis-points li{counter-increment:j;display:grid;grid-template-columns:auto 1fr;gap:4px 18px;padding:22px 4px;border-bottom:1px solid var(--line)}
+.jis-points li::before{content:counter(j,decimal-leading-zero);grid-row:span 2;font-family:var(--mono);font-size:12px;color:var(--g-ink);padding-top:4px}
+.jis-points b{font-size:17px}
+.jis-points span{font-size:14px;color:var(--sub);line-height:1.9}
+@media(max-width:860px){.jis{grid-template-columns:1fr}}
