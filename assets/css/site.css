@@ -209,3 +209,15 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .anav a.on::after{transform:scaleX(1)}
 @media(max-width:960px){.anav-in{justify-content:flex-start}.anav a{height:46px;font-size:13px;padding:0 12px}.anav a::after{left:12px;right:12px}}
 [id]{scroll-margin-top:136px}
+
+/* ミスターティムソンの紹介(Design Philosophy のセクション) */
+.mascot-intro{display:grid;grid-template-columns:minmax(220px,360px) 1fr;align-items:center;gap:clamp(24px,5vw,72px);margin-bottom:clamp(32px,4vw,48px);padding:clamp(24px,3vw,40px);border-radius:20px;background:radial-gradient(70% 90% at 20% 50%,rgba(79,224,141,.14),transparent 70%),var(--ink-2);border:1px solid var(--line-d)}
+.mascot-vis img{width:100%;height:auto;max-height:420px;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(0,0,0,.5))}
+.mascot-label{font-size:12px;letter-spacing:.16em;color:var(--g-glow)}
+.mascot-h{margin:10px 0 14px;font-weight:900;font-size:clamp(22px,2.6vw,32px);line-height:1.4}
+.mascot-text{color:#d9ded6;line-height:1.95;max-width:36em}
+.mascot-facts{display:grid;margin:22px 0 20px;border-top:1px solid var(--line-d)}
+.mascot-facts div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-d);font-size:14px}
+.mascot-facts dt{color:var(--sub-d);font-size:13px}
+.mascot-facts dd{font-weight:700}
+@media(max-width:760px){.mascot-intro{grid-template-columns:1fr}.mascot-vis{max-width:240px;margin:0 auto}.mascot-facts div{grid-template-columns:1fr;gap:2px}}

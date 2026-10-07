@@ -1,5 +1,5 @@
 // TIMSUN 取扱店: 地方 → 都道府県で選び、店舗名・住所で絞り込む(?pref=東京 で直接開ける)
-import { esc } from '/assets/js/site.js';
+import { esc } from './site.js';
 
 const REGIONS = [
   ['北海道・東北', ['北海道', '青森', '岩手', '宮城', '秋田', '山形', '福島']],
@@ -41,7 +41,7 @@ function renderShops() {
 
 async function main() {
   try {
-    SHOPS = await fetch('/assets/data/shops.json').then((r) => r.json());
+    SHOPS = await fetch(new URL('../data/shops.json', import.meta.url)).then((r) => r.json());
   } catch (e) {
     $('#shops').innerHTML = '<p class="err">取扱店を読み込めませんでした。時間をおいて再度お試しください。</p>';
     return;

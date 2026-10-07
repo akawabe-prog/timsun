@@ -1,8 +1,8 @@
 // TIMSUN 製品: シリーズ別のパターン一覧と、パターン詳細(?p=TS689)
 // 商品(サイズ・価格・在庫)はCJ APIから取得し、型番→シリーズの対応は data.js で行う。
-import { fetchCatalog } from '/assets/js/cj-api.js';
-import { SERIES, PATTERNS, baseOf, variantOf, isSHG, sizeOf } from '/assets/js/data.js';
-import { esc, yen, reveal, IMG, ITEM_URL } from '/assets/js/site.js';
+import { fetchCatalog, dataAsOf } from './cj-api.js';
+import { SERIES, PATTERNS, baseOf, variantOf, isSHG, sizeOf } from './data.js';
+import { esc, yen, reveal, IMG, ITEM_URL } from './site.js';
 
 const $ = (s) => document.querySelector(s);
 const isSet = (h) => /^【セット品】/.test(h.name);
@@ -108,11 +108,13 @@ function renderDetail(p) {
             <td><a class="link" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">購入</a></td></tr>`).join('')}</tbody>
         </table>
       </div>
-      <p class="note sizes-note">価格・在庫は日本総代理店カスタムジャパンのオンラインストアの情報です。取扱店での価格は店舗にお問い合わせください。</p>
+      <p class="note sizes-note">価格・在庫は日本総代理店カスタムジャパンのオンラインストアの情報です${ASOF ? `(${fmtDate(ASOF)}時点。最新はリンク先の商品ページでご確認ください)` : ''}。取扱店での価格は店舗にお問い合わせください。</p>
     </div>`;
 }
 
 let PATS = null;
+let ASOF = null;
+const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `${y}年${m}月${day}日`; };
 function route() {
   const id = new URLSearchParams(location.search).get('p');
   const p = id && PATS.get(id.toUpperCase());
@@ -125,12 +127,14 @@ function route() {
 async function main() {
   try {
     PATS = groupPatterns(await fetchCatalog());
+    ASOF = await dataAsOf();
   } catch (e) {
     console.error(e);
     $('#seriesList').innerHTML = '<div class="wrap"><p class="err">製品情報を読み込めませんでした。時間をおいて再度お試しください。</p></div>';
     return;
   }
   renderList(PATS);
+  if (ASOF) $('#seriesList').insertAdjacentHTML('afterbegin', `<div class="wrap"><p class="note asof">価格は${fmtDate(ASOF)}時点のものです。</p></div>`);
   route();
   addEventListener('popstate', () => location.reload());
 }
