@@ -47,3 +47,12 @@ export const yen = (n) => (n == null ? '' : `¥${Number(n).toLocaleString('ja-JP
 export const IMG = 'https://img.customjapan.net';
 export const ITEM_URL = (id) => `https://moto.customjapan.net/i/${id}`;
 export const STORE_URL = 'https://www.customjapan.net/search?filter-maker=490&maker=490';
+
+// イベントのサムネイルカード(TOPとニュースページで共通)。写真がないイベントは英語名の文字サムネイル
+export const eventCard = (n) => `
+  <a class="ev-card" href="${esc(n.u)}" target="_blank" rel="noopener">
+    <span class="ev-ph${n.img ? '' : ' ev-type'}">${n.img
+      ? `<img src="${esc(n.img)}" alt="" width="960" height="540" loading="lazy" decoding="async">`
+      : `<span class="ev-type-in"><span class="ev-type-k">EVENT</span><b>${esc(n.en || '')}</b></span>`}</span>
+    <span class="ev-meta"><time>${esc(n.d)}</time><b>${esc(n.t)}</b></span>
+  </a>`;

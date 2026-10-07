@@ -50,7 +50,8 @@ button{cursor:pointer;border:0;background:none}
 .eyebrow::before{content:"";width:18px;height:1px;background:currentColor}
 .dark .eyebrow{color:var(--g-glow)}
 .h1{font-weight:900;font-size:clamp(34px,5.6vw,68px);line-height:1.2;letter-spacing:-.02em}
-.h2{font-weight:900;font-size:clamp(26px,3.2vw,40px);line-height:1.35;letter-spacing:-.01em;margin:14px 0 16px}
+/* セクション見出しは控えめに(大きく見せるのはブランドの言葉だけ) */
+.h2{font-weight:800;font-size:clamp(20px,2.2vw,28px);line-height:1.45;letter-spacing:-.005em;margin:10px 0 12px}
 .h3{font-weight:700;font-size:clamp(18px,1.8vw,21px);line-height:1.5}
 .lead{color:var(--sub);font-size:clamp(15px,1.4vw,17px);max-width:40em}
 .dark .lead{color:var(--sub-d)}
@@ -132,7 +133,7 @@ main{display:block}
 
 /* ── 下層ページの見出し ── */
 .phero{padding:calc(68px + clamp(48px,7vw,88px)) 0 clamp(48px,6vw,72px)}  /* 上はヘッダーが重なる分を足す */
-.phero .h1{font-size:clamp(32px,4.6vw,56px);margin:16px 0 18px}
+.phero .h1{font-size:clamp(28px,3.6vw,44px);margin:14px 0 14px}
 .crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--sub-d);font-family:var(--mono);letter-spacing:.04em}
 .crumb a:hover{color:#fff}
 .crumb li{list-style:none}
@@ -298,3 +299,25 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 
 /* スマホではパネルを出さず、メニュー一覧のみ(パネルの指定より後ろに置く) */
 @media(max-width:960px){.mega{display:none}}
+
+/* ── イベントのサムネイルカード(TOP・ニュースページ共通) ── */
+.ev-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.ev-card{display:grid;align-content:start;gap:12px}
+.ev-ph{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;border-radius:var(--radius);background:var(--ink)}
+.ev-ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease)}
+.ev-card:hover .ev-ph img{transform:scale(1.04)}
+.ev-type{background:radial-gradient(120% 90% at 100% 0%,rgba(79,224,141,.18),transparent 60%),repeating-linear-gradient(115deg,var(--ink) 0 22px,#161a14 22px 23px)}
+.ev-type-in{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:16px;color:#fff}
+.ev-type-k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--g-glow)}
+.ev-type-in b{font-family:var(--en);font-weight:800;font-size:clamp(14px,1.3vw,17px);line-height:1.25;letter-spacing:.01em}
+.ev-meta{display:grid;gap:4px}
+.ev-meta time{font-family:var(--en);font-size:12px;color:var(--sub)}
+.ev-meta b{font-size:14px;font-weight:700;line-height:1.6}
+.ev-card:hover .ev-meta b{color:var(--g-ink)}
+@media(max-width:900px){.ev-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.ev-grid{grid-template-columns:1fr}}
+.nw-block{margin-top:clamp(48px,6vw,72px)}
+
+/* 英語だけで伝わる一覧の見出し(Featured Tyres / Product Series / By Riding Style / Events / News / Magazine) */
+.en-head{align-items:center;margin-bottom:20px}
+.title-en{font-family:var(--en);font-weight:800;font-size:clamp(20px,2vw,26px);line-height:1.2;letter-spacing:-.01em}

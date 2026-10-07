@@ -118,20 +118,21 @@ export const FACTS = {
 };
 
 // 日本公式サイトのニュース(各記事は既存サイトへリンク)
+// イベント(c: 'event')は en(英語のイベント名)と、写真があれば img を持つ。写真がないものは文字のサムネイルで表示する
 export const NEWS = [
-  { d: '2026.03.16', c: 'event', t: '「第53回東京モーターサイクルショー2026」に出展決定。恒例のじゃんけん大会も開催', u: 'https://www.timsun-japan.com/news/2323.html' },
+  { d: '2026.03.16', c: 'event', t: '「第53回東京モーターサイクルショー2026」に出展決定。恒例のじゃんけん大会も開催', en: 'TOKYO MOTORCYCLE SHOW 2026', u: 'https://www.timsun-japan.com/news/2323.html' },
   { d: '2025.08.27', c: 'product', t: 'ストリートハイグリップ TS720シリーズを発売', u: 'https://www.timsun-japan.com/news/2230.html' },
-  { d: '2025.03.25', c: 'event', t: '第52回東京モーターサイクルショーに出展', u: 'https://prtimes.jp/main/html/rd/p/000000058.000070755.html' },
+  { d: '2025.03.25', c: 'event', t: '第52回東京モーターサイクルショーに出展', en: 'TOKYO MOTORCYCLE SHOW 2025', img: '/assets/img/events/tms2025.webp', u: 'https://prtimes.jp/main/html/rd/p/000000058.000070755.html' },
   { d: '2025.01.21', c: 'media', t: '「カブonly vol.18」にTIMSUNが掲載されました', u: 'https://www.timsun-japan.com/media/2113.html' },
-  { d: '2025.01.21', c: 'event', t: '「AJ大阪主催 バイクの神様ミーティング2024」にブース出展', u: 'https://www.timsun-japan.com/news/2108.html' },
+  { d: '2025.01.21', c: 'event', t: '「AJ大阪主催 バイクの神様ミーティング2024」にブース出展', en: 'BIKE NO KAMISAMA MEETING 2024', u: 'https://www.timsun-japan.com/news/2108.html' },
   { d: '2025.01.16', c: 'media', t: '「Moto Megane(モトメガネ)」で紹介されました', u: 'https://www.timsun-japan.com/news/2105.html' },
-  { d: '2024.03.27', c: 'event', t: '第51回 東京モーターサイクルショー2024に出展', u: 'https://www.timsun-japan.com/news/2073.html' },
-  { d: '2023.11.24', c: 'event', t: '第4回 XOVER POINTに出展', u: 'https://www.timsun-japan.com/news/2044.html' },
-  { d: '2023.03.16', c: 'event', t: '第50回東京モーターサイクルショー/第39回大阪モーターサイクルショーに出展', u: 'https://www.timsun-japan.com/news/1912.html' },
-  { d: '2022.03.09', c: 'event', t: 'JNCCの公式スポンサーに就任', u: 'https://www.timsun-japan.com/news/1798.html' },
+  { d: '2024.03.27', c: 'event', t: '第51回 東京モーターサイクルショー2024に出展', en: 'TOKYO MOTORCYCLE SHOW 2024', img: '/assets/img/events/tms2024.webp', u: 'https://www.timsun-japan.com/news/2073.html' },
+  { d: '2023.11.24', c: 'event', t: '第4回 XOVER POINTに出展', en: 'XOVER POINT 2023', u: 'https://www.timsun-japan.com/news/2044.html' },
+  { d: '2023.03.16', c: 'event', t: '第50回東京モーターサイクルショー/第39回大阪モーターサイクルショーに出展', en: 'TOKYO / OSAKA MOTORCYCLE SHOW 2023', u: 'https://www.timsun-japan.com/news/1912.html' },
+  { d: '2022.03.09', c: 'event', t: 'JNCCの公式スポンサーに就任', en: 'JNCC OFFICIAL SPONSOR', u: 'https://www.timsun-japan.com/news/1798.html' },
   { d: '2020.11.07', c: 'media', t: '「モトチャンプ」11月号に掲載されました', u: 'https://www.timsun-japan.com/news/1695.html' },
   { d: '2019.10.21', c: 'media', t: 'ストリートハイグリップシリーズの性能比較特集が掲載されました', u: 'https://www.customjapan.net/shop/pages/timsun_lp_1910.aspx' },
-  { d: '2018.07.12', c: 'event', t: '国内バイク販売店7社とティムソン工場視察ツアーを実施', u: 'https://www.timsun-japan.com/news/1474.html' },
+  { d: '2018.07.12', c: 'event', t: '国内バイク販売店7社とティムソン工場視察ツアーを実施', en: 'FACTORY TOUR 2018', img: '/assets/img/brand/hq-2.webp', u: 'https://www.timsun-japan.com/news/1474.html' },
 ];
 export const NEWS_CAT = { event: 'イベント', product: '製品', media: 'メディア' };
 

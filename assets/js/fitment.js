@@ -7,7 +7,6 @@ import { sizeOf, parseSize, isSHG } from './data.js';
 
 import { MAKERS, GROUP_LABEL, GROUP_ORDER, norm, fold, buildTree } from './fittree.js';
 import { IMG, ITEM_URL, esc, yen } from './site.js';
-import { mountFitSelect } from './fitselect.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 
@@ -270,4 +269,3 @@ function bindSize() {
 }
 
 main();
-mountFitSelect(document.querySelector('[data-fitselect]'));

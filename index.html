@@ -53,7 +53,7 @@
 </section>
 
 <nav class="anav" aria-label="このページの内容">
-  <ul class="anav-in"><li><a href="#find">タイヤを探す</a></li><li><a href="#items">注目のタイヤ</a></li><li><a href="#lineup">シリーズ</a></li><li><a href="#shg">ストリートハイグリップ</a></li><li><a href="#usecase">使い方から選ぶ</a></li><li><a href="#discover">TIMSUNを知る</a></li><li><a href="#news">ニュース</a></li><li><a href="#magazine">読みもの</a></li></ul>
+  <ul class="anav-in"><li><a href="#find">タイヤを探す</a></li><li><a href="#items">注目のタイヤ</a></li><li><a href="#lineup">シリーズ</a></li><li><a href="#shg">ストリートハイグリップ</a></li><li><a href="#usecase">使い方から選ぶ</a></li><li><a href="#discover">TIMSUNを知る</a></li><li><a href="#events">イベント</a></li><li><a href="#newsBlock">ニュース</a></li><li><a href="#magazine">読みもの</a></li></ul>
 </nav>
 
 
@@ -158,7 +158,7 @@
 <!-- 注目のタイヤ(Featured Tyres) -->
 <section class="sec alt" id="items">
   <div class="wrap">
-    <div class="sec-head"><div><p class="eyebrow">Featured Tyres</p><h2 class="h2">注目のタイヤ</h2></div><a class="more" href="/products">すべての製品</a></div>
+    <div class="sec-head en-head"><h2 class="title-en">Featured Tyres<span class="sr">注目のタイヤ</span></h2><a class="more" href="/products">すべての製品</a></div>
     <div class="rail-wrap">
       <div class="rail" id="itemsRail"><p class="loading">製品情報を読み込んでいます</p></div>
       <button class="rail-btn prev" type="button" aria-label="前へ" data-dir="-1"></button>
@@ -171,14 +171,7 @@
 <!-- シリーズから選ぶ -->
 <section class="sec" id="lineup">
   <div class="wrap">
-    <div class="sec-head">
-      <div>
-        <p class="eyebrow">Product Series</p>
-        <h2 class="h2">走るシーンから選ぶ。</h2>
-        <p class="lead">世界共通のシリーズ体系に、日本独自の「ビジネス」を加えた9シリーズ。上位グレード「ストリートハイグリップ」と、毎日の足元を支える「スタンダード」をそろえています。</p>
-      </div>
-      <a class="btn btn-ghost" href="/products">すべての製品</a>
-    </div>
+    <div class="sec-head en-head"><h2 class="title-en">Product Series<span class="sr">走るシーンから選ぶ 9つのシリーズ</span></h2><a class="more" href="/products">すべての製品</a></div>
     <div class="srail-wrap">
       <div class="srail" id="seriesGrid"></div>
       <button class="rail-btn prev" type="button" aria-label="前のシリーズ" data-rail="seriesGrid" data-dir="-1"></button>
@@ -211,7 +204,7 @@
       </a>
     </div>
     <div class="shg-lineup">
-      <div class="shg-lineup-head"><h3 class="shg-lineup-h">ラインアップ<span class="en" id="shgCount"></span></h3><a class="more" href="/products?grade=shg">製品一覧</a></div>
+      <div class="shg-lineup-head"><h3 class="shg-lineup-h"><span class="sr">ストリートハイグリップのラインアップ</span><span class="en" id="shgCount"></span></h3><a class="more" href="/products?grade=shg">製品一覧</a></div>
       <div class="rail" id="shgRail"><p class="loading">製品情報を読み込んでいます</p></div>
     </div>
   </div>
@@ -220,7 +213,7 @@
 <!-- 使い方から選ぶ(By Riding Style) -->
 <section class="sec" id="usecase">
   <div class="wrap">
-    <div class="sec-head"><div><p class="eyebrow">By Riding Style</p><h2 class="h2">使い方から選ぶ</h2></div><a class="more" href="/fitment">車種から探す</a></div>
+    <div class="sec-head en-head"><h2 class="title-en">By Riding Style<span class="sr">使い方から選ぶ</span></h2><a class="more" href="/fitment">車種から探す</a></div>
     <div class="usecases" id="usecases"></div>
   </div>
 </section>
@@ -259,25 +252,25 @@
   </div>
 </section>
 
-<!-- ニュース -->
-<section class="sec" id="news">
+<!-- イベント(サムネイル)とニュース(一覧)を分けて表示 -->
+<section class="sec" id="news" aria-label="イベントとニュース">
   <div class="wrap">
-    <div class="sec-head">
-      <div>
-        <p class="eyebrow">News &amp; Events</p>
-        <h2 class="h2">ニュース&amp;イベント</h2>
-      </div>
-      <a class="btn btn-ghost" href="/news">ニュース一覧</a>
+    <div class="ev-block" id="events">
+      <div class="sec-head en-head"><h2 class="title-en">Events<span class="sr">イベント</span></h2><a class="more" href="/news#events">イベント一覧</a></div>
+      <div class="ev-grid" id="eventGrid"></div>
     </div>
-    <ul class="newslist" id="newsList"></ul>
-    <p class="ig"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagramをフォロー @timsun_japan_gram</a></p>
+    <div class="nw-block" id="newsBlock">
+      <div class="sec-head en-head"><h2 class="title-en">News<span class="sr">ニュース</span></h2><a class="more" href="/news">ニュース一覧</a></div>
+      <ul class="newslist" id="newsList"></ul>
+      <p class="ig"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagramをフォロー @timsun_japan_gram</a></p>
+    </div>
   </div>
 </section>
 
 <!-- タイヤの読みもの(Magazine) -->
 <section class="sec alt" id="magazine">
   <div class="wrap">
-    <div class="sec-head"><div><p class="eyebrow">Magazine</p><h2 class="h2">タイヤの読みもの</h2></div><a class="more" href="/magazine">記事一覧</a></div>
+    <div class="sec-head en-head"><h2 class="title-en">Magazine<span class="sr">タイヤの読みもの</span></h2><a class="more" href="/magazine">記事一覧</a></div>
     <div class="mag-grid" id="magGrid"></div>
   </div>
 </section>

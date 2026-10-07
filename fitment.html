@@ -52,27 +52,12 @@
 
     <!-- 車種から -->
     <div id="pBody" role="tabpanel" aria-labelledby="tabBody">
-      <p class="fsel-title">プルダウンで選ぶ</p>
-      <div class="fsel" data-fitselect>
-        <div class="fsel-row">
-          <label><span class="fsel-step">1</span><span class="sr">メーカー</span><select data-fs="maker" aria-label="メーカー"></select></label>
-          <label><span class="fsel-step">2</span><span class="sr">排気量・ブランド</span><select data-fs="group" aria-label="排気量・ブランド"></select></label>
-          <label><span class="fsel-step">3</span><span class="sr">車種</span><select data-fs="body" aria-label="車種"></select></label>
-          <label><span class="fsel-step">4</span><span class="sr">型式</span><select data-fs="frame" aria-label="型式(任意)"></select></label>
-        </div>
-        <p class="fsel-or"><span>または</span></p>
-        <input class="fsel-kw" data-fs="kw" type="search" placeholder="キーワードで探す(例)PCX、AF61、モンキー125" aria-label="車種名・型式のキーワード" autocomplete="off">
-        <div class="fsel-foot">
-          <button class="btn no-arrow fsel-go" type="button" data-fs="go"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>適合を見る</button>
-          <p class="fsel-msg" data-fs="msg" aria-live="polite"></p>
-        </div>
-      </div>
-      <p class="fsel-title sub">メーカーのロゴから選ぶ</p>
       <div class="qbox">
-        <label class="sr" for="q">車種名・型式で検索</label>
+        <label class="fit-q-label" for="q">車種名・型式で探す</label>
         <input id="q" type="search" placeholder="車種名・型式を入力(例)PCX、AF61、モンキー125" autocomplete="off">
         <div id="suggest" class="suggest" hidden></div>
       </div>
+      <p class="fsel-or fit-or"><span>または、メーカーから順に選ぶ</span></p>
       <div class="steps">
         <p class="step-t"><span>1</span>車両メーカーを選択</p>
         <div id="makers" class="makers"><p class="loading">適合データを読み込んでいます</p></div>
