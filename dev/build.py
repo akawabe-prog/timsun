@@ -27,6 +27,72 @@ NAV = [
     ("/support", "サポート"),
 ]
 
+# グローバルメニューのパネル(マウスを乗せるとサムネイル付きで開く。参考: sp-connect.customjapan.net)
+# tiles: (URL, 名前, 種類, 素材)  種類 img=写真 / logo=ロゴ / icon=アイコン / dark=文字だけの黒タイル
+# banners: (URL, 画像, 小見出し, 見出し)
+CJ_LOGO = "https://cdn.customjapan.net/logo/maker/"
+ICONS = {
+    "faq": '<path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14"/><circle cx="12" cy="17.5" r=".6" fill="currentColor"/><circle cx="12" cy="12" r="9"/>',
+    "book": '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/>',
+    "pdf": '<path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/>',
+    "mail": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+    "size": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>',
+}
+MEGA = {
+    "/fitment": {"label": "Find Your Tyre", "all": ("/fitment", "適合タイヤ検索へ"),
+        "tiles": [("/fitment?m=1", "ホンダ", "logo", CJ_LOGO + "m1_honda.webp"), ("/fitment?m=2", "ヤマハ", "logo", CJ_LOGO + "m2_yamaha.webp"),
+                  ("/fitment?m=3", "スズキ", "logo", CJ_LOGO + "m3_suzuki.webp"), ("/fitment?m=4", "カワサキ", "logo", CJ_LOGO + "m4_kawasaki.webp"),
+                  ("/fitment?m=20", "海外メーカー", "dark", "OVERSEAS"), ("/fitment?tab=size", "サイズから", "icon", "size")],
+        "banners": [("/fitment", "/assets/img/banner/ride.webp", "BY MODEL", "車種・型式から探す"),
+                    ("/fitment?tab=size", "/assets/img/banner/tread.webp", "BY SIZE", "サイズから探す")]},
+    "/products": {"label": "Product Series", "all": ("/products", "すべての製品"),
+        "tiles": [("/products#scooter", "スクーター", "img", "/assets/img/series/scooter.webp"), ("/products#street-sport", "ストリートスポーツ", "img", "/assets/img/series/street-sport.webp"),
+                  ("/products#touring-sport", "ツーリングスポーツ", "img", "/assets/img/series/touring-sport.webp"), ("/products#adventure", "アドベンチャー", "img", "/assets/img/series/adventure.webp"),
+                  ("/products#motocross", "モトクロス", "img", "/assets/img/series/motocross.webp"), ("/products#vintage", "ビンテージ", "img", "/assets/img/series/vintage.webp"),
+                  ("/products#cruising", "クルーザー", "img", "/assets/img/series/cruising.webp"), ("/products#business", "ビジネス", "dark", "JAPAN ONLY"),
+                  ("/products#snow", "スノー", "img", "/assets/img/series/snow.webp")],
+        "banners": [("/products?p=TS720", "/assets/video/hero-poster.webp", "NEW — STREET HIGH GRIP", "TS720 GECKO"),
+                    ("https://cdn.customjapan.net/catalog/490_timsun_catalog_2025.pdf", "/assets/img/banner/factory.webp", "CATALOG", "総合カタログ2025(PDF)")]},
+    "/technology": {"label": "Technology & Quality", "all": ("/technology", "テクノロジー&品質へ"),
+        "tiles": [("/technology#rd", "開発体制", "img", "/assets/video/factory-poster.webp"), ("/technology#quality", "品質マネジメント", "img", "/assets/img/banner/factory.webp"),
+                  ("/technology#certification", "製品認証", "img", "/assets/img/banner/tread.webp"), ("/technology#manufacturing", "製造", "img", "/assets/video/hero-poster.webp"),
+                  ("/technology#gecko-philosophy", "ヤモリの設計思想", "mascot", "/assets/img/mr-timsun.webp")],
+        "banners": []},
+    "/brand": {"label": "Brand", "all": ("/brand", "ブランドへ"),
+        "tiles": [("/brand#promise", "ティムソンの約束", "img", "/assets/video/hero-poster.webp"), ("/brand#global", "世界のTIMSUN", "img", "/assets/img/banner/ride.webp"),
+                  ("/brand#gecko", "ミスターティムソン", "mascot", "/assets/img/mr-timsun.webp"), ("/brand#japan", "日本総代理店", "img", "/assets/video/factory-poster.webp"),
+                  ("/news", "ニュース&イベント", "img", "/assets/img/banner/tread.webp")],
+        "banners": []},
+    "/support": {"label": "Support", "all": ("/support", "サポートへ"),
+        "tiles": [("/support#faq", "よくあるご質問", "icon", "faq"), ("/magazine", "タイヤの読みもの", "icon", "book"),
+                  ("/support#basics", "タイヤの基礎知識", "icon", "size"), ("/support#catalog", "カタログ", "icon", "pdf"), ("/support#contact", "お問い合わせ", "icon", "mail")],
+        "banners": []},
+}
+
+def tile(u, name, kind, src):
+    ext = ' target="_blank" rel="noopener"' if u.startswith("http") else ""
+    if kind in ("img", "mascot", "logo"):
+        ph = f'<img src="{src}" alt="" loading="lazy" decoding="async">'
+    elif kind == "icon":
+        ph = f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[src]}</svg>'
+    else:
+        ph = f'<span>{src}</span>'
+    return f'<a class="mt mt-{kind}" href="{u}"{ext}><span class="mt-ph">{ph}</span><span class="mt-name">{name}</span></a>'
+
+def mega(u):
+    m = MEGA.get(u)
+    if not m:
+        return ""
+    tiles = "".join(tile(*t) for t in m["tiles"])
+    banners = "".join(
+        f'<a class="mb" href="{bu}"{" target=\"_blank\" rel=\"noopener\"" if bu.startswith("http") else ""}>'
+        f'<img src="{img}" alt="" loading="lazy" decoding="async"><span class="mb-eb">{eb}</span><span class="mb-t">{t}</span></a>'
+        for bu, img, eb, t in m["banners"])
+    return (f'<div class="mega"><div class="mega-in"><p class="mega-label">{m["label"]}</p>'
+            f'<div class="mega-tiles n{len(m["tiles"])}">{tiles}</div>'
+            + (f'<div class="mega-banners">{banners}</div>' if banners else "")
+            + f'<p class="mega-all"><a href="{m["all"][0]}">{m["all"][1]}</a></p></div></div>')
+
 HEAD = """<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -93,7 +159,8 @@ def build(path):
     body = re.sub(r"<!--(title|desc|nav|css|js|anchors):.*?-->\n?", "", src).strip()
     here = ' aria-current="page"'
     nav = "\n".join(
-        f'      <a href="{u}"{here if u == cur else ""}>{label}</a>' for u, label in NAV)
+        f'      <div class="gitem{" has-mega" if u in MEGA else ""}"><a class="gtop" href="{u}"{here if u == cur else ""}>{label}</a>{mega(u)}</div>'
+        for u, label in NAV)
     # ページ内アンカーメニュー: <!--anchors: #id ラベル | #id ラベル--> を <!--ANCHOR--> の位置に置く
     anchors = [x.strip().split(" ", 1) for x in (meta(src, "anchors") or [""])[0].split("|") if x.strip()]
     if anchors:
