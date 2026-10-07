@@ -90,3 +90,15 @@
 .fit-q-label{display:block;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--sub)}
 .fit-or{margin:28px 0 4px}
 .qbox{max-width:none}
+
+/* プルダウンとロゴ選択を見分ける: プルダウン=黒い1段のバー、ロゴ=白いカードの順番選び */
+.fit-sec .fsel{grid-template-columns:1fr auto;align-items:center;gap:12px;padding:16px;border-radius:14px;background:var(--ink)}
+.fit-sec .fsel .fsel-row select{border:0;background-color:#fff;font-weight:700}
+.fit-sec .fsel .fsel-row select:disabled{opacity:1;background-color:rgba(255,255,255,.1);color:var(--sub-d)}
+.fit-sec .fsel-step{background:var(--g);color:#fff}
+.fit-sec .fsel label:has(select:disabled) .fsel-step{background:rgba(255,255,255,.2);color:var(--sub-d)}
+.fit-sec .fsel-foot{flex-direction:column;align-items:stretch;gap:6px}
+.fit-sec .fsel-msg{color:#ff9d8f;max-width:220px}
+.fit-sec .fsel-msg:empty{display:none}
+@media(max-width:900px){.fit-sec .fsel{grid-template-columns:1fr}.fit-sec .fsel-msg{max-width:none}}
+.step-t span{width:4px;height:20px;border-radius:2px;background:var(--g);font-size:0;color:transparent}
