@@ -1,56 +1,116 @@
-// TIMSUN TOP: シリーズ一覧・注目製品・取扱店数・ニュース
-import { fetchCatalog } from './cj-api.js';
-import { SERIES, PATTERNS, NEWS, NEWS_CAT, baseOf, sizeOf, parseSize } from './data.js';
-import { esc, yen, reveal } from './site.js';
+// TIMSUN TOP: 注目のタイヤ・シリーズ・STREET HIGH GRIP・使い方・声とメディア・読みもの・ニュース・数字
+// 並びはMEDULLAのトップに倣う(気づく → 欲しくなる → 信じる → 選ぶ → 共感する → 続ける)
+import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
+import { SERIES, PATTERNS, NEWS, MEDIA, VOICES, ARTICLES, USECASES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
+import { esc, yen, IMG } from './site.js';
 
-const PREFS = ['北海道', '青森', '岩手', '宮城', '秋田', '山形', '福島', '東京', '神奈川', '埼玉', '千葉', '茨城', '栃木', '群馬', '山梨', '新潟', '長野', '富山', '石川', '福井', '愛知', '岐阜', '静岡', '三重', '大阪', '兵庫', '京都', '滋賀', '奈良', '和歌山', '鳥取', '島根', '岡山', '広島', '山口', '徳島', '香川', '愛媛', '高知', '福岡', '佐賀', '長崎', '熊本', '大分', '宮崎', '鹿児島', '沖縄'];
+const $ = (id) => document.getElementById(id);
+const isSet = (h) => /^【セット品】/.test(h.name);
+const priceOf = (h) => h.price?.regular?.pc?.taxIn;
+const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `${y}年${m}月${day}日`; };
 
-function renderSeries(counts) {
-  document.getElementById('seriesGrid').innerHTML = SERIES.map((s, i) => `
-    <a class="sr-card rv" href="/products#${s.id}">
-      <span class="ph${s.img ? '' : ' biz'}">${s.img ? `<img src="${s.img}" alt="" width="346" height="500" loading="lazy">` : 'JAPAN<br>ONLY'}</span>
-      <span>
-        <span class="no">${String(i + 1).padStart(2, '0')}</span>
-        <h3>${esc(s.en)}</h3>
-        <span class="ja">${esc(s.ja)}</span>
-        <span class="cnt">${counts ? `${counts[s.id] || 0}パターン` : ''}</span>
-      </span>
-      ${s.jpOnly ? '<span class="tag jp">日本独自</span>' : ''}
-    </a>`).join('');
-  reveal(document.querySelectorAll('#seriesGrid .rv'));
+// 型番ごとにまとめる(画像・最安値・サイズ数・グレード・即納)
+function patterns(items) {
+  const map = new Map();
+  for (const h of items) {
+    const b = baseOf(h.name); if (!b || !PATTERNS[b] || isSet(h)) continue;
+    (map.get(b) || map.set(b, []).get(b)).push(h);
+  }
+  return new Map([...map].map(([id, hs]) => {
+    const prices = hs.map(priceOf).filter(Boolean);
+    return [id, { id, ...PATTERNS[id], items: hs, from: prices.length ? Math.min(...prices) : null,
+      sizes: new Set(hs.map(sizeOf)).size, shg: hs.some((h) => isSHG(h.name)),
+      quick: hs.some((h) => (h.icons || []).some((i) => i.cd === 'INS')), img: hs.find((h) => h.img?.l)?.img.l }];
+  }));
+}
+
+// 4 注目のタイヤ
+function renderItems(pats) {
+  const cards = FEATURED.map((id) => pats.get(id)).filter(Boolean).map((p) => {
+    const s = SERIES.find((x) => x.id === p.s);
+    const badges = [NEW_PATTERNS.includes(p.id) ? '<span class="tag badge-new">NEW</span>' : '',
+      p.shg ? '<span class="tag shg">STREET HIGH GRIP</span>' : '', p.quick ? '<span class="tag">即納あり</span>' : ''].join('');
+    return `<a class="icard" href="/products?p=${p.id}">
+      <span class="ph"><img src="${IMG}${esc(p.img)}" alt="TIMSUN ${p.id}" width="320" height="320" loading="lazy" decoding="async"><span class="badges">${badges}</span></span>
+      <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr">${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
+    </a>`;
+  });
+  $('itemsRail').innerHTML = cards.join('');
+}
+
+// 7 シリーズ一覧 | STREET HIGH GRIP
+function renderLineup(pats) {
+  const count = (sid) => [...pats.values()].filter((p) => p.s === sid).length;
+  $('seriesList').innerHTML = SERIES.filter((s) => count(s.id)).map((s) => `
+    <li><a href="/products#${s.id}"><b>${esc(s.en)}<small>${esc(s.ja)}${s.jpOnly ? '(日本独自)' : ''}</small></b><span>${esc(s.lead)}</span><em>${count(s.id)}</em></a></li>`).join('');
+  $('shgList').innerHTML = ['TS720', 'TS689', 'TS880'].map((id) => pats.get(id)).filter(Boolean).map((p) => `
+    <a class="shg-item" href="/products?p=${p.id}"><span><b>${p.id}${p.id === 'TS720' ? ' GECKO' : ''}</b><small>${esc(p.d)}</small></span><img src="${IMG}${esc(p.img)}" alt="" width="150" height="130" loading="lazy"></a>`).join('');
+}
+
+// 8 使い方から選ぶ
+function renderUsecases() {
+  $('usecases').innerHTML = USECASES.map((u) => `
+    <a class="ucard" href="/products#${u.series}">${u.img ? `<img src="${u.img}" alt="" width="346" height="500" loading="lazy">` : '<span class="biz">BUSINESS</span>'}
+      <span><b>${esc(u.title)}</b><small>${esc(u.text)}</small></span></a>`).join('');
+}
+
+// 9 販売店の声・メディア掲載
+function renderVoices() {
+  const voices = VOICES.map((v) => `<div class="vcard voice"><span class="k">VOICE</span><p>${esc(v)}</p><span class="who">販売店アンケートより(バイクショップ勤務の方)</span></div>`);
+  const media = MEDIA.map((m) => `<a class="vcard" href="${esc(m.u)}" target="_blank" rel="noopener"><span class="k">MEDIA — ${esc(m.d)}</span><p>${esc(m.name)}</p><span class="who">${esc(m.t)}</span></a>`);
+  const out = []; for (let i = 0; i < Math.max(voices.length, media.length); i++) { if (voices[i]) out.push(voices[i]); if (media[i]) out.push(media[i]); }
+  $('voicesRail').innerHTML = out.join('');
+}
+
+// 10 タイヤの読みもの
+function renderMagazine() {
+  $('magGrid').innerHTML = ARTICLES.slice(0, 6).map((a) => `
+    <a class="mcard" href="/magazine?a=${a.slug}"><span class="tag${a.tag === '製品' ? ' shg' : ' muted'}">${esc(a.tag)}</span><b>${esc(a.title)}</b><small>${esc(a.lead)}</small></a>`).join('');
+}
+
+// 11 ニュース(写真付き。写真はカテゴリごとの代表画像)
+const NEWS_IMG = { event: ['/assets/img/banner/event.webp', ''], product: [`${IMG}/items/29090884_1.jpg`, 'contain'], media: ['/assets/img/banner/tread.webp', ''] };
+function renderNews() {
+  $('newsList').innerHTML = NEWS.slice(0, 6).map((n) => { const [src, cls] = NEWS_IMG[n.c] || NEWS_IMG.media; return `
+    <a class="ncard" href="${esc(n.u)}" target="_blank" rel="noopener"><img class="${cls}" src="${src}" alt="" width="120" height="76" loading="lazy"><span><time>${esc(n.d)}</time><b>${esc(n.t)}</b></span></a>`; }).join('');
+}
+
+// 数字(取扱店数・適合車種数)を実データで
+async function renderNumbers() {
+  try {
+    const shops = await fetch(new URL('../data/shops.json', import.meta.url)).then((r) => r.json());
+    const n = Math.floor(shops.length / 10) * 10;
+    document.querySelectorAll('.js-shops').forEach((e) => { e.textContent = String(n); });
+    document.querySelectorAll('.js-shops-n').forEach((e) => { e.innerHTML = `${n}<small>+</small>`; });
+    const bs = $('bnShops'); if (bs) bs.textContent = String(n);
+  } catch (e) { /* 既定の表示のまま */ }
+  try {
+    const set = new Set();
+    for (const h of await fetchFitmentIndex()) {
+      for (const [m, gs] of Object.entries(h.moto?.body?.facet || {})) for (const [g, list] of Object.entries(gs || {})) (list || []).forEach((v) => set.add(`${m}:${g}:${v.split('||')[1]}`));
+    }
+    const f = Math.floor(set.size / 100) * 100;
+    if (f) { document.querySelectorAll('.js-fit').forEach((e) => { e.innerHTML = `${f.toLocaleString('ja-JP')}<small>+</small>`; }); const bf = $('bnFit'); if (bf) bf.textContent = `${f.toLocaleString('ja-JP')}車種以上`; }
+  } catch (e) { /* 既定の表示のまま */ }
 }
 
 async function renderCatalogParts() {
-  renderSeries(null);
   try {
     const items = await fetchCatalog();
-    // シリーズごとのパターン数
-    const pats = {};
-    for (const h of items) {
-      const b = baseOf(h.name); const p = b && PATTERNS[b];
-      if (p) (pats[p.s] ??= new Set()).add(b);
-    }
-    renderSeries(Object.fromEntries(Object.entries(pats).map(([k, v]) => [k, v.size])));
-    fillSizeSelects(items);
-    // 注目製品(TS720)のサイズ数と価格帯
-    const ts = items.filter((h) => baseOf(h.name) === 'TS720' && !/^【セット品】/.test(h.name));
-    const prices = ts.map((h) => h.price?.regular?.pc?.taxIn).filter(Boolean);
-    const spec = document.getElementById('tsSpec');
-    if (ts.length) spec.querySelector('[data-k="sizes"]').textContent = `${ts.length}サイズ`;
-    if (prices.length) spec.querySelector('[data-k="price"]').textContent = `${yen(Math.min(...prices))}〜(税込・1本)`;
-  } catch (e) { console.error(e); }
+    const pats = patterns(items);
+    renderItems(pats); renderLineup(pats); fillSizeSelects(items);
+    const asof = await dataAsOf();
+    if (asof) { const n = $('itemsAsof'); n.hidden = false; n.textContent = `価格は${fmtDate(asof)}時点のものです。`; }
+  } catch (e) {
+    console.error(e);
+    $('itemsRail').innerHTML = '<p class="err">製品情報を読み込めませんでした。</p>';
+  }
 }
 
-async function renderShops() {
-  const sel = document.getElementById('pref');
-  sel.insertAdjacentHTML('beforeend', PREFS.map((p) => `<option value="${p}">${p}</option>`).join(''));
-  try {
-    const shops = await fetch(new URL('../data/shops.json', import.meta.url)).then((r) => r.json());
-    const bs = document.getElementById('bnShops'); if (bs) bs.textContent = String(Math.floor(shops.length / 10) * 10);
-    const by = shops.reduce((m, s) => ((m[s.pref] = (m[s.pref] || 0) + 1), m), {});
-    sel.querySelectorAll('option[value]').forEach((o) => { if (o.value) o.textContent = `${o.value}(${by[o.value] || 0}店)`; });
-  } catch (e) { /* 既定の表示のまま */ }
-}
+// 注目のタイヤの前後ボタン
+document.querySelectorAll('.rail-btn').forEach((b) => b.addEventListener('click', () => {
+  const r = $('itemsRail'); r.scrollBy({ left: Number(b.dataset.dir) * r.clientWidth * 0.75, behavior: 'smooth' });
+}));
 
 // ヒーロー下部の帯: 最新ニュース1件
 function renderHeroNews() {
@@ -60,12 +120,6 @@ function renderHeroNews() {
   a.querySelector('.hb-title').textContent = n.t;
 }
 
-function renderNews() {
-  document.getElementById('newsList').innerHTML = NEWS.slice(0, 4).map((n) => `
-    <li><a href="${esc(n.u)}" target="_blank" rel="noopener">
-      <time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span>
-    </a></li>`).join('');
-}
 
 // ヒーロー映像: 一時停止ボタン。動きを減らす設定なら止めておく。画面外では停止
 const video = document.querySelector('.hero-video');
@@ -127,6 +181,9 @@ function fillSizeSelects(items) {
 }
 
 renderCatalogParts();
-renderShops();
+renderNumbers();
+renderUsecases();
+renderVoices();
+renderMagazine();
 renderNews();
 renderHeroNews();

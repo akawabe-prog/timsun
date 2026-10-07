@@ -2,7 +2,7 @@
 [hidden]{display:none!important}
 
 /* シリーズのナビ(スクロールで上に固定) */
-.snav{position:sticky;top:68px;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.snav{position:sticky;top:var(--hd);z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .snav-in{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
 .snav-in::-webkit-scrollbar{display:none}
 .snav a{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap}
@@ -18,7 +18,7 @@
 @media(max-width:720px){.grades-in{grid-template-columns:1fr}}
 
 /* シリーズ */
-.series-sec{padding:clamp(56px,7vw,88px) 0;scroll-margin-top:124px}
+.series-sec{padding:clamp(56px,7vw,88px) 0;scroll-margin-top:calc(var(--hd) + 56px)}
 .series-head{display:grid;grid-template-columns:120px 1fr;gap:28px;align-items:center;margin-bottom:32px}
 .series-head img,.series-head .biz{width:120px;height:160px;border-radius:12px;object-fit:cover}
 .series-head .biz{display:grid;place-items:center;text-align:center;background:var(--ink);color:var(--g-glow);font-weight:800;letter-spacing:.1em;font-size:13px}

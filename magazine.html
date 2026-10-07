@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ニュース&イベント|TIMSUN(ティムソン)日本公式サイト</title>
-<meta name="description" content="TIMSUN(ティムソン)日本のニュース、新製品、イベント出展、メディア掲載情報。">
+<title>タイヤの読みもの|TIMSUN(ティムソン)日本公式サイト</title>
+<meta name="description" content="タイヤサイズの読み方、製造時期の見方、交換時期の目安、空気圧、保管方法、ストリートハイグリップとは。TIMSUN(ティムソン)のタイヤの読みものとメディア掲載。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TIMSUN(ティムソン)日本公式サイト">
-<meta property="og:title" content="ニュース&イベント|TIMSUN(ティムソン)日本公式サイト">
-<meta property="og:description" content="TIMSUN(ティムソン)日本のニュース、新製品、イベント出展、メディア掲載情報。">
+<meta property="og:title" content="タイヤの読みもの|TIMSUN(ティムソン)日本公式サイト">
+<meta property="og:description" content="タイヤサイズの読み方、製造時期の見方、交換時期の目安、空気圧、保管方法、ストリートハイグリップとは。TIMSUN(ティムソン)のタイヤの読みものとメディア掲載。">
 <!-- og:url / og:image / canonical は公開ドメイン確定後に絶対URLで追加する -->
 <meta name="theme-color" content="#0f110e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,37 +38,42 @@
 <main id="main">
 <section class="phero dark tread">
   <div class="wrap">
-    <ol class="crumb"><li><a href="/">TOP</a></li><li>ニュース&amp;イベント</li></ol>
-    <h1 class="h1">ニュース&amp;イベント</h1>
-    <p class="lead">新製品、モーターサイクルショーなどのイベント出展、メディア掲載のお知らせ。</p>
+    <ol class="crumb" id="crumb"><li><a href="/">TOP</a></li><li>タイヤの読みもの</li></ol>
+    <div id="magHead">
+      <h1 class="h1">タイヤの読みもの</h1>
+      <p class="lead">タイヤ選びと、毎日の点検に役立つ基礎知識。TIMSUNが紹介されたメディアの記事もまとめています。</p>
+    </div>
   </div>
 </section>
 
-<section class="sec-tight">
+<!-- 一覧 -->
+<section class="sec-tight" id="magList">
   <div class="wrap">
-    <div class="filters" id="filters" role="group" aria-label="カテゴリで絞り込み">
-      <button type="button" data-c="" aria-pressed="true">すべて</button>
-      <button type="button" data-c="product" aria-pressed="false">製品</button>
-      <button type="button" data-c="event" aria-pressed="false">イベント</button>
-      <button type="button" data-c="media" aria-pressed="false">メディア</button>
+    <div class="filters" id="magFilters" role="group" aria-label="カテゴリで絞り込み">
+      <button type="button" data-t="" aria-pressed="true">すべて</button>
+      <button type="button" data-t="基礎知識" aria-pressed="false">基礎知識</button>
+      <button type="button" data-t="製品" aria-pressed="false">製品</button>
+      <button type="button" data-t="メディア" aria-pressed="false">メディア掲載</button>
     </div>
-    <ul class="newslist" id="news"></ul>
-    <p class="mt-m"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">最新情報はInstagramで @timsun_japan_gram</a></p>
+    <div class="mag-list" id="magCards"></div>
   </div>
 </section>
-<script type="module">
-import { NEWS, NEWS_CAT } from '/assets/js/data.js';
-import { esc } from '/assets/js/site.js';
-const list = document.getElementById('news');
-const render = (c) => { list.innerHTML = NEWS.filter((n) => !c || n.c === c).map((n) => `
-  <li><a href="${esc(n.u)}" target="_blank" rel="noopener"><time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span></a></li>`).join(''); };
-document.getElementById('filters').addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return;
-  document.querySelectorAll('#filters button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-  render(b.dataset.c);
-});
-render('');
-</script>
+
+<!-- 記事 -->
+<article class="sec-tight" id="magArticle" hidden></article>
+
+<section class="sec-tight">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <p class="eyebrow">Fitment</p>
+        <h2 class="h2">あなたのバイクに合うタイヤを探す</h2>
+        <p class="note">車種・型式、またはサイズから。</p>
+      </div>
+      <div class="btns"><a class="btn" href="/fitment">適合タイヤ検索</a><a class="btn btn-ghost" href="/support#faq">よくあるご質問</a></div>
+    </div>
+  </div>
+</section>
 </main>
 <div class="float-cta" aria-label="すぐに探す">
   <a class="fc-main" href="/fitment"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>適合検索</a>
@@ -92,5 +97,6 @@ render('');
   </div>
 </footer>
 <script type="module" src="/assets/js/site.js"></script>
+<script type="module" src="/assets/js/magazine.js"></script>
 </body>
 </html>

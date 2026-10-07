@@ -25,6 +25,8 @@
   --en:"Archivo","Noto Sans JP",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
   --wrap:1200px;
+  --bar:32px;            /* お知らせバー */
+  --hd:calc(var(--bar) + 68px);  /* ヘッダー全体の高さ */
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -95,7 +97,7 @@ main{display:block}
 .menu[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
 @media(max-width:960px){
   .hd-in{gap:12px}
-  .gnav{position:fixed;inset:68px 0 auto 0;flex-direction:column;gap:0;margin:0;padding:8px 16px 24px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 24px 40px -24px rgba(0,0,0,.35);font-size:16px;transform:translateY(-8px);opacity:0;visibility:hidden;transition:opacity .2s,transform .25s var(--ease),visibility .2s}
+  .gnav{position:fixed;inset:var(--hd) 0 auto 0;flex-direction:column;gap:0;margin:0;padding:8px 16px 24px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 24px 40px -24px rgba(0,0,0,.35);font-size:16px;transform:translateY(-8px);opacity:0;visibility:hidden;transition:opacity .2s,transform .25s var(--ease),visibility .2s}
   .hd:has(.gnav.open){color:var(--ink);background:#fff;border-bottom-color:var(--line)}
   .gnav{color:var(--ink)}
   .gnav.open{opacity:1;transform:none;visibility:visible}
@@ -122,7 +124,7 @@ main{display:block}
   -webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 85%);mask-image:linear-gradient(90deg,transparent 30%,#000 85%)}
 
 /* ── 下層ページの見出し ── */
-.phero{padding:calc(68px + clamp(48px,7vw,88px)) 0 clamp(48px,6vw,72px)}  /* 上はヘッダーが重なる分を足す */
+.phero{padding:calc(var(--hd) + clamp(48px,7vw,88px)) 0 clamp(48px,6vw,72px)}  /* 上はヘッダーが重なる分を足す */
 .phero .h1{font-size:clamp(32px,4.6vw,56px);margin:16px 0 18px}
 .crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--sub-d);font-family:var(--mono);letter-spacing:.04em}
 .crumb a:hover{color:#fff}
@@ -199,7 +201,7 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .cta .btn-ghost:hover{background:rgba(255,255,255,.06)}
 
 /* ── ページ内アンカーメニュー(グローバルメニューとは別。ページ内のセクションへ移動) ── */
-.anav{position:sticky;top:68px;z-index:45;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.anav{position:sticky;top:var(--hd);z-index:45;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .anav-in{display:flex;justify-content:center;gap:4px;list-style:none;margin:0 auto;padding:0 16px;max-width:var(--wrap);overflow-x:auto;scrollbar-width:none}
 .anav-in::-webkit-scrollbar{display:none}
 .anav a{position:relative;display:flex;align-items:center;gap:8px;height:52px;padding:0 clamp(12px,1.8vw,24px);font-size:14px;font-weight:700;color:var(--sub);white-space:nowrap;transition:color .2s}
@@ -208,7 +210,7 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .anav a:hover,.anav a.on{color:var(--ink)}
 .anav a.on::after{transform:scaleX(1)}
 @media(max-width:960px){.anav-in{justify-content:flex-start}.anav a{height:46px;font-size:13px;padding:0 12px}.anav a::after{left:12px;right:12px}}
-[id]{scroll-margin-top:136px}
+[id]{scroll-margin-top:calc(var(--hd) + 68px)}
 
 /* ミスターティムソンの紹介(Design Philosophy のセクション) */
 .mascot-intro{display:grid;grid-template-columns:minmax(220px,360px) 1fr;align-items:center;gap:clamp(24px,5vw,72px);margin-bottom:clamp(32px,4vw,48px);padding:clamp(24px,3vw,40px);border-radius:20px;background:radial-gradient(70% 90% at 20% 50%,rgba(79,224,141,.14),transparent 70%),var(--ink-2);border:1px solid var(--line-d)}
@@ -221,3 +223,22 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .mascot-facts dt{color:var(--sub-d);font-size:13px}
 .mascot-facts dd{font-weight:700}
 @media(max-width:760px){.mascot-intro{grid-template-columns:1fr}.mascot-vis{max-width:240px;margin:0 auto}.mascot-facts div{grid-template-columns:1fr;gap:2px}}
+
+/* 最上部のお知らせバー(ヘッダーの一部。透明ヘッダーのときも黒で固定) */
+.topbar{display:flex;align-items:center;justify-content:center;height:var(--bar);padding:0 16px;background:var(--ink);color:#e7ebe4;font-size:12px;font-weight:500;letter-spacing:.02em;border-bottom:1px solid var(--line-d)}
+.topbar span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.topbar span::after{content:"→";margin-left:8px;font-family:var(--en);color:var(--g-glow)}
+.topbar:hover span{text-decoration:underline;text-underline-offset:3px}
+.hd::before{top:var(--bar)}
+
+/* 右下に浮く「適合検索・取扱店」(最初のセクションを過ぎたら表示) */
+.float-cta{position:fixed;right:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:60;display:flex;gap:8px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .3s,transform .3s var(--ease)}
+.float-cta.show{opacity:1;transform:none;pointer-events:auto}
+.float-cta a{display:flex;align-items:center;gap:8px;height:48px;padding:0 18px;border-radius:999px;font-weight:700;font-size:14px;box-shadow:0 12px 28px -12px rgba(15,17,14,.55)}
+.fc-main{background:var(--g-ink);color:#fff}
+.fc-main:hover{background:#09652c}
+.fc-sub{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.fc-sub:hover{border-color:rgba(14,160,70,.45)}
+@media(max-width:620px){.float-cta{left:12px;right:12px}.float-cta a{flex:1;justify-content:center}}
+/* 浮きボタンがフッターの最下段に重ならないように */
+.ft{padding-bottom:80px}

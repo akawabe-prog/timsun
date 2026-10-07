@@ -9,7 +9,7 @@ import argparse, pathlib, re, shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "_site"
-PAGES = ["assets", "fitment", "products", "technology", "brand", "shops", "support", "news", "dealers"]
+PAGES = ["assets", "fitment", "products", "technology", "brand", "shops", "support", "news", "dealers", "magazine"]
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--base", default="/timsun")
