@@ -4,6 +4,7 @@ import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
 import { SERIES, PATTERNS, baseOf, variantOf, isSHG, sizeOf } from './data.js';
 import { esc, yen, reveal, IMG, ITEM_URL, spyAnchors } from './site.js';
 import { PATTERN_COPY } from './pattern-copy.js';
+import { SIZE_SPEC } from './size-spec.js';
 import { MAKERS } from './fittree.js';
 
 const $ = (s) => document.querySelector(s);
@@ -214,14 +215,18 @@ function renderDetail(p) {
             <h3 class="pd-grp-h"><span class="en">${POS_EN[g.pos]}</span>${esc(g.pos)}<small>${g.rows.length}</small></h3>
             <div class="sizes-wrap">
               <table class="spec sizes pd-table">
-                <thead><tr><th>サイズ</th><th>型番</th><th>構造</th><th>品番</th><th class="num">メーカー希望小売価格<br><small>税込</small></th><th class="num">オンラインストア<br><small>税込</small></th><th>在庫</th><th></th></tr></thead>
+                <thead><tr><th>サイズ</th><th>構造</th><th>品番</th><th class="num">標準リム幅<br><small>インチ</small></th><th>許容リム幅<br><small>インチ</small></th><th class="num">外径<br><small>mm</small></th><th class="num">トレッド幅<br><small>mm</small></th><th class="num">メーカー希望小売価格<br><small>税込</small></th><th class="num">オンラインストア<br><small>税込</small></th><th>在庫</th><th></th></tr></thead>
                 <tbody>${g.rows.map((h) => {
                   const o = official.get(String(h.id));
+                  const sp = SIZE_SPEC[h.id];
                   return `<tr>
-                  <td class="en pd-size">${isSet(h) ? `${esc(setParts(h).size)}${setParts(h).for ? `<small>${esc(setParts(h).for)}</small>` : ''}` : esc(o?.size || sizeOf(h))}</td>
-                  <td class="en">${esc(variantOf(h.name) || '')}</td>
+                  <td class="en pd-size">${isSet(h) ? `${esc(setParts(h).size)}${setParts(h).for ? `<small>${esc(setParts(h).for)}</small>` : ''}` : `${esc(o?.size || sizeOf(h))}<small class="en">${esc(variantOf(h.name) || '')}</small>`}</td>
                   <td class="en">${typeOf(h)}</td>
                   <td class="en">${esc(h.id)}</td>
+                  <td class="num en">${esc(sp?.std || '—')}</td>
+                  <td class="en pd-rims">${sp?.rims?.length ? sp.rims.map(esc).join(' / ') : '—'}</td>
+                  <td class="num en">${sp?.od ? `${esc(sp.od)}${sp.odr ? `<small>${esc(sp.odr.replace('-', '–'))}</small>` : ''}` : '—'}</td>
+                  <td class="num en">${sp?.tw ? `${esc(sp.tw)}${sp.twr ? `<small>${esc(sp.twr.replace('-', '–'))}</small>` : ''}` : '—'}</td>
                   <td class="num">${o?.msrp ? yen(o.msrp) : o ? 'オープン価格' : '—'}</td>
                   <td class="num">${yen(priceOf(h))}</td>
                   <td class="st">${esc(h.status?.txt || '')}</td>
@@ -230,7 +235,7 @@ function renderDetail(p) {
               </table>
             </div>
           </div>`).join('')}
-        <p class="note sizes-note">メーカー希望小売価格はTIMSUN日本公式サイト、オンラインストアの価格・在庫は日本総代理店カスタムジャパンのオンラインストアの情報です${ASOF ? `(${fmtDate(ASOF)}時点。最新はリンク先の商品ページでご確認ください)` : ''}。取扱店での価格は店舗にお問い合わせください。</p>
+        <p class="note sizes-note">リム幅・外径・トレッド幅はカスタムジャパン オンラインストアの商品ページの値です(括弧内は製品の許容範囲)。メーカー希望小売価格はTIMSUN日本公式サイト、オンラインストアの価格・在庫は日本総代理店カスタムジャパンのオンラインストアの情報です${ASOF ? `(${fmtDate(ASOF)}時点。最新はリンク先の商品ページでご確認ください)` : ''}。取扱店での価格は店舗にお問い合わせください。</p>
         <p class="pd-links"><a class="link" href="/magazine?a=size">タイヤサイズ表記の見方</a><a class="link" href="/shops">取扱店を探す</a></p>
       </div>
     </section>

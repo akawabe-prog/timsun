@@ -114,12 +114,15 @@
 .pd-grp-h{display:flex;align-items:baseline;gap:12px;font-size:15px;font-weight:800;padding-bottom:10px;margin-bottom:2px;border-bottom:2px solid var(--ink)}
 .pd-grp-h .en{font-size:clamp(20px,2vw,26px);font-weight:800;letter-spacing:-.01em}
 .pd-grp-h small{font-family:var(--en);font-weight:500;color:var(--sub)}
-.pd-table{min-width:860px}
+.pd-table{min-width:1120px}
+.pd-table td.num small{display:block;font-size:10.5px;color:var(--sub);font-weight:400}
+.pd-rims{font-size:12px!important;white-space:nowrap}
+.pd-table thead th:nth-child(4),.pd-table thead th:nth-child(5),.pd-table thead th:nth-child(6),.pd-table thead th:nth-child(7),.pd-table td:nth-child(4),.pd-table td:nth-child(5),.pd-table td:nth-child(6),.pd-table td:nth-child(7){background:rgba(14,160,70,.04)}
 .pd-table thead th{vertical-align:bottom;line-height:1.4}
 .pd-table thead small{font-size:10px;color:var(--sub)}
 .pd-table .num{text-align:right;white-space:nowrap}
 .pd-size{font-weight:700;font-size:14px!important;white-space:nowrap}
-.pd-size small{display:block;max-width:340px;white-space:normal;font-family:var(--ja);font-size:11px;font-weight:500;color:var(--sub);line-height:1.5;margin-top:2px}
+.pd-size small{display:block;letter-spacing:.02em;max-width:340px;white-space:normal;font-family:var(--ja);font-size:11px;font-weight:500;color:var(--sub);line-height:1.5;margin-top:2px}
 .pd-links{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:20px}
 
 .pd-fit-lead{font-size:14px;color:var(--sub);margin-bottom:20px}
