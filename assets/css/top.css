@@ -58,19 +58,6 @@
 .feature-links{display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px}
 @media(max-width:820px){.feature{grid-template-columns:1fr}.feature-vis{max-width:420px}}
 
-/* 工場・品質 */
-.quality{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:clamp(32px,6vw,80px)}
-.quality-vis{border-radius:20px;overflow:hidden;background:var(--ink);aspect-ratio:16/10}
-.quality-vis img{width:100%;height:100%;object-fit:cover}
-.quality .lead{margin-bottom:28px}
-@media(max-width:820px){.quality{grid-template-columns:1fr}}
-
-/* 取扱店 */
-.shopfind{display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px 48px}
-.shopq{display:flex;flex-wrap:wrap;gap:12px}
-.shopq select{min-width:220px;height:48px;padding:0 40px 0 16px;border:1px solid var(--line);border-radius:999px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%230f110e' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;font-weight:700}
-@media(max-width:820px){.shopfind{grid-template-columns:1fr}}
-
 /* ニュース */
 .newslist{list-style:none;border-top:1px solid var(--line)}
 .newslist a{display:grid;grid-template-columns:120px 96px 1fr;gap:16px;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--line);transition:color .2s}
@@ -149,7 +136,7 @@
 .icard .ph{position:relative;aspect-ratio:1;padding:16px;background:linear-gradient(#fff,var(--paper-2))}
 .icard .ph img{width:100%;height:100%;object-fit:contain}
 .icard .badges{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:4px}
-.badge-new{background:var(--g-ink)!important;color:#fff!important}
+.tag.badge-new{background:var(--g-ink);color:#fff}
 .icard .meta{display:grid;align-content:start;gap:4px;padding:14px 16px 16px}
 .icard .nm{font-family:var(--en);font-weight:800;font-size:20px;line-height:1.1}
 .icard .srs{font-size:12px;color:var(--sub)}
@@ -183,3 +170,15 @@
 .mcard small{font-size:12px;color:var(--sub);line-height:1.7}
 @media(max-width:820px){.mag-grid{grid-template-columns:1fr}}
 
+
+/* ── TIMSUNを知る: MEDULLAのカード型(画像+小見出し+2行の文)に畳む ── */
+.discover{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.lcard{display:grid;grid-template-columns:112px 1fr;align-items:center;gap:18px;padding:12px;border-radius:var(--radius);background:#fff;border:1px solid var(--line);transition:border-color .2s,box-shadow .25s,transform .25s var(--ease)}
+.lcard:hover{border-color:var(--g-line);box-shadow:var(--sh-hover);transform:translateY(-2px)}
+.lcard img{width:112px;height:96px;object-fit:cover;border-radius:var(--r-sm);background:var(--paper-2)}
+.lcard img.contain{object-fit:contain;padding:6px;background:var(--ink)}
+.lcard > span{display:grid;gap:3px}
+.lcard small.lcard-eb{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-ink)}
+.lcard b{font-size:16px}
+.lcard small{font-size:12px;color:var(--sub);line-height:1.65}
+@media(max-width:1000px){.discover{grid-template-columns:1fr}}

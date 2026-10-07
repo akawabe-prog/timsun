@@ -4,8 +4,6 @@ import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, FEATURED, NEW_PAT
 import { esc, yen, reveal, IMG } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
-const PREFS = ['北海道', '青森', '岩手', '宮城', '秋田', '山形', '福島', '東京', '神奈川', '埼玉', '千葉', '茨城', '栃木', '群馬', '山梨', '新潟', '長野', '富山', '石川', '福井', '愛知', '岐阜', '静岡', '三重', '大阪', '兵庫', '京都', '滋賀', '奈良', '和歌山', '鳥取', '島根', '岡山', '広島', '山口', '徳島', '香川', '愛媛', '高知', '福岡', '佐賀', '長崎', '熊本', '大分', '宮崎', '鹿児島', '沖縄'];
-
 // ── 注目のタイヤ(Featured Tyres): 型番ごとのカードを横に流す。売れ筋データがないため「人気」バッジは付けない ──
 const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `${y}年${m}月${day}日`; };
 function patternsOf(items) {
@@ -88,14 +86,13 @@ async function renderCatalogParts() {
   } catch (e) { console.error(e); }
 }
 
+// 取扱店数(実データから。バナーとカードの数字を更新)
 async function renderShops() {
-  const sel = document.getElementById('pref');
-  sel.insertAdjacentHTML('beforeend', PREFS.map((p) => `<option value="${p}">${p}</option>`).join(''));
   try {
     const shops = await fetch(new URL('../data/shops.json', import.meta.url)).then((r) => r.json());
-    const bs = document.getElementById('bnShops'); if (bs) bs.textContent = String(Math.floor(shops.length / 10) * 10);
-    const by = shops.reduce((m, s) => ((m[s.pref] = (m[s.pref] || 0) + 1), m), {});
-    sel.querySelectorAll('option[value]').forEach((o) => { if (o.value) o.textContent = `${o.value}(${by[o.value] || 0}店)`; });
+    const n = String(Math.floor(shops.length / 10) * 10);
+    const bs = document.getElementById('bnShops'); if (bs) bs.textContent = n;
+    document.querySelectorAll('.js-shops').forEach((e) => { e.textContent = n; });
   } catch (e) { /* 既定の表示のまま */ }
 }
 
