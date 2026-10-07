@@ -30,7 +30,7 @@
 
 /* 画像+文章 */
 .media{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,80px);align-items:center}
-.media-vis{border-radius:var(--r-lg);overflow:hidden;background:var(--ink)}
+.media-vis{border-radius:20px;overflow:hidden;background:var(--ink)}
 .media-vis img,.media-vis video{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10}
 .media-vis.contain{background:var(--paper-2);display:grid;place-items:center;padding:6%}
 .media-vis.contain img{object-fit:contain;aspect-ratio:auto;max-height:520px;width:auto}
@@ -58,7 +58,7 @@
 
 /* 取扱店 */
 .shop-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:24px}
-.shop-tools select,.shop-tools input{height:50px;padding:0 16px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper-2);font-size:15px}
+.shop-tools select,.shop-tools input{height:50px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--paper-2);font-size:15px}
 .shop-tools select{min-width:220px;padding-right:40px;appearance:none;background:var(--paper-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%230f110e' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;font-weight:700}
 .shop-tools input{flex:1;min-width:220px}
 .shop-count{font-size:14px;color:var(--sub)}
@@ -69,12 +69,12 @@
 .region div{display:flex;flex-wrap:wrap;gap:6px}
 .region button{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:700;background:#fff}
 .region button small{font-family:var(--en);color:var(--sub);font-weight:500;margin-left:4px}
-.region button:hover{border-color:var(--g-line)}
+.region button:hover{border-color:rgba(14,160,70,.45)}
 .region button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .region button:disabled{opacity:.35;cursor:default}
 @media(max-width:620px){.region{grid-template-columns:1fr}}
 .shops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px}
-.shop{display:grid;gap:4px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;font-size:14px}
+.shop{display:grid;gap:4px;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}
 .shop b{font-size:15px}
 .shop .addr{color:var(--sub)}
 .shop .tel{font-family:var(--en);font-weight:700;color:var(--g-ink)}

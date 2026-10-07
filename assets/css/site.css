@@ -19,24 +19,16 @@
   --g-ink:#0b7a35;      /* 白地の文字・ボタン用(コントラスト 5.3:1) */
   --g-glow:#4fe08d;     /* 暗い背景上の文字・線 */
   --g-tint:rgba(14,160,70,.08);
-  /* 角丸は3段階: 大きな面 / カード / 画像・入力欄(ボタン・ラベルは丸) */
-  --r-lg:16px;
   --radius:12px;
   --r-sm:8px;
-  /* 影は2種類だけ: マウスを乗せたとき / 浮いている部品 */
-  --sh-hover:0 18px 40px -28px rgba(15,17,14,.45);
-  --sh-float:0 20px 40px -22px rgba(15,17,14,.5);
-  --g-line:rgba(14,160,70,.45);   /* マウスを乗せたときの枠 */
-  /* セクションの余白は2段階 */
-  --sec:clamp(64px,8vw,112px);
-  --sec-tight:clamp(40px,5vw,64px);
+  --g-line:rgba(14,160,70,.45);                 /* マウスを乗せたときの枠 */
+  --sh-hover:0 18px 40px -28px rgba(15,17,14,.45); /* マウスを乗せたときの影 */
+  --sh-float:0 20px 40px -22px rgba(15,17,14,.5);  /* 浮いている部品の影 */
   --ease:cubic-bezier(.22,.61,.2,1);
   --ja:"Noto Sans JP",system-ui,-apple-system,"Hiragino Sans",sans-serif;
   --en:"Archivo","Noto Sans JP",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
   --wrap:1200px;
-  --bar:32px;            /* お知らせバー */
-  --hd:calc(var(--bar) + 68px);  /* ヘッダー全体の高さ */
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -58,7 +50,7 @@ button{cursor:pointer;border:0;background:none}
 .eyebrow::before{content:"";width:18px;height:1px;background:currentColor}
 .dark .eyebrow{color:var(--g-glow)}
 .h1{font-weight:900;font-size:clamp(34px,5.6vw,68px);line-height:1.2;letter-spacing:-.02em}
-.h2{font-weight:800;font-size:clamp(26px,3vw,38px);line-height:1.4;letter-spacing:-.01em;margin:12px 0 14px}
+.h2{font-weight:900;font-size:clamp(26px,3.2vw,40px);line-height:1.35;letter-spacing:-.01em;margin:14px 0 16px}
 .h3{font-weight:700;font-size:clamp(18px,1.8vw,21px);line-height:1.5}
 .lead{color:var(--sub);font-size:clamp(15px,1.4vw,17px);max-width:40em}
 .dark .lead{color:var(--sub-d)}
@@ -98,7 +90,7 @@ main{display:block}
 .gnav a{position:relative;padding:6px 0}
 .gnav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--g);transform:scaleX(0);transform-origin:left;transition:transform .25s var(--ease)}
 .gnav a:hover::after,.gnav a[aria-current="page"]::after{transform:scaleX(1)}
-.menu{display:none;width:44px;height:44px;border-radius:var(--r-sm);position:relative}
+.menu{display:none;width:44px;height:44px;border-radius:10px;position:relative}
 .menu span,.menu span::before,.menu span::after{position:absolute;left:12px;width:20px;height:2px;background:currentColor;transition:transform .25s var(--ease),opacity .2s}
 .menu span{top:21px}.menu span::before{content:"";left:0;top:-6px}.menu span::after{content:"";left:0;top:6px}
 .menu{color:inherit}
@@ -107,7 +99,7 @@ main{display:block}
 .menu[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
 @media(max-width:960px){
   .hd-in{gap:12px}
-  .gnav{position:fixed;inset:var(--hd) 0 auto 0;flex-direction:column;gap:0;margin:0;padding:8px 16px 24px;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--sh-float);font-size:16px;transform:translateY(-8px);opacity:0;visibility:hidden;transition:opacity .2s,transform .25s var(--ease),visibility .2s}
+  .gnav{position:fixed;inset:68px 0 auto 0;flex-direction:column;gap:0;margin:0;padding:8px 16px 24px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 24px 40px -24px rgba(0,0,0,.35);font-size:16px;transform:translateY(-8px);opacity:0;visibility:hidden;transition:opacity .2s,transform .25s var(--ease),visibility .2s}
   .hd:has(.gnav.open){color:var(--ink);background:#fff;border-bottom-color:var(--line)}
   .gnav{color:var(--ink)}
   .gnav.open{opacity:1;transform:none;visibility:visible}
@@ -118,16 +110,14 @@ main{display:block}
 }
 
 /* ── セクション ── */
-.sec{padding:var(--sec) 0}
-.sec-tight{padding:var(--sec-tight) 0}
+.sec{padding:clamp(72px,10vw,128px) 0}
+.sec-tight{padding:clamp(56px,7vw,88px) 0}
 .alt{background:var(--paper-2)}
 .dark{background:var(--ink);color:#fff}
 .sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 40px;margin-bottom:clamp(32px,4vw,48px)}
 .sec-head .h2{margin-bottom:0}
 .sec-head > div{max-width:720px}
-.sec-head .lead{margin-top:4px}
-.sec-head.center{justify-content:center;text-align:center}
-.sec-head.center .eyebrow{justify-content:center}
+.sec-head .lead{margin-top:12px}
 
 /* トレッド由来の細い斜線(装飾) */
 .tread{position:relative;isolation:isolate}
@@ -136,7 +126,7 @@ main{display:block}
   -webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 85%);mask-image:linear-gradient(90deg,transparent 30%,#000 85%)}
 
 /* ── 下層ページの見出し ── */
-.phero{padding:calc(var(--hd) + clamp(48px,7vw,88px)) 0 clamp(48px,6vw,72px)}  /* 上はヘッダーが重なる分を足す */
+.phero{padding:calc(68px + clamp(48px,7vw,88px)) 0 clamp(48px,6vw,72px)}  /* 上はヘッダーが重なる分を足す */
 .phero .h1{font-size:clamp(32px,4.6vw,56px);margin:16px 0 18px}
 .crumb{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--sub-d);font-family:var(--mono);letter-spacing:.04em}
 .crumb a:hover{color:#fff}
@@ -149,7 +139,7 @@ main{display:block}
 .g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
 .g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:border-color .2s,transform .25s var(--ease),box-shadow .25s}
-a.card:hover{border-color:var(--g-line);transform:translateY(-2px);box-shadow:var(--sh-hover)}
+a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-shadow:0 18px 40px -28px rgba(15,17,14,.45)}
 .dark .card{background:var(--ink-2);border-color:var(--line-d)}
 .tag{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.04em;background:var(--g-tint);color:var(--g-ink);white-space:nowrap}
 .tag.shg{background:var(--ink);color:var(--g-glow)}
@@ -203,7 +193,7 @@ a.card:hover{border-color:var(--g-line);transform:translateY(-2px);box-shadow:va
 @media(max-width:820px){.ft-top{grid-template-columns:1fr}.ft-cols{grid-template-columns:1fr 1fr}}
 
 /* ── 共通CTA帯 ── */
-.cta{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px 48px;padding:clamp(36px,5vw,56px);border-radius:var(--r-lg);background:var(--ink);color:#fff;overflow:hidden}
+.cta{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px 48px;padding:clamp(36px,5vw,56px);border-radius:20px;background:var(--ink);color:#fff;overflow:hidden}
 .cta .h2{margin:10px 0 8px;font-size:clamp(22px,2.6vw,32px)}
 .cta .btns{display:flex;flex-wrap:wrap;gap:12px}
 @media(max-width:820px){.cta{grid-template-columns:1fr}}
@@ -213,47 +203,29 @@ a.card:hover{border-color:var(--g-line);transform:translateY(-2px);box-shadow:va
 .cta .btn-ghost:hover{background:rgba(255,255,255,.06)}
 
 /* ── ページ内アンカーメニュー(グローバルメニューとは別。ページ内のセクションへ移動) ── */
-.anav{position:sticky;top:var(--hd);z-index:45;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.anav-in{display:flex;justify-content:center;gap:4px;list-style:none;margin:0 auto;padding:0 16px;max-width:var(--wrap);overflow-x:auto;scrollbar-width:none}
+.anav{position:sticky;top:68px;z-index:45;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+/* 項目が多くても切れないよう画面幅いっぱいを使い、はみ出すときは左端から並べて横スクロール */
+.anav-in{display:flex;justify-content:safe center;gap:0;list-style:none;margin:0 auto;padding:0 clamp(8px,2vw,32px);overflow-x:auto;scrollbar-width:none}
 .anav-in::-webkit-scrollbar{display:none}
-.anav a{position:relative;display:flex;align-items:center;gap:8px;height:52px;padding:0 clamp(12px,1.8vw,24px);font-size:14px;font-weight:700;color:var(--sub);white-space:nowrap;transition:color .2s}
+.anav a{position:relative;display:flex;align-items:center;gap:8px;height:52px;padding:0 clamp(10px,1.2vw,20px);font-size:14px;font-weight:700;color:var(--sub);white-space:nowrap;transition:color .2s}
 .anav a::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.6}
-.anav a::after{content:"";position:absolute;left:clamp(12px,1.8vw,24px);right:clamp(12px,1.8vw,24px);bottom:0;height:3px;background:var(--g);transform:scaleX(0);transition:transform .25s var(--ease)}
+.anav a::after{content:"";position:absolute;left:clamp(10px,1.2vw,20px);right:clamp(10px,1.2vw,20px);bottom:0;height:3px;background:var(--g);transform:scaleX(0);transition:transform .25s var(--ease)}
 .anav a:hover,.anav a.on{color:var(--ink)}
 .anav a.on::after{transform:scaleX(1)}
 @media(max-width:960px){.anav-in{justify-content:flex-start}.anav a{height:46px;font-size:13px;padding:0 12px}.anav a::after{left:12px;right:12px}}
-[id]{scroll-margin-top:calc(var(--hd) + 68px)}
+[id]{scroll-margin-top:136px}
 
 /* ミスターティムソンの紹介(Design Philosophy のセクション) */
-.mascot-intro{display:grid;grid-template-columns:minmax(220px,360px) 1fr;align-items:center;gap:clamp(24px,5vw,72px);margin-bottom:clamp(32px,4vw,48px);padding:clamp(24px,3vw,40px);border-radius:var(--r-lg);background:radial-gradient(70% 90% at 20% 50%,rgba(79,224,141,.14),transparent 70%),var(--ink-2);border:1px solid var(--line-d)}
+.mascot-intro{display:grid;grid-template-columns:minmax(220px,360px) 1fr;align-items:center;gap:clamp(24px,5vw,72px);margin-bottom:clamp(32px,4vw,48px);padding:clamp(24px,3vw,40px);border-radius:20px;background:radial-gradient(70% 90% at 20% 50%,rgba(79,224,141,.14),transparent 70%),var(--ink-2);border:1px solid var(--line-d)}
 .mascot-vis img{width:100%;height:auto;max-height:420px;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(0,0,0,.5))}
 .mascot-label{font-size:12px;letter-spacing:.16em;color:var(--g-glow)}
-.mascot-h{margin:10px 0 14px;font-weight:800;font-size:clamp(22px,2.6vw,32px);line-height:1.4}
+.mascot-h{margin:10px 0 14px;font-weight:900;font-size:clamp(22px,2.6vw,32px);line-height:1.4}
 .mascot-text{color:#d9ded6;line-height:1.95;max-width:36em}
 .mascot-facts{display:grid;margin:22px 0 20px;border-top:1px solid var(--line-d)}
 .mascot-facts div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-d);font-size:14px}
 .mascot-facts dt{color:var(--sub-d);font-size:13px}
 .mascot-facts dd{font-weight:700}
 @media(max-width:760px){.mascot-intro{grid-template-columns:1fr}.mascot-vis{max-width:240px;margin:0 auto}.mascot-facts div{grid-template-columns:1fr;gap:2px}}
-
-/* 最上部のお知らせバー(ヘッダーの一部。透明ヘッダーのときも黒で固定) */
-.topbar{display:flex;align-items:center;justify-content:center;height:var(--bar);padding:0 16px;background:var(--ink);color:#e7ebe4;font-size:12px;font-weight:500;letter-spacing:.02em;border-bottom:1px solid var(--line-d)}
-.topbar span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.topbar span::after{content:"→";margin-left:8px;font-family:var(--en);color:var(--g-glow)}
-.topbar:hover span{text-decoration:underline;text-underline-offset:3px}
-.hd::before{top:var(--bar)}
-
-/* 右下に浮く「適合検索・取扱店」(最初のセクションを過ぎたら表示) */
-.float-cta{position:fixed;right:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:60;display:flex;gap:8px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .3s,transform .3s var(--ease)}
-.float-cta.show{opacity:1;transform:none;pointer-events:auto}
-.float-cta a{display:flex;align-items:center;gap:8px;height:48px;padding:0 18px;border-radius:999px;font-weight:700;font-size:14px;box-shadow:var(--sh-float)}
-.fc-main{background:var(--g-ink);color:#fff}
-.fc-main:hover{background:#09652c}
-.fc-sub{background:#fff;color:var(--ink);border:1px solid var(--line)}
-.fc-sub:hover{border-color:var(--g-line)}
-@media(max-width:620px){.float-cta{left:12px;right:12px}.float-cta a{flex:1;justify-content:center}}
-/* 浮きボタンがフッターの最下段に重ならないように */
-.ft{padding-bottom:80px}
 
 /* 「すべて見る」リンク: セクション見出しの右端は全ページこれに統一 */
 .more{display:inline-flex;align-items:center;gap:10px;flex:none;font-size:14px;font-weight:700;color:var(--ink);padding-bottom:4px;border-bottom:1px solid var(--line);transition:color .2s,border-color .2s}
