@@ -1,7 +1,7 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ一覧・注目製品・使い方から選ぶ・取扱店数・ニュース・読みもの
 import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
 import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
-import { esc, yen, reveal, IMG } from './site.js';
+import { esc, yen, reveal, IMG, eventCard } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
 // ── 注目のタイヤ(Featured Tyres): 型番ごとのカードを横に流す。売れ筋データがないため「人気」バッジは付けない ──
@@ -120,8 +120,10 @@ function renderHeroNews() {
   a.querySelector('.hb-title').textContent = n.t;
 }
 
+// イベント(サムネイル・新しい順に4件)とニュース(イベント以外・新しい順に4件)を分けて表示
 function renderNews() {
-  document.getElementById('newsList').innerHTML = NEWS.slice(0, 4).map((n) => `
+  document.getElementById('eventGrid').innerHTML = NEWS.filter((n) => n.c === 'event').slice(0, 4).map(eventCard).join('');
+  document.getElementById('newsList').innerHTML = NEWS.filter((n) => n.c !== 'event').slice(0, 4).map((n) => `
     <li><a href="${esc(n.u)}" target="_blank" rel="noopener">
       <time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span>
     </a></li>`).join('');

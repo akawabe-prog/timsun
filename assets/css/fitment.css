@@ -87,3 +87,6 @@
 .tire .st{font-size:12px;color:var(--sub)}
 .tire .go{margin-top:6px;font-size:13px;font-weight:700;color:var(--g-ink)}
 .results .note{margin-top:12px}
+.fit-q-label{display:block;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--sub)}
+.fit-or{margin:28px 0 4px}
+.qbox{max-width:none}
