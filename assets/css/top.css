@@ -12,7 +12,7 @@
 @media(max-width:620px){.hero{height:62svh;min-height:360px}}
 
 /* タイヤを探す */
-.finder-sec{padding:clamp(28px,4vw,48px) 0 8px}
+.finder-sec{padding:clamp(40px,5vw,64px) 0}  /* 下にも十分な余白を取り、パネルが次のセクションに被らないようにする */
 .finder{background:#fff;border-radius:20px;box-shadow:0 30px 60px -40px rgba(15,17,14,.6),0 0 0 1px var(--line);overflow:hidden}
 .finder-tabs{display:flex;border-bottom:1px solid var(--line)}
 .finder-tabs button{flex:1;padding:18px 12px;font-weight:700;font-size:15px;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
