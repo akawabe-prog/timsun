@@ -51,7 +51,7 @@ export async function mountFitSelect(root, { base = '/fitment' } = {}) {
     } else if (kw && kw.value.trim()) {
       location.href = `${base}?${new URLSearchParams({ q: kw.value.trim() })}`;
     } else {
-      if (msg) msg.textContent = 'メーカー・排気量・車種を選ぶか、キーワードを入力してください。';
+      if (msg) msg.textContent = kw ? 'メーカー・排気量・車種を選ぶか、キーワードを入力してください。' : 'メーカー・排気量・車種を選んでください。';
       (mk.value ? (gr.value ? bd : gr) : mk).focus();
     }
   };
