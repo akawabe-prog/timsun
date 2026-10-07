@@ -44,11 +44,11 @@ CJ開発ガイドに準拠(ルート相対パス、拡張子なしURL、init は
 | 4 | 注目のタイヤ | `data.js` の `FEATURED`(順番)、`NEW_PATTERNS`(新着)。売れ筋データがないため「人気」バッジは付けない |
 | 5 | TIMSUNとは | `dev/pages/index.html` |
 | 6 | 4つの入口(技術と品質/ヤモリの設計思想/取扱店で相談/イベント) | `dev/pages/index.html` |
-| 7 | シリーズ一覧 | STREET HIGH GRIP の注目 | `data.js` の `SERIES` |
+| 7 | シリーズ(画像付き9枚)と注目の新製品(TS720 GECKO) | `data.js` の `SERIES` / `dev/pages/index.html` |
 | 8 | 使い方から選ぶ | `data.js` の `USECASES` |
 | 9 | 販売店の声・メディア掲載 | `data.js` の `VOICES` / `MEDIA` |
 | 10 | タイヤの読みもの | `data.js` の `ARTICLES`(FAQ・サポートの事実の範囲で書く) |
-| 11 | ニュース&イベント(写真付き) | `data.js` の `NEWS` |
+| 11 | ニュース&イベント(日付・カテゴリ・タイトルの一覧) | `data.js` の `NEWS` |
 | 12 | FAQ | 適合検索 | — |
 | 13 | TIMSUNを選ぶ理由 | 取扱店数・適合車種数は実データから集計 |
 | 常時 | 右下の「適合検索・取扱店」ボタン | `dev/build.py` の `FLOAT` |

@@ -1,8 +1,8 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ・STREET HIGH GRIP・使い方・声とメディア・読みもの・ニュース・数字
 // 並びはMEDULLAのトップに倣う(気づく → 欲しくなる → 信じる → 選ぶ → 共感する → 続ける)
 import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
-import { SERIES, PATTERNS, NEWS, MEDIA, VOICES, ARTICLES, USECASES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
-import { esc, yen, IMG } from './site.js';
+import { SERIES, PATTERNS, NEWS, NEWS_CAT, MEDIA, VOICES, ARTICLES, USECASES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
+import { esc, yen, IMG, reveal } from './site.js';
 
 const $ = (id) => document.getElementById(id);
 const isSet = (h) => /^【セット品】/.test(h.name);
@@ -38,13 +38,28 @@ function renderItems(pats) {
   $('itemsRail').innerHTML = cards.join('');
 }
 
-// 7 シリーズ一覧 | STREET HIGH GRIP
-function renderLineup(pats) {
-  const count = (sid) => [...pats.values()].filter((p) => p.s === sid).length;
-  $('seriesList').innerHTML = SERIES.filter((s) => count(s.id)).map((s) => `
-    <li><a href="/products#${s.id}"><b>${esc(s.en)}<small>${esc(s.ja)}${s.jpOnly ? '(日本独自)' : ''}</small></b><span>${esc(s.lead)}</span><em>${count(s.id)}</em></a></li>`).join('');
-  $('shgList').innerHTML = ['TS720', 'TS689', 'TS880'].map((id) => pats.get(id)).filter(Boolean).map((p) => `
-    <a class="shg-item" href="/products?p=${p.id}"><span><b>${p.id}${p.id === 'TS720' ? ' GECKO' : ''}</b><small>${esc(p.d)}</small></span><img src="${IMG}${esc(p.img)}" alt="" width="150" height="130" loading="lazy"></a>`).join('');
+// シリーズ(画像付きの9枚のカード)
+function renderSeries(pats) {
+  const count = (sid) => (pats ? [...pats.values()].filter((p) => p.s === sid).length : null);
+  $('seriesGrid').innerHTML = SERIES.map((s, i) => `
+    <a class="sr-card rv" href="/products#${s.id}">
+      <span class="ph${s.img ? '' : ' biz'}">${s.img ? `<img src="${s.img}" alt="" width="346" height="500" loading="lazy">` : 'JAPAN<br>ONLY'}</span>
+      <span>
+        <span class="no">${String(i + 1).padStart(2, '0')}</span>
+        <h3>${esc(s.en)}</h3>
+        <span class="ja">${esc(s.ja)}</span>
+        <span class="cnt">${count(s.id) != null ? `${count(s.id)}パターン` : ''}</span>
+      </span>
+      ${s.jpOnly ? '<span class="tag jp">日本独自</span>' : ''}
+    </a>`).join('');
+  reveal(document.querySelectorAll('#seriesGrid .rv'));
+}
+
+// 注目の新製品(TS720)のサイズ数と価格
+function renderFeature(pats) {
+  const p = pats.get('TS720'); const spec = $('tsSpec'); if (!p || !spec) return;
+  spec.querySelector('[data-k="sizes"]').textContent = `${p.sizes}サイズ`;
+  if (p.from) spec.querySelector('[data-k="price"]').textContent = `${yen(p.from)}〜(税込・1本)`;
 }
 
 // 8 使い方から選ぶ
@@ -68,11 +83,12 @@ function renderMagazine() {
     <a class="mcard" href="/magazine?a=${a.slug}"><span class="tag${a.tag === '製品' ? ' shg' : ' muted'}">${esc(a.tag)}</span><b>${esc(a.title)}</b><small>${esc(a.lead)}</small></a>`).join('');
 }
 
-// 11 ニュース(写真付き。写真はカテゴリごとの代表画像)
-const NEWS_IMG = { event: ['/assets/img/banner/event.webp', ''], product: [`${IMG}/items/29090884_1.jpg`, 'contain'], media: ['/assets/img/banner/tread.webp', ''] };
+// ニュース(日付・カテゴリ・タイトルの一覧)
 function renderNews() {
-  $('newsList').innerHTML = NEWS.slice(0, 6).map((n) => { const [src, cls] = NEWS_IMG[n.c] || NEWS_IMG.media; return `
-    <a class="ncard" href="${esc(n.u)}" target="_blank" rel="noopener"><img class="${cls}" src="${src}" alt="" width="120" height="76" loading="lazy"><span><time>${esc(n.d)}</time><b>${esc(n.t)}</b></span></a>`; }).join('');
+  $('newsList').innerHTML = NEWS.slice(0, 4).map((n) => `
+    <li><a href="${esc(n.u)}" target="_blank" rel="noopener">
+      <time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span>
+    </a></li>`).join('');
 }
 
 // 数字(取扱店数・適合車種数)を実データで
@@ -98,7 +114,7 @@ async function renderCatalogParts() {
   try {
     const items = await fetchCatalog();
     const pats = patterns(items);
-    renderItems(pats); renderLineup(pats); fillSizeSelects(items);
+    renderItems(pats); renderSeries(pats); renderFeature(pats); fillSizeSelects(items);
     const asof = await dataAsOf();
     if (asof) { const n = $('itemsAsof'); n.hidden = false; n.textContent = `価格は${fmtDate(asof)}時点のものです。`; }
   } catch (e) {
@@ -180,6 +196,7 @@ function fillSizeSelects(items) {
   fill('sw', uniq('w')); fill('sa', uniq('a')); fill('sr', uniq('r'));
 }
 
+renderSeries(null);
 renderCatalogParts();
 renderNumbers();
 renderUsecases();

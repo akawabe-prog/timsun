@@ -150,22 +150,45 @@
   </div>
 </section>
 
-<!-- 7 シリーズ | STREET HIGH GRIP(MEDULLAの Products | Hair Care Devices に倣う) -->
-<section class="blk" id="lineup">
-  <div class="wrap two">
-    <div>
-      <div class="blk-head"><h2 class="blk-h">シリーズ<small class="en">Series</small></h2><a class="more" href="/products">製品一覧</a></div>
-      <ul class="slist" id="seriesList"></ul>
+<!-- シリーズから選ぶ -->
+<section class="sec" id="lineup">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Product Series</p>
+        <h2 class="h2">走るシーンから選ぶ。</h2>
+        <p class="lead">世界共通のシリーズ体系に、日本独自の「ビジネス」を加えた9シリーズ。上位グレード「ストリートハイグリップ」と、毎日の足元を支える「スタンダード」をそろえています。</p>
+      </div>
+      <a class="btn btn-ghost" href="/products">すべての製品</a>
     </div>
-    <div>
-      <div class="blk-head"><h2 class="blk-h shg-h"><img src="/assets/img/shg-logo.webp" alt="STREET HIGH GRIP" width="640" height="87" loading="lazy"></h2><a class="more" href="/magazine?a=shg">ストリートハイグリップとは</a></div>
-      <div class="shg-list" id="shgList"></div>
+    <div class="series" id="seriesGrid"></div>
+  </div>
+</section>
+
+<!-- 注目の新製品 -->
+<section class="sec alt" id="new">
+  <div class="wrap feature">
+    <div class="feature-vis rv">
+      <img src="https://img.customjapan.net/items/29090884_1.jpg" alt="TIMSUN TS720F GECKO" width="500" height="500" loading="lazy">
+    </div>
+    <div class="feature-copy rv">
+      <p class="eyebrow">New — 2025</p>
+      <img class="shg-logo" src="/assets/img/shg-logo.webp" alt="STREET HIGH GRIP ストリートハイグリップ" width="640" height="87" loading="lazy">
+      <h2 class="h2"><span class="en">TS720 GECKO</span></h2>
+      <p class="lead">スクーターなど小径タイヤのために、コンパウンドとパターンを専用に設計しました。名前の「GECKO」は、TIMSUNのシンボルであるヤモリから。</p>
+      <dl class="mini-spec" id="tsSpec">
+        <div><dt>シリーズ</dt><dd>スクーター</dd></div>
+        <div><dt>グレード</dt><dd>ストリートハイグリップ</dd></div>
+        <div><dt>サイズ</dt><dd class="en" data-k="sizes">—</dd></div>
+        <div><dt>価格</dt><dd class="en" data-k="price">—</dd></div>
+      </dl>
+      <p class="feature-links"><a class="btn" href="/products?p=TS720">サイズと価格を見る</a><a class="link" href="/fitment?q=%E3%83%A2%E3%83%B3%E3%82%AD%E3%83%BC125">モンキー125(JB02/03/05)対応サイズ</a></p>
     </div>
   </div>
 </section>
 
 <!-- 8 使い方から選ぶ(MEDULLAの Gift に倣う「場面からの入口」) -->
-<section class="blk alt" id="usecase">
+<section class="blk" id="usecase">
   <div class="wrap">
     <div class="blk-head"><h2 class="blk-h">使い方から選ぶ<small class="en">By Riding Style</small></h2><a class="more" href="/fitment">車種から探す</a></div>
     <div class="usecases" id="usecases"></div>
@@ -173,7 +196,7 @@
 </section>
 
 <!-- 9 販売店の声・メディア掲載(MEDULLAの MY MEDULLA STORY に倣う) -->
-<section class="blk" id="voice">
+<section class="blk alt" id="voice">
   <div class="wrap">
     <div class="blk-head"><h2 class="blk-h">販売店の声・メディア掲載<small class="en">Voices &amp; Media</small></h2><a class="more" href="/brand#voice">もっと見る</a></div>
     <div class="voices-rail" id="voicesRail"></div>
@@ -181,23 +204,30 @@
 </section>
 
 <!-- 10 タイヤの読みもの(MEDULLAの MAGAZINE に倣う) -->
-<section class="blk alt" id="magazine">
+<section class="blk" id="magazine">
   <div class="wrap">
     <div class="blk-head"><h2 class="blk-h">タイヤの読みもの<small class="en">Magazine</small></h2><a class="more" href="/magazine">記事一覧</a></div>
     <div class="mag-grid" id="magGrid"></div>
   </div>
 </section>
 
-<!-- 11 ニュース -->
-<section class="blk" id="news">
+<!-- ニュース -->
+<section class="sec alt" id="news">
   <div class="wrap">
-    <div class="blk-head"><h2 class="blk-h">ニュース&amp;イベント<small class="en">Information</small></h2><a class="more" href="/news">ニュース一覧</a></div>
-    <div class="news-grid" id="newsList"></div>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">News &amp; Events</p>
+        <h2 class="h2">ニュース&amp;イベント</h2>
+      </div>
+      <a class="btn btn-ghost" href="/news">ニュース一覧</a>
+    </div>
+    <ul class="newslist" id="newsList"></ul>
+    <p class="ig"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagramをフォロー @timsun_japan_gram</a></p>
   </div>
 </section>
 
 <!-- 12 FAQ | 適合検索 -->
-<section class="blk-tight alt" aria-label="サポート">
+<section class="blk-tight" aria-label="サポート">
   <div class="wrap help2">
     <a class="hcard" href="/support#faq"><span class="mono">FAQ</span><b>よくあるご質問</b><small>サイズの見方、交換時期、保管方法など</small></a>
     <a class="hcard dark-card" href="/fitment"><span class="mono">FITMENT SEARCH</span><b>適合タイヤ検索</b><small>車種・型式、またはサイズから、あなたのバイクに合うタイヤを</small></a>
@@ -205,7 +235,7 @@
 </section>
 
 <!-- 13 TIMSUNを選ぶ理由(MEDULLAの会員特典のアイコン列に倣う) -->
-<section class="blk" aria-labelledby="reasonsH">
+<section class="blk alt" aria-labelledby="reasonsH">
   <div class="wrap">
     <h2 class="blk-h center" id="reasonsH">TIMSUNを選ぶ理由</h2>
     <ul class="reasons4">
