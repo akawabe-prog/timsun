@@ -119,3 +119,8 @@
 .size-table{margin:8px 0 24px}
 .size-table th{width:90px;font-size:18px;color:var(--g-ink);font-weight:800}
 .mag-eyebrow{margin-top:16px}
+
+/* ミスターティムソンの紹介動画 */
+.mr-movie{margin-top:clamp(40px,5vw,64px)}
+.mr-movie video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:20px;background:var(--ink)}
+.mr-movie .note{margin-top:10px}
