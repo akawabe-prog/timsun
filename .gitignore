@@ -6,3 +6,5 @@ dev/refresh-snapshot.py
 dev/fitment-snapshot.json
 # ローカルのプレビュー設定(PCのパスを含む)
 .claude/
+# GitHub Pages 用に生成する公開フォルダ
+_site/

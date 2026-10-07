@@ -1,7 +1,7 @@
 // TIMSUN TOP: シリーズ一覧・注目製品・取扱店数・ニュース
-import { fetchCatalog } from '/assets/js/cj-api.js';
-import { SERIES, PATTERNS, NEWS, NEWS_CAT, baseOf, sizeOf, parseSize } from '/assets/js/data.js';
-import { esc, yen, reveal } from '/assets/js/site.js';
+import { fetchCatalog } from './cj-api.js';
+import { SERIES, PATTERNS, NEWS, NEWS_CAT, baseOf, sizeOf, parseSize } from './data.js';
+import { esc, yen, reveal } from './site.js';
 
 const PREFS = ['北海道', '青森', '岩手', '宮城', '秋田', '山形', '福島', '東京', '神奈川', '埼玉', '千葉', '茨城', '栃木', '群馬', '山梨', '新潟', '長野', '富山', '石川', '福井', '愛知', '岐阜', '静岡', '三重', '大阪', '兵庫', '京都', '滋賀', '奈良', '和歌山', '鳥取', '島根', '岡山', '広島', '山口', '徳島', '香川', '愛媛', '高知', '福岡', '佐賀', '長崎', '熊本', '大分', '宮崎', '鹿児島', '沖縄'];
 
@@ -45,7 +45,7 @@ async function renderShops() {
   const sel = document.getElementById('pref');
   sel.insertAdjacentHTML('beforeend', PREFS.map((p) => `<option value="${p}">${p}</option>`).join(''));
   try {
-    const shops = await fetch('/assets/data/shops.json').then((r) => r.json());
+    const shops = await fetch(new URL('../data/shops.json', import.meta.url)).then((r) => r.json());
     const bs = document.getElementById('bnShops'); if (bs) bs.textContent = String(Math.floor(shops.length / 10) * 10);
     const by = shops.reduce((m, s) => ((m[s.pref] = (m[s.pref] || 0) + 1), m), {});
     sel.querySelectorAll('option[value]').forEach((o) => { if (o.value) o.textContent = `${o.value}(${by[o.value] || 0}店)`; });

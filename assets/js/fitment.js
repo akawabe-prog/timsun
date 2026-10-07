@@ -2,8 +2,8 @@
 // 車種から: 車両メーカー → 排気量(海外はブランド) → 車種 → 型式 → 適合するTIMSUNタイヤ
 //   車種一覧は「TIMSUNタイヤが持つ適合データ」から組み立てるため、TIMSUNが合う車種しか出ない。
 // サイズから: TIMSUNの取扱サイズだけを選択肢にし、該当する商品を表示する。
-import { fetchFitmentIndex, fetchItems, fetchCatalog } from '/assets/js/cj-api.js';
-import { sizeOf, parseSize, isSHG } from '/assets/js/data.js';
+import { fetchFitmentIndex, fetchItems, fetchCatalog, dataAsOf } from './cj-api.js';
+import { sizeOf, parseSize, isSHG } from './data.js';
 
 const MAKERS = [
   { id: '1', name: 'ホンダ', en: 'HONDA', logo: 'm1_honda' },
@@ -17,7 +17,7 @@ const GROUP_LABEL = {
   bmw: 'BMW', duc: 'DUCATI', hd: 'Harley-Davidson', ktm: 'KTM', tri: 'TRIUMPH',
 };
 const GROUP_ORDER = ['1', '2', '3', '4', '5', '6', 'bmw', 'duc', 'hd', 'ktm', 'tri'];
-import { IMG, ITEM_URL, esc, yen } from '/assets/js/site.js';
+import { IMG, ITEM_URL, esc, yen } from './site.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 // 車種名と型式キーの照合用(型式キーは「- → _」「空白 → -」「' と : は削除」「Γ → !Gamma;」に変換されている)
@@ -170,8 +170,10 @@ async function renderResults() {
     state.f === '*' ? '<p class="note">型式を選んでいないため、この車種のいずれかの型式に適合するタイヤをすべて表示しています。</p>' : '');
 }
 
-function showResults(heading, items, pre = '') {
+async function showResults(heading, items, pre = '') {
   const box = $('#results');
+  const asof = await dataAsOf();
+  const asofNote = asof ? `<p class="note">価格・在庫は${asof.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, '$1年$2月$3日')}時点のものです。最新は商品ページでご確認ください。</p>` : '';
   const sort = (a, b) => (STOCK_RANK[a.status?.txt] ?? 9) - (STOCK_RANK[b.status?.txt] ?? 9) || (a.price?.regular?.pc?.taxIn ?? 0) - (b.price?.regular?.pc?.taxIn ?? 0);
   const groups = [['front', 'フロント'], ['rear', 'リア'], ['set', '前後セット'], ['other', 'その他']]
     .map(([k, label]) => [label, items.filter((h) => posOf(h).includes(k)).sort(sort)])
@@ -181,7 +183,7 @@ function showResults(heading, items, pre = '') {
     <h2 class="res-h">${heading}<span>${items.length}点</span></h2>
     ${pre}
     ${groups.map(([label, list]) => `<section class="grp"><h3>${label}<small>${list.length}点</small></h3><div class="tires">${list.map(card).join('')}</div></section>`).join('')}
-    <p class="note">年式・仕様により適合が異なる場合があります。ご購入前に商品ページの適合車種をご確認ください。</p>`
+    <p class="note">年式・仕様により適合が異なる場合があります。ご購入前に商品ページの適合車種をご確認ください。</p>${asofNote}`
     : `<h2 class="res-h">${heading}</h2><p class="note">該当するTIMSUNタイヤが見つかりませんでした。条件を変えてお試しください。</p>`;
   box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
