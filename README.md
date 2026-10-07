@@ -111,6 +111,8 @@ TOPの「車種から探す」タブと、適合タイヤ検索ページの上�
 | バージンラバーのみ使用 | [Motor-Fan 2024年4月](https://motor-fan.jp/?p=106020) |
 | 主な輸出先・Gecko Knight | 本国 [Company News](https://timsun.cn/enews/86.aspx) |
 | ティムソンの約束・FAQ・販売店の声・ニュース・型番の説明・取扱店 | 日本公式 timsun-japan.com |
+| ミスターティムソンの紹介動画(ブランドページ `assets/video/mr-timsun.mp4`) | カスタムジャパン customjapan.net/b/timsun |
+| リール動画(`assets/video/reels/`) | Instagram @timsun_japan_gram |
 | バナー背景(`assets/img/banner/`) | 本国映像のコマ(タイヤ接写・流し撮り・工場)。透かしの入らない範囲を横長に切り取り。文字はHTMLで載せる |
 | ヒーロー映像(`assets/video/hero.mp4`、16:9・約8秒ループ。ヒーローは画面いっぱいの高さ) | 本国サイトの映像を編集: 2021新品発布(ヤモリ刻印・タイヤ接写)、企業映像 `Timsun.mp4`(レーサー・工場)、特技巡演北京站(流し撮り・バーンアウト)。字幕・ロゴ透かしの入らない区間だけを使い、透かしは画面下を切り取って除去 |
 | 本社ビル・タイヤラックの写真(`assets/img/brand/`) | 本国サイト 公司简介・Company Profile 掲載の写真 |
