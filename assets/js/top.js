@@ -1,6 +1,6 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ一覧・注目製品・使い方から選ぶ・取扱店数・ニュース・読みもの
 import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
-import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, REELS, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
+import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, MOVIES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
 import { esc, yen, reveal, IMG, eventCard } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
@@ -208,7 +208,7 @@ renderUsecases();
 renderMagazine();
 renderShops();
 renderNews();
-renderReels();
+renderMovies();
 renderHeroNews();
 mountFitSelect(document.querySelector('[data-fitselect]'));
 
@@ -224,24 +224,35 @@ mountFitSelect(document.querySelector('[data-fitselect]'));
   } catch (e) { /* 既定の表示のまま */ }
 })();
 
-// ── リール: 画面に入っている間だけ無音で再生する ──
-function renderReels() {
-  const rail = document.getElementById('reelRail');
-  rail.innerHTML = REELS.map((r) => `
-    <a class="reel" href="https://www.instagram.com/reel/${r.id}/" target="_blank" rel="noopener">
-      <video src="/assets/video/reels/${r.id}.mp4" poster="/assets/video/reels/${r.id}.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
-      <span class="reel-ig" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></span>
-      <span class="reel-play" aria-hidden="true"></span>
-      <b class="reel-t">${esc(r.t)}</b>
-    </a>`).join('');
-  // 本数が少なく横に余るときは矢印を出さない
-  const fit = () => rail.parentElement.querySelectorAll('.rail-btn').forEach((b) => { b.hidden = rail.scrollWidth <= rail.clientWidth + 1; });
-  fit(); addEventListener('resize', fit);
+// ── ムービー: 高さの低い列から順に積む石畳(Pinterest 風)。画面に入っている間だけ無音で再生する ──
+function renderMovies() {
+  const grid = document.getElementById('movieGrid');
+  const card = (m) => {
+    const ext = /^https?:/.test(m.u);
+    return `
+    <a class="mv${m.v ? ' tall' : ''}" href="${esc(m.u)}"${ext ? ' target="_blank" rel="noopener"' : ''}>
+      <span class="mv-media">
+        <video src="/assets/video/movies/${m.id}.mp4" poster="/assets/video/movies/${m.id}.webp" muted loop playsinline preload="none" aria-hidden="true"></video>
+        <span class="mv-tag">${esc(m.tag)}</span>
+        <span class="mv-play" aria-hidden="true"></span>
+      </span>
+      <span class="mv-cap"><b>${esc(m.t)}</b><span class="mv-go">${ext ? 'Instagramで見る' : '音声つきで見る'}</span></span>
+    </a>`;
+  };
+  let cols = 0;
+  const layout = () => {
+    const n = innerWidth > 900 ? 3 : 2;
+    if (n === cols) return; cols = n;
+    const h = Array(n).fill(0), out = Array.from({ length: n }, () => []);
+    MOVIES.forEach((m) => { const c = h.indexOf(Math.min(...h)); out[c].push(card(m)); h[c] += m.v ? 16 / 9 : 9 / 16; });
+    grid.innerHTML = out.map((c) => `<div class="mv-col">${c.join('')}</div>`).join('');
+    watch();
+  };
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (still || !('IntersectionObserver' in window)) return;
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
+  const io = !still && 'IntersectionObserver' in window && new IntersectionObserver((es) => es.forEach((e) => {
     const v = e.target.querySelector('video');
     if (e.isIntersecting) v.play().catch(() => {}); else v.pause();
-  }), { threshold: 0.6 });
-  rail.querySelectorAll('.reel').forEach((el) => io.observe(el));
+  }), { threshold: 0.5 });
+  const watch = () => io && grid.querySelectorAll('.mv').forEach((el) => io.observe(el));
+  layout(); addEventListener('resize', layout);
 }

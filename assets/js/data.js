@@ -231,9 +231,19 @@ export const ARTICLES = [
   },
 ];
 
-// ── Instagram のリール(@timsun_japan_gram)。縦長で撮られたものだけを使う。動画は冒頭12秒の無音プレビュー(/assets/video/reels/)。
-// 押すと Instagram の元のリール(音声つき・全編)を開く。題は各投稿の見出しから
-export const REELS = [
-  { id: 'Dd5Wu92FKN9', t: 'CIMAMotor 2026 TIMSUNブース' },
-  { id: 'Ddc_zVzCQGZ', t: 'TIMSUN CUPの審査員たち' },
-];
+// ── ムービー(TOPの Movies)。動画は冒頭12秒の無音プレビュー(/assets/video/movies/)。
+// 押すと元の動画(Instagram のリール、またはブランドページの紹介動画)を音声つき・全編で開く。v: 縦長で撮られたもの
+const IG = (id) => `https://www.instagram.com/reel/${id}/`;
+export const MOVIES = [
+  { id: 'mr-timsun', t: 'ミスターティムソンの紹介', tag: 'Mr.TIMSUN', u: '/brand#gecko' },
+  { id: 'Dd5Wu92FKN9', t: 'CIMAMotor 2026 TIMSUNブース', tag: 'EVENT', v: true },
+  { id: 'DaFj3UrFZoh', t: '過酷な道があるから、挑戦は終わらない', tag: 'TECHNOLOGY' },
+  { id: 'Da7vZSIDSDm', t: '世界60ヶ国以上で愛される、グローバルクオリティ', tag: 'BRAND' },
+  { id: 'Dd3XXxmihW7', t: 'スタント競技大会 TIMSUN CUP', tag: 'EVENT' },
+  { id: 'DZZ5TMjFIG6', t: 'Mr.TIMSUNの一日', tag: 'Mr.TIMSUN' },
+  { id: 'Ddc_zVzCQGZ', t: 'TIMSUN CUPの審査員たち', tag: 'EVENT', v: true },
+  { id: 'DZziSw5iAp1', t: 'タイヤの向きが前後で逆な理由', tag: 'TIPS' },
+  { id: 'DZNBUOODbPN', t: '実は、特別なレース用タイヤじゃありません', tag: 'TECHNOLOGY' },
+  { id: 'Dd8PxwpDlPT', t: 'CIMAMotor 2026 アフタームービー', tag: 'EVENT' },
+  { id: 'DWoBlNngX_J', t: '東京モーターサイクルショー2026 御礼', tag: 'EVENT' },
+].map((m) => ({ ...m, u: m.u || IG(m.id) }));
