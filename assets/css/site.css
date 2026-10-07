@@ -86,10 +86,13 @@ main{display:block}
 /* ワイド画面でもロゴは左端・メニューは右端(画面幅いっぱい) */
 .hd-in{display:flex;align-items:center;gap:28px;height:68px;padding:0 clamp(16px,3vw,48px)}
 .logo img{width:132px;height:auto}
-.gnav{display:flex;gap:26px;margin-left:auto;font-size:14px;font-weight:700}
-.gnav a{position:relative;padding:6px 0}
-.gnav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--g);transform:scaleX(0);transform-origin:left;transition:transform .25s var(--ease)}
-.gnav a:hover::after,.gnav a[aria-current="page"]::after{transform:scaleX(1)}
+.gnav{display:flex;gap:26px;margin-left:auto;align-self:stretch;font-size:14px;font-weight:700}
+/* 項目はヘッダーの高さいっぱいにして、項目からパネルへマウスを動かしても閉じないようにする */
+.gitem{display:flex}
+.gtop{position:relative;display:flex;align-items:center;gap:6px}
+.gtop::after{content:"";position:absolute;left:0;right:0;bottom:18px;height:2px;background:var(--g);transform:scaleX(0);transform-origin:left;transition:transform .25s var(--ease)}
+.gitem:hover .gtop::after,.gitem:focus-within .gtop::after,.gtop[aria-current="page"]::after{transform:scaleX(1)}
+.has-mega > .gtop::before{content:"";order:2;width:5px;height:5px;margin-top:-3px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);opacity:.6}
 .menu{display:none;width:44px;height:44px;border-radius:10px;position:relative}
 .menu span,.menu span::before,.menu span::after{position:absolute;left:12px;width:20px;height:2px;background:currentColor;transition:transform .25s var(--ease),opacity .2s}
 .menu span{top:21px}.menu span::before{content:"";left:0;top:-6px}.menu span::after{content:"";left:0;top:6px}
@@ -103,8 +106,11 @@ main{display:block}
   .hd:has(.gnav.open){color:var(--ink);background:#fff;border-bottom-color:var(--line)}
   .gnav{color:var(--ink)}
   .gnav.open{opacity:1;transform:none;visibility:visible}
-  .gnav a{padding:14px 4px;border-bottom:1px solid var(--line)}
-  .gnav a::after{display:none}
+  .gnav{align-self:auto}
+  .gitem{display:block}
+  .gtop{padding:14px 4px;border-bottom:1px solid var(--line)}
+  .gtop::after,.has-mega > .gtop::before{display:none}
+  .mega{display:none!important}
   .hd-cta{margin-left:auto}
   .menu{display:block}
 }
@@ -234,3 +240,59 @@ a.card:hover{border-color:rgba(14,160,70,.45);transform:translateY(-2px);box-sha
 .more:hover::after{background-color:var(--g-ink)}
 .dark .more{color:#fff;border-color:var(--line-d)}
 .dark .more::after{background-color:var(--g-ink)}
+
+/* ── グローバルメニューのパネル(マウスを乗せるとサムネイル付きで開く。参考: sp-connect.customjapan.net) ── */
+.mega{position:absolute;left:0;right:0;top:100%;color:var(--ink);background:#fff;border-top:1px solid var(--line);box-shadow:0 30px 40px -30px rgba(15,17,14,.35);
+  opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s,transform .25s var(--ease),visibility 0s linear .2s;font-weight:500}
+.gitem:hover > .mega,.gitem:focus-within > .mega{opacity:1;visibility:visible;transform:none;transition-delay:.06s,.06s,0s}
+.hd:has(.gitem:hover > .mega),.hd:has(.gitem:focus-within > .mega){color:var(--ink);background:#fff;border-bottom-color:var(--line)}
+.hd:has(.gitem:hover > .mega)::before{opacity:0}
+.mega-in{max-width:var(--wrap);margin:0 auto;padding:28px 16px 30px}
+.mega-label{margin-bottom:14px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--sub)}
+.mega-tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.mega-tiles.n5{grid-template-columns:repeat(5,1fr)}
+.mega-tiles.n9{grid-template-columns:repeat(9,1fr)}
+.mt{display:grid;gap:10px;justify-items:center;text-align:center}
+.mt-ph{display:grid;place-items:center;width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--r-sm);background:var(--paper-2);transition:box-shadow .2s}
+.mt-ph img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
+.mt-logo .mt-ph img{width:72%;height:auto;object-fit:contain}
+.mt-mascot .mt-ph{background:var(--ink)}
+.mt-mascot .mt-ph img{width:78%;height:88%;object-fit:contain}
+.mt-dark .mt-ph{background:var(--ink);color:var(--g-glow);font-family:var(--en);font-weight:800;font-size:12px;letter-spacing:.12em}
+.mt-icon .mt-ph svg{width:38%;height:38%;color:var(--g-ink)}
+.mt-name{font-size:12px;font-weight:700;line-height:1.4}
+.mt:hover .mt-ph{box-shadow:inset 0 0 0 2px var(--g)}
+.mt:hover .mt-ph img{transform:scale(1.05)}
+.mt:hover .mt-name{color:var(--g-ink)}
+.mega-banners{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.mb{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;aspect-ratio:3/1;padding:16px 20px;overflow:hidden;border-radius:var(--r-sm);color:#fff;isolation:isolate}
+.mb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s var(--ease)}
+.mb::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(10,12,9,.82),rgba(10,12,9,.15) 70%)}
+.mb:hover img{transform:scale(1.04)}
+.mb-eb{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--g-glow)}
+.mb-t{font-size:18px;font-weight:800}
+.mega-all{margin-top:18px;text-align:center}
+.mega-all a{font-size:12px;font-weight:700;letter-spacing:.06em;border-bottom:1px solid currentColor;padding-bottom:2px}
+.mega-all a:hover{color:var(--g-ink)}
+@media(max-width:1100px){.mega-tiles.n9{grid-template-columns:repeat(5,1fr)}}
+
+/* ── プルダウン式の車種検索(参考: shad-japan.com「車種から探す」) ── */
+.fsel{display:grid;gap:14px;width:100%}
+.fsel-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.fsel-row label{position:relative;display:block}
+.fsel-step{position:absolute;left:12px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--g-glow);font-family:var(--en);font-size:11px;font-weight:700;pointer-events:none}
+.fsel .fsel-row select{width:100%;height:52px;padding:0 34px 0 42px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%230f110e' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;appearance:none;font-size:15px;font-weight:700;color:var(--ink);text-overflow:ellipsis}
+.fsel .fsel-row select:focus{outline:2px solid var(--g);outline-offset:0;background-color:#fff}
+.fsel .fsel-row select:disabled{opacity:.45;cursor:not-allowed}
+.fsel select:disabled + .fsel-step,.fsel label:has(select:disabled) .fsel-step{background:var(--sub)}
+.fsel-or{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--sub)}
+.fsel-or::before,.fsel-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.fsel-kw{width:100%;height:52px;padding:0 16px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--paper-2);font-size:16px}
+.fsel-kw:focus{outline:2px solid var(--g);outline-offset:0;background:#fff}
+.fsel-foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+.fsel-go{height:52px;padding:0 32px}
+.fsel-msg{font-size:13px;color:#a3261b}
+.fsel-title{margin:8px 0 12px;font-weight:700;font-size:15px}
+.fsel-title.sub{margin-top:36px;padding-top:28px;border-top:1px solid var(--line)}
+@media(max-width:900px){.fsel-row{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.fsel-row{grid-template-columns:1fr}.fsel-go{width:100%;justify-content:center}}
