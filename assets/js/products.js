@@ -61,7 +61,7 @@ function renderList(pats) {
         <header class="series-head">
           ${s.img ? `<img src="${s.img}" alt="" width="346" height="500" loading="lazy">` : '<span class="biz en">JAPAN<br>ONLY</span>'}
           <div>
-            <p class="eyebrow">Series ${String(SERIES.indexOf(s) + 1).padStart(2, '0')}${s.jpOnly ? ' — 日本独自' : ''}</p>
+            <p class="eyebrow">Series ${String(SERIES.indexOf(s) + 1).padStart(2, '0')}</p>
             <h2 class="h2"><span class="en">${esc(s.en)}</span><small>${esc(s.ja)}</small></h2>
             <p class="lead">${esc(s.lead)}</p>
           </div>
@@ -133,7 +133,20 @@ async function main() {
     $('#seriesList').innerHTML = '<div class="wrap"><p class="err">製品情報を読み込めませんでした。時間をおいて再度お試しください。</p></div>';
     return;
   }
-  renderList(PATS);
+  // ?grade=shg: ストリートハイグリップだけを表示
+  const grade = new URLSearchParams(location.search).get('grade');
+  if (grade === 'shg' && !new URLSearchParams(location.search).get('p')) {
+    document.title = 'ストリートハイグリップ|製品一覧|TIMSUN(ティムソン)日本公式サイト';
+    $('#crumb').innerHTML = '<li><a href="/">TOP</a></li><li><a href="/products">製品</a></li><li>ストリートハイグリップ</li>';
+    $('#pheroBody').innerHTML = `<p class="eyebrow detail-eyebrow">TIMSUN Premium Line</p>
+      <h1 class="h1">ストリートハイグリップ</h1>
+      <p class="lead">グリップ力と耐摩耗性のバランス、そしてウェットグリップを追求したTIMSUNの上位ブランド。走るシーンごとにパターンをそろえています。</p>
+      <p class="grade-switch"><a class="tag shg" aria-current="page">STREET HIGH GRIP</a><a class="tag muted" href="/products">すべての製品</a></p>`;
+    renderList(new Map([...PATS].filter(([, p]) => p.shg)));
+    document.querySelector('.grades')?.setAttribute('hidden', '');
+  } else {
+    renderList(PATS);
+  }
   if (ASOF) $('#seriesList').insertAdjacentHTML('afterbegin', `<div class="wrap"><p class="note asof">価格は${fmtDate(ASOF)}時点のものです。</p></div>`);
   route();
   addEventListener('popstate', () => location.reload());

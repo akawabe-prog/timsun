@@ -49,7 +49,7 @@ MEGA = {
         "tiles": [("/products#scooter", "スクーター", "img", "/assets/img/series/scooter.webp"), ("/products#street-sport", "ストリートスポーツ", "img", "/assets/img/series/street-sport.webp"),
                   ("/products#touring-sport", "ツーリングスポーツ", "img", "/assets/img/series/touring-sport.webp"), ("/products#adventure", "アドベンチャー", "img", "/assets/img/series/adventure.webp"),
                   ("/products#motocross", "モトクロス", "img", "/assets/img/series/motocross.webp"), ("/products#vintage", "ビンテージ", "img", "/assets/img/series/vintage.webp"),
-                  ("/products#cruising", "クルーザー", "img", "/assets/img/series/cruising.webp"), ("/products#business", "ビジネス", "dark", "JAPAN ONLY"),
+                  ("/products#cruising", "クルーザー", "img", "/assets/img/series/cruising.webp"), ("/products#business", "ビジネス", "img", "/assets/img/series/business.webp"),
                   ("/products#snow", "スノー", "img", "/assets/img/series/snow.webp")],
         "banners": [("/products?p=TS720", "/assets/video/hero-poster.webp", "NEW — STREET HIGH GRIP", "TS720 GECKO"),
                     ("https://cdn.customjapan.net/catalog/490_timsun_catalog_2025.pdf", "/assets/img/banner/factory.webp", "CATALOG", "総合カタログ2025(PDF)")]},

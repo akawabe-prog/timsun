@@ -58,3 +58,5 @@
 .sizes-note{margin-top:14px}
 .detail-eyebrow{margin-top:16px}
 .asof{padding-top:24px}
+.grade-switch{display:flex;gap:8px;margin-top:18px}
+.grade-switch .tag{height:28px;padding:0 12px;font-size:12px}
