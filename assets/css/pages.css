@@ -105,3 +105,17 @@
 .dl span{font-size:13px;color:var(--sub)}
 .mt-l{margin-top:clamp(40px,5vw,64px)}
 .mt-m{margin-top:24px}
+
+/* タイヤの読みもの */
+.mag-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.mag-card{display:grid;gap:8px;align-content:start;padding:22px;border-radius:8px;background:#fff;box-shadow:0 0 0 1px var(--line);transition:box-shadow .2s,transform .25s var(--ease)}
+.mag-card:hover{box-shadow:0 0 0 1px rgba(14,160,70,.45),0 14px 28px -20px rgba(15,17,14,.4);transform:translateY(-1px)}
+.mag-card b{font-size:16px;line-height:1.5}
+.mag-card .ext{font-family:var(--en);color:var(--sub);font-weight:500}
+.mag-card small{font-size:13px;color:var(--sub);line-height:1.75}
+.mag-card .tag{justify-self:start}
+.article{max-width:760px}
+.article .prose p{font-size:16px}
+.size-table{margin:8px 0 24px}
+.size-table th{width:90px;font-size:18px;color:var(--g-ink);font-weight:800}
+.mag-eyebrow{margin-top:16px}
