@@ -21,9 +21,10 @@ if (hd) {
   sync();
 }
 
-// ページ内アンカーメニュー: 見えているセクションに印を付ける
-const alinks = [...document.querySelectorAll('.anav a[href^="#"]')];
-if (alinks.length && 'IntersectionObserver' in window) {
+// ページ内アンカーメニュー: 見えているセクションに印を付ける(あとから作ったメニューにも使えるよう関数に)
+export function spyAnchors(root = document) {
+  const alinks = [...root.querySelectorAll('.anav a[href^="#"]')];
+  if (!alinks.length || !('IntersectionObserver' in window)) return;
   const map = new Map(alinks.map((a) => [document.querySelector(a.getAttribute('href')), a]).filter(([el]) => el));
   const spy = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
@@ -33,6 +34,7 @@ if (alinks.length && 'IntersectionObserver' in window) {
   }), { rootMargin: '-140px 0px -55% 0px' });
   map.forEach((_, el) => spy.observe(el));
 }
+spyAnchors();
 
 // スクロールで表示(IntersectionObserver が無い環境でも必ず表示される)
 const io = 'IntersectionObserver' in window
