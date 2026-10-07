@@ -218,17 +218,23 @@
 </section>
 
 <!-- イベント(サムネイル)とニュース(一覧)を分けて表示 -->
-<section class="sec" id="news" aria-label="イベントとニュース">
+<section class="sec dark ev-sec" id="events" aria-label="イベント">
   <div class="wrap">
-    <div class="ev-block" id="events">
-      <div class="sec-head en-head"><h2 class="title-en">Events<span class="sr">イベント</span></h2><a class="more" href="/news#events">イベント一覧</a></div>
-      <div class="ev-grid" id="eventGrid"></div>
+    <div class="sec-head en-head"><h2 class="title-en">Events<span class="sr">イベント</span></h2><a class="more" href="/news#events">イベント一覧</a></div>
+    <div class="srail-wrap">
+      <div class="ev-rail" id="eventGrid"></div>
+      <button class="rail-btn prev" type="button" aria-label="前のイベント" data-rail="eventGrid" data-dir="-1"></button>
+      <button class="rail-btn next" type="button" aria-label="次のイベント" data-rail="eventGrid" data-dir="1"></button>
     </div>
-    <div class="nw-block" id="newsBlock">
-      <div class="sec-head en-head"><h2 class="title-en">News<span class="sr">ニュース</span></h2><a class="more" href="/news">ニュース一覧</a></div>
-      <ul class="newslist" id="newsList"></ul>
-      <p class="ig"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagramをフォロー @timsun_japan_gram</a></p>
-    </div>
+  </div>
+</section>
+
+<!-- ニュース -->
+<section class="sec" id="newsBlock" aria-label="ニュース">
+  <div class="wrap">
+    <div class="sec-head en-head"><h2 class="title-en">News<span class="sr">ニュース</span></h2><a class="more" href="/news">ニュース一覧</a></div>
+    <ul class="newslist" id="newsList"></ul>
+    <p class="ig"><a class="link" href="https://www.instagram.com/timsun_japan_gram/" target="_blank" rel="noopener">Instagramをフォロー @timsun_japan_gram</a></p>
   </div>
 </section>
 
