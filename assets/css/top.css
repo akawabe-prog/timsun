@@ -137,15 +137,17 @@
 @media(max-width:820px){.rail{grid-auto-columns:62%}.rail-btn{display:none}}
 
 /* 8 使い方から選ぶ */
-.usecases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.ucard{position:relative;display:flex;align-items:flex-end;aspect-ratio:3/4;border-radius:var(--radius);overflow:hidden;color:#fff;background:var(--ink);isolation:isolate}
-.ucard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s var(--ease)}
-.ucard:hover img{transform:scale(1.04)}
-.ucard::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(transparent 35%,rgba(10,12,9,.85))}
-.ucard .biz{position:absolute;inset:0;z-index:-2;display:grid;place-items:center;font-family:var(--en);font-weight:800;letter-spacing:.12em;color:var(--g-glow);background:repeating-linear-gradient(115deg,var(--ink) 0 22px,#151913 22px 23px)}
-.ucard span{display:grid;gap:4px;padding:18px}
-.ucard b{font-size:18px}
-.ucard small{font-size:12px;opacity:.85;line-height:1.6}
+/* 使い方から選ぶ: 写真を使わない白いカード(シリーズの写真パネルと見分ける) */
+.usecases{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.ucard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:clamp(22px,2.4vw,32px);border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff;transition:background .25s}
+.ucard:hover{background:var(--g-tint)}
+.uc-no{position:absolute;top:clamp(22px,2.4vw,32px);right:clamp(22px,2.4vw,32px);font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--sub)}
+.uc-ic{width:44px;height:44px;margin-bottom:clamp(20px,3vw,40px);color:var(--g-ink)}
+.ucard b{font-size:clamp(18px,1.6vw,21px);font-weight:800}
+.ucard small{font-size:13px;color:var(--sub);line-height:1.75}
+.uc-go{display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:18px;font-size:13px;font-weight:700;color:var(--g-ink)}
+.uc-go::after{content:"→";transition:transform .25s var(--ease)}
+.ucard:hover .uc-go::after{transform:translateX(4px)}
 @media(max-width:820px){.usecases{grid-template-columns:1fr 1fr}}
 
 /* 10 読みもの */

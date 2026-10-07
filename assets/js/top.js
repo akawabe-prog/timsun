@@ -50,10 +50,25 @@ function renderShg(pats) {
 }
 
 // ── 使い方から選ぶ(By Riding Style) ──
+// 使い方: シリーズ(写真のパネル)と見分けがつくよう、写真を使わずアイコンと言葉で見せる
+const UC_ICON = {
+  commute: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  work: '<path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4z"/><path d="m3.5 8 8.5 4 8.5-4M12 12v8"/>',
+  touring: '<path d="M9.5 3 5 21M14.5 3 19 21M12 5v2.5M12 10.5v3M12 16.5v3"/>',
+  offroad: '<path d="m2.5 19 6-10 4 6 2.5-3.5 6.5 7.5z"/><path d="m7 11.5 1.5-2.5 1.6 2.4"/>',
+};
 function renderUsecases() {
-  document.getElementById('usecases').innerHTML = USECASES.map((u) => `
-    <a class="ucard" href="/products#${u.series}">${u.img ? `<img src="${u.img}" alt="" width="346" height="500" loading="lazy">` : '<span class="biz">BUSINESS</span>'}
-      <span><b>${esc(u.title)}</b><small>${esc(u.text)}</small></span></a>`).join('');
+  document.getElementById('usecases').innerHTML = USECASES.map((u, i) => {
+    const sr = SERIES.find((x) => x.id === u.series);
+    return `
+    <a class="ucard" href="/products#${u.series}">
+      <span class="uc-no">${String(i + 1).padStart(2, '0')}</span>
+      <svg class="uc-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UC_ICON[u.id] || ''}</svg>
+      <b>${esc(u.title)}</b>
+      <small>${esc(u.text)}</small>
+      <span class="uc-go">おすすめ:${esc(sr ? sr.ja : '')}</span>
+    </a>`;
+  }).join('');
 }
 
 // ── タイヤの読みもの(Magazine) ──

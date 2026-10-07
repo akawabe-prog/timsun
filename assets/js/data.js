@@ -161,10 +161,10 @@ export const NEW_PATTERNS = ['TS720'];   // 新着(2025年8月発売)
 
 // ── トップ「使い方から選ぶ」 ──
 export const USECASES = [
-  { id: 'commute', title: '通勤・通学', text: '毎日のスクーターに。晴れの日も雨の日も。', series: 'scooter', img: '/assets/img/series/scooter.webp' },
-  { id: 'work', title: '仕事のバイク', text: 'カブ・ジャイロ・ビジネス車の足元に。', series: 'business', img: '/assets/img/series/business.webp' },
-  { id: 'touring', title: 'ツーリング', text: '長い距離を、安心して走るために。', series: 'touring-sport', img: '/assets/img/series/touring-sport.webp' },
-  { id: 'offroad', title: 'オフロード', text: 'トレールからモトクロスまで。', series: 'adventure', img: '/assets/img/series/adventure.webp' },
+  { id: 'commute', title: '通勤・通学', text: '毎日のスクーターに。晴れの日も雨の日も。', series: 'scooter' },
+  { id: 'work', title: '仕事のバイク', text: 'カブ・ジャイロ・ビジネス車の足元に。', series: 'business' },
+  { id: 'touring', title: 'ツーリング', text: '長い距離を、安心して走るために。', series: 'touring-sport' },
+  { id: 'offroad', title: 'オフロード', text: 'トレールからモトクロスまで。', series: 'adventure' },
 ];
 
 // ── メディア掲載(実在の記事。外部リンク) ──
