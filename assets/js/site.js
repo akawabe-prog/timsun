@@ -15,7 +15,6 @@ if (hd) {
   const sync = () => {
     const limit = first ? first.offsetTop + first.offsetHeight - hd.offsetHeight : 0;
     hd.classList.toggle('solid', scrollY > limit - 1);
-    document.querySelector('.float-cta')?.classList.toggle('show', scrollY > limit - 1);
   };
   addEventListener('scroll', sync, { passive: true });
   addEventListener('resize', sync);

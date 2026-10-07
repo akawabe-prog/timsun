@@ -18,9 +18,6 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGES = ROOT / "dev" / "pages"
 SITE = "TIMSUN(ティムソン)日本公式サイト"
 
-# 最上部のお知らせバー(1行)。差し替えはここだけ
-ANNOUNCE = ("モンキー125(JB02 / JB03 / JB05)対応、TS880・TS720に新サイズを追加しました", "/fitment?q=%E3%83%A2%E3%83%B3%E3%82%AD%E3%83%BC125")
-
 NAV = [
     ("/fitment", "タイヤを探す"),
     ("/products", "製品"),
@@ -53,7 +50,6 @@ HEAD = """<!DOCTYPE html>
 
 HEADER = """<a class="sr" href="#main">本文へ移動</a>
 <header class="hd">
-  <a class="topbar" href="{ann_url}"><span>{ann_text}</span></a>
   <div class="hd-in">
     <a class="logo" href="/" aria-label="TIMSUN トップへ"><img src="https://cdn.customjapan.net/logo/maker/m490_timsun.webp" alt="TIMSUN Excel Beyond" width="500" height="150"></a>
     <nav class="gnav" id="gnav" aria-label="メイン">
@@ -63,12 +59,6 @@ HEADER = """<a class="sr" href="#main">本文へ移動</a>
     <button class="menu" type="button" aria-expanded="false" aria-controls="gnav" aria-label="メニュー"><span></span></button>
   </div>
 </header>
-"""
-
-FLOAT = """<div class="float-cta" aria-label="すぐに探す">
-  <a class="fc-main" href="/fitment"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>適合検索</a>
-  <a class="fc-sub" href="/shops"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/></svg>取扱店</a>
-</div>
 """
 
 FOOTER = """<footer class="ft">
@@ -112,9 +102,9 @@ def build(path):
         body = body.replace("<!--ANCHOR-->", anav)
     body = body.replace("<!--ANCHOR-->", "")
     html = (HEAD.format(title=title, desc=desc, site=SITE, css=css)
-            + HEADER.format(nav=nav, ann_text=ANNOUNCE[0], ann_url=ANNOUNCE[1])
+            + HEADER.format(nav=nav)
             + f'<main id="main">\n{body}\n</main>\n'
-            + FLOAT + FOOTER + js + "</body>\n</html>\n")
+            + FOOTER + js + "</body>\n</html>\n")
     out = ROOT / path.name
     out.write_text(html, encoding="utf-8")
     return out.name
