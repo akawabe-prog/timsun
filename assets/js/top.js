@@ -122,7 +122,7 @@ function renderHeroNews() {
 
 // イベント(サムネイル・新しい順に4件)とニュース(イベント以外・新しい順に4件)を分けて表示
 function renderNews() {
-  document.getElementById('eventGrid').innerHTML = NEWS.filter((n) => n.c === 'event').slice(0, 4).map(eventCard).join('');
+  document.getElementById('eventGrid').innerHTML = NEWS.filter((n) => n.c === 'event').slice(0, 6).map(eventCard).join('');
   document.getElementById('newsList').innerHTML = NEWS.filter((n) => n.c !== 'event').slice(0, 4).map((n) => `
     <li><a href="${esc(n.u)}" target="_blank" rel="noopener">
       <time>${esc(n.d)}</time><span class="tag${n.c === 'product' ? ' shg' : ' muted'}">${NEWS_CAT[n.c]}</span><span class="t">${esc(n.t)}</span>

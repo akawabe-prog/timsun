@@ -53,6 +53,9 @@ export const eventCard = (n) => `
   <a class="ev-card" href="${esc(n.u)}" target="_blank" rel="noopener">
     <span class="ev-ph${n.img ? '' : ' ev-type'}">${n.img
       ? `<img src="${esc(n.img)}" alt="" width="960" height="540" loading="lazy" decoding="async">`
-      : `<span class="ev-type-in"><span class="ev-type-k">EVENT</span><b>${esc(n.en || '')}</b></span>`}</span>
-    <span class="ev-meta"><time>${esc(n.d)}</time><b>${esc(n.t)}</b></span>
+      : `<span class="ev-type-in"><span class="ev-type-k">TIMSUN EVENT</span><b>${esc(n.d.slice(0, 4))}</b></span>`}</span>
+    <b class="ev-t">${esc(n.en || n.t)}</b>
+    <time class="ev-d">${esc(n.d)}</time>
+    <span class="ev-x">${esc(n.t)}</span>
+    <span class="ev-go">詳しく見る</span>
   </a>`;
