@@ -24,8 +24,9 @@ function groupPatterns(items) {
   const map = new Map();
   for (const h of items) {
     const b = baseOf(h.name);
-    if (!b || !PATTERNS[b]) continue;
-    if (!map.has(b)) map.set(b, { id: b, ...PATTERNS[b], items: [] });
+    if (!b) continue;
+    // data.js に未登録の新しい型番も詳細ページは作る(一覧にはシリーズが決まってから並べる)
+    if (!map.has(b)) map.set(b, { id: b, s: null, d: '', ...PATTERNS[b], items: [] });
     map.get(b).items.push(h);
   }
   for (const p of map.values()) {
@@ -134,8 +135,10 @@ function pickCard(h, o) {
 }
 
 function renderDetail(p, pickId) {
-  const s = SERIES.find((x) => x.id === p.s);
+  const s = SERIES.find((x) => x.id === p.s) || { id: '', ja: 'その他', en: 'Other' };
   const copy = PATTERN_COPY[p.id] || [];
+  // 一行の説明: data.js に無い新しい型番は、説明文の最初の一文を使う
+  const lead = p.d || (copy[0]?.text ? `${copy[0].text.split('。')[0]}。` : `TIMSUN ${p.id}`);
   const official = new Map(copy.flatMap((c) => c.rows.map((r) => [r.code, { ...r, v: c.v }])));
   document.title = `${p.id}|${s.ja}|TIMSUN(ティムソン)日本公式サイト`;
   const singles = p.items.filter((h) => !isSet(h));
@@ -200,7 +203,7 @@ function renderDetail(p, pickId) {
       <div class="wrap pd-feat">
         <div>
           <p class="eyebrow">Feature</p>
-          <h2 class="pd-catch">${esc(p.d)}</h2>
+          <h2 class="pd-catch">${esc(lead)}</h2>
           <ul class="pd-chips">
             <li><small>シリーズ</small><span>${esc(s.ja)}</span></li>
             <li><small>グレード</small><span>${p.shg ? 'ストリートハイグリップ' : 'スタンダード'}</span></li>
@@ -215,14 +218,14 @@ function renderDetail(p, pickId) {
             <div class="pd-copy-b">
               ${copy.length > 1 ? `<p class="pd-copy-v en">${esc(c.v)}</p>` : ''}
               ${c.text.split('\n').map((t) => `<p>${esc(t)}</p>`).join('')}
-            </div>`).join('') : `<p>${esc(p.d)}</p>`}
-          ${copy.length ? '<p class="note">出典: TIMSUN日本公式サイトの商品ページ</p>' : ''}
+            </div>`).join('') : `<p>${esc(lead)}</p>`}
+          ${copy.length ? `<p class="note">出典: ${copy.some((c) => c.src === 'cj') ? 'カスタムジャパン オンラインストアの商品ページ' : 'TIMSUN日本公式サイトの商品ページ'}</p>` : ''}
         </div>
       </div>
       ${infoBase ? `
       <div class="wrap pd-info">
         <h3 class="pd-h3">製品の特長<small>画像を押すと大きく表示します</small></h3>
-        <div class="pd-info-rail">${[4, 5, 6, 7].map((n) => `<a class="pd-info-i" href="${infoBase}_${n}.jpg" target="_blank" rel="noopener"><img src="${infoBase}_${n}.jpg" alt="${p.id} 製品の特長 ${n - 3}" width="600" height="600" loading="lazy" onerror="this.parentElement.remove()"></a>`).join('')}</div>
+        <div class="pd-info-rail">${[4, 5, 6, 7].map((n) => `<a class="pd-info-i" href="${infoBase}_${n}.jpg" target="_blank" rel="noopener"><img src="${infoBase}_${n}.jpg" alt="${p.id} 製品の特長 ${n - 3}" width="600" height="600" loading="lazy" onerror="const b=this.closest('.pd-info');this.parentElement.remove();if(b&&!b.querySelector('.pd-info-i'))b.remove()"></a>`).join('')}</div>
       </div>` : ''}
     </section>
 
@@ -234,7 +237,7 @@ function renderDetail(p, pickId) {
         <div>
           <p class="eyebrow">Tread Pattern</p>
           <h2 class="h2">${p.id}のトレッドパターン</h2>
-          <p class="pd-tread-t">${esc(p.d)}</p>
+          <p class="pd-tread-t">${esc(lead)}</p>
         </div>
       </div>
     </section>` : ''}
