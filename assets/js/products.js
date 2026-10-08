@@ -104,7 +104,36 @@ function fitOf(items) {
   return MAKERS.filter((m) => out.get(m.id)?.size).map((m) => ({ ...m, bodies: [...out.get(m.id)].sort((a, b) => a.localeCompare(b, 'ja')) }));
 }
 
-function renderDetail(p) {
+function pickCard(h, o) {
+  const sp = SIZE_SPEC[h.id];
+  const row = (k, v) => (v ? `<div><dt>${k}</dt><dd>${v}</dd></div>` : '');
+  return `
+    <section class="pd-pick" aria-label="選んだサイズ">
+      <div class="wrap pd-pick-in">
+        <img src="${IMG}${esc(h.img?.l || h.img?.s || '')}" alt="" width="200" height="200">
+        <div class="pd-pick-main">
+          <p class="pd-pick-k">選んだサイズ</p>
+          <p class="pd-pick-size en">${esc(isSet(h) ? setParts(h).size : o?.size || sizeOf(h))}</p>
+          <p class="pd-pick-sub">${esc(variantOf(h.name) || '')}・${esc(posOf(h))}${typeOf(h) ? `・<span class="en">${typeOf(h)}</span>` : ''}・品番 <span class="en">${esc(h.id)}</span></p>
+          <dl class="pd-pick-spec">
+            ${row('標準リム幅', sp?.std && `<span class="en">${esc(sp.std)}</span>インチ`)}
+            ${row('許容リム幅', sp?.rims?.length && `<span class="en">${sp.rims.map(esc).join(' / ')}</span>`)}
+            ${row('外径', sp?.od && `<span class="en">${esc(sp.od)}</span>mm`)}
+            ${row('トレッド幅', sp?.tw && `<span class="en">${esc(sp.tw)}</span>mm`)}
+          </dl>
+        </div>
+        <div class="pd-pick-buy">
+          ${o?.msrp ? `<p class="pd-pick-msrp">メーカー希望小売価格 <span class="en">${yen(o.msrp)}</span>(税込)</p>` : ''}
+          <p class="pd-pick-price"><span class="en">${yen(priceOf(h))}</span><small>オンラインストア・税込</small></p>
+          <p class="pd-pick-st">${esc(h.status?.txt || '')}</p>
+          <a class="btn" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">オンラインストアで購入</a>
+          <a class="link" href="/shops">取扱店で相談する</a>
+        </div>
+      </div>
+    </section>`;
+}
+
+function renderDetail(p, pickId) {
   const s = SERIES.find((x) => x.id === p.s);
   const copy = PATTERN_COPY[p.id] || [];
   const official = new Map(copy.flatMap((c) => c.rows.map((r) => [r.code, { ...r, v: c.v }])));
@@ -118,6 +147,8 @@ function renderDetail(p) {
     return [{ src: `${IMG}${base}_1.jpg`, cap: v }, { src: `${IMG}${base}_3.jpg`, cap: `${v} トレッド面`, tread: true }];
   });
   const first = byVar.values().next().value || p.items[0];
+  // ?i=商品ID: 適合検索などから選んだサイズ。上にまとめて見せ、サイズ表の行に印を付ける
+  const pick = pickId && p.items.find((h) => String(h.id) === String(pickId));
   const infoBase = first?.img?.l ? `${IMG}${first.img.l.replace(/_1\.jpg$/, '')}` : null;
   const tread = shots.find((x) => x.tread);
   const groups = POS_ORDER.map((pos) => ({ pos, rows: p.items.filter((h) => posOf(h) === pos)
@@ -156,9 +187,10 @@ function renderDetail(p) {
         </ul>
       </nav>
 
+    ${pick ? pickCard(pick, official.get(String(pick.id))) : ''}
     <section class="pd-hero" aria-label="製品写真">
       <div class="wrap pd-gallery">
-        <figure class="pd-main"><img id="pdMain" src="${esc(shots[0]?.src || IMG + p.img)}" alt="TIMSUN ${p.id}" width="640" height="640"></figure>
+        <figure class="pd-main"><img id="pdMain" src="${esc(pick?.img?.l ? IMG + pick.img.l : shots[0]?.src || IMG + p.img)}" alt="TIMSUN ${p.id}" width="640" height="640"></figure>
         ${shots.length > 1 ? `<div class="pd-thumbs" role="group" aria-label="写真を切り替え">${shots.map((x, i) => `
           <button type="button" class="pd-th${i ? '' : ' on'}" data-src="${esc(x.src)}" aria-label="${esc(x.cap)}"><img src="${esc(x.src)}" alt="" width="120" height="120" loading="lazy" onerror="this.parentElement.remove()"></button>`).join('')}</div>` : ''}
       </div>
@@ -219,7 +251,7 @@ function renderDetail(p) {
                 <tbody>${g.rows.map((h) => {
                   const o = official.get(String(h.id));
                   const sp = SIZE_SPEC[h.id];
-                  return `<tr>
+                  return `<tr${pick && h === pick ? ' class="pick" id="pdPickRow"' : ''}>
                   <td class="en pd-size">${isSet(h) ? `${esc(setParts(h).size)}${setParts(h).for ? `<small>${esc(setParts(h).for)}</small>` : ''}` : `${esc(o?.size || sizeOf(h))}<small class="en">${esc(variantOf(h.name) || '')}</small>`}</td>
                   <td class="en">${typeOf(h)}</td>
                   <td class="en">${esc(h.id)}</td>
@@ -296,10 +328,11 @@ const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `$
 function route() {
   const id = new URLSearchParams(location.search).get('p');
   const p = id && PATS.get(id.toUpperCase());
+  const pickId = new URLSearchParams(location.search).get('i');
   $('#listView').hidden = !!p;
   $('#listHero').hidden = !!p;
   $('#detailView').hidden = !p;
-  if (p) { renderDetail(p); scrollTo(0, 0); dispatchEvent(new Event('scroll')); } // 上の黒い帯を隠したのでヘッダーを白に
+  if (p) { renderDetail(p, pickId); scrollTo(0, 0); dispatchEvent(new Event('scroll')); } // 上の黒い帯を隠したのでヘッダーを白に
   else if (id) { location.replace('/products'); }
 }
 

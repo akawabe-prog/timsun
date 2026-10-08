@@ -3,7 +3,7 @@
 //   車種一覧は「TIMSUNタイヤが持つ適合データ」から組み立てるため、TIMSUNが合う車種しか出ない。
 // サイズから: TIMSUNの取扱サイズだけを選択肢にし、該当する商品を表示する。
 import { fetchFitmentIndex, fetchItems, fetchCatalog, dataAsOf } from './cj-api.js';
-import { sizeOf, parseSize, isSHG } from './data.js';
+import { sizeOf, parseSize, isSHG, baseOf, PATTERNS } from './data.js';
 
 import { MAKERS, GROUP_LABEL, GROUP_ORDER, norm, fold, buildTree } from './fittree.js';
 import { IMG, ITEM_URL, esc, yen } from './site.js';
@@ -95,7 +95,10 @@ const STOCK_RANK = { '◯在庫あり': 0, '△残りわずか': 1, '★在庫�
 function card(h) {
   const price = h.price?.regular?.pc?.taxIn;
   const quick = (h.icons || []).some((i) => i.cd === 'INS');
-  return `<a class="tire" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">
+  // 自社の商品詳細(選んだサイズを開く)へ。詳細ページの無い型番だけオンラインストアへ
+  const b = baseOf(h.name);
+  const own = b && PATTERNS[b];
+  return `<a class="tire" href="${own ? `/products?p=${b}&i=${encodeURIComponent(h.id)}` : ITEM_URL(h.id)}"${own ? '' : ' target="_blank" rel="noopener"'}>
     <span class="ph"><img src="${IMG}${esc(h.img?.l || h.img?.s || '')}" alt="" width="320" height="320" loading="lazy" decoding="async"></span>
     <span class="meta">
       <span class="tags">${isSHG(h.name) ? '<span class="tag shg">STREET HIGH GRIP</span>' : ''}${quick ? '<span class="tag">即納</span>' : ''}</span>
@@ -103,7 +106,7 @@ function card(h) {
       <span class="sz">${esc(sizeOf(h))}${typeOf(h) ? ` / ${typeOf(h)}` : ''}</span>
       <span class="pr">${yen(price)}<small>(税込・1本)</small></span>
       <span class="st">${esc(h.status?.txt || '')}</span>
-      <span class="go">商品ページで購入 →</span>
+      <span class="go">${own ? '詳しく見る' : 'オンラインストアで見る'} →</span>
     </span>
   </a>`;
 }

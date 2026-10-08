@@ -136,3 +136,24 @@
 .pd-fit-more{margin-top:18px}
 .pd-fit-list a{display:block;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:14px;font-weight:700;transition:border-color .2s,color .2s}
 .pd-fit-list a:hover{border-color:var(--g);color:var(--g-ink)}
+
+/* 選んだサイズ(?i=商品ID): 適合検索などから来たときに上にまとめて見せる */
+.pd-pick{background:var(--g-tint);border-bottom:1px solid var(--g-line)}
+.pd-pick-in{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(20px,3vw,40px);align-items:center;padding:clamp(20px,2.6vw,32px) 0}
+.pd-pick-in > img{width:clamp(96px,10vw,140px);aspect-ratio:1;object-fit:contain;background:#fff;border-radius:14px;padding:8px}
+.pd-pick-k{font-size:12px;font-weight:700;color:var(--g-ink);letter-spacing:.04em}
+.pd-pick-size{font-weight:800;font-size:clamp(24px,2.8vw,34px);line-height:1.2;margin-top:2px}
+.pd-pick-sub{margin-top:4px;font-size:13px;color:var(--sub)}
+.pd-pick-spec{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:12px}
+.pd-pick-spec dt{font-size:11px;color:var(--sub)}
+.pd-pick-spec dd{font-weight:700;font-size:14px}
+.pd-pick-buy{display:grid;justify-items:end;gap:6px;text-align:right}
+.pd-pick-msrp{font-size:12px;color:var(--sub)}
+.pd-pick-price{display:flex;align-items:baseline;gap:8px}
+.pd-pick-price .en{font-weight:800;font-size:clamp(26px,2.6vw,32px)}
+.pd-pick-price small{font-size:11px;color:var(--sub)}
+.pd-pick-st{font-size:13px;color:var(--sub)}
+.pd-pick-buy .btn{margin-top:4px}
+@media(max-width:820px){.pd-pick-in{grid-template-columns:auto 1fr}.pd-pick-buy{grid-column:1/-1;justify-items:start;text-align:left}}
+.pd-table tr.pick td{background:var(--g-tint)!important}
+.pd-table tr.pick td:first-child{box-shadow:inset 3px 0 0 var(--g)}
