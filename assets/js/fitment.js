@@ -3,7 +3,7 @@
 //   車種一覧は「TIMSUNタイヤが持つ適合データ」から組み立てるため、TIMSUNが合う車種しか出ない。
 // サイズから: TIMSUNの取扱サイズだけを選択肢にし、該当する商品を表示する。
 import { fetchFitmentIndex, fetchItems, fetchCatalog, dataAsOf } from './cj-api.js';
-import { sizeOf, parseSize, isSHG, baseOf, PATTERNS } from './data.js';
+import { sizeOf, parseSize, isSHG, baseOf } from './data.js';
 
 import { MAKERS, GROUP_LABEL, GROUP_ORDER, norm, fold, buildTree } from './fittree.js';
 import { IMG, ITEM_URL, esc, yen } from './site.js';
@@ -97,7 +97,7 @@ function card(h) {
   const quick = (h.icons || []).some((i) => i.cd === 'INS');
   // 自社の商品詳細(選んだサイズを開く)へ。詳細ページの無い型番だけオンラインストアへ
   const b = baseOf(h.name);
-  const own = b && PATTERNS[b];
+  const own = !!b; // 型番があれば自社の詳細ページがある(未登録の新しい型番も自動で作る)
   return `<a class="tire" href="${own ? `/products?p=${b}&i=${encodeURIComponent(h.id)}` : ITEM_URL(h.id)}"${own ? '' : ' target="_blank" rel="noopener"'}>
     <span class="ph"><img src="${IMG}${esc(h.img?.l || h.img?.s || '')}" alt="" width="320" height="320" loading="lazy" decoding="async"></span>
     <span class="meta">
