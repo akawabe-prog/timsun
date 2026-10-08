@@ -1,23 +1,50 @@
 // TIMSUN 製品: シリーズ別のパターン一覧と、パターン詳細(?p=TS689)
-// 商品(サイズ・価格・在庫)はCJ APIから取得し、型番→シリーズの対応は data.js で行う。
-import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
+// 商品(型番・サイズ・仕様・説明文・画像・価格)は商品マスターから作った assets/data/master.json(dev/make_master.py)。
+// 在庫だけはCJ APIの最新を重ねる。型番→シリーズは data.js の PATTERNS、未登録の型番はマスターのジャンルから決める。
+import { fetchCatalog, fetchFitmentIndex } from './cj-api.js';
 import { SERIES, PATTERNS, baseOf, variantOf, isSHG, sizeOf } from './data.js';
 import { esc, yen, reveal, IMG, ITEM_URL, spyAnchors } from './site.js';
-import { PATTERN_COPY } from './pattern-copy.js';
-import { SIZE_SPEC } from './size-spec.js';
 import { MAKERS } from './fittree.js';
 
 const $ = (s) => document.querySelector(s);
-const isSet = (h) => /^【セット品】/.test(h.name);
+const isSet = (h) => !!h.m?.set || /^【セット品】/.test(h.name);
 const priceOf = (h) => h.price?.regular?.pc?.taxIn;
 const STOCK_RANK = { '◯在庫あり': 0, '△残りわずか': 1, '★在庫限り': 2, '別倉庫': 3, '入荷待': 4 };
 const posOf = (h) => {
-  const v = (h.spec?.values || []).join(' ');
   if (isSet(h)) return '前後セット';
+  const v = h.m?.pos || (h.spec?.values || []).join(' ');
+  if (/前後兼用|フロント\/リア/.test(v)) return 'フロント/リア';
   const f = v.includes('フロント'), r = v.includes('リア');
   return f && r ? 'フロント/リア' : f ? 'フロント' : r ? 'リア' : '—';
 };
-const typeOf = (h) => { const v = (h.spec?.values || []).join(' '); return /TL/.test(v) ? 'TL' : /WT|TT/.test(v) ? 'TT' : ''; };
+const typeOf = (h) => { if (h.m?.tube) return h.m.tube; const v = (h.spec?.values || []).join(' '); return /TL/.test(v) ? 'TL' : /WT|TT/.test(v) ? 'TT' : ''; };
+
+// マスターのジャンル(またはカテゴリ)→ シリーズ。data.js に未登録の型番に使う
+const GENRE_SERIES = [
+  [/ビジネス/, 'business'], [/スクーター/, 'scooter'], [/オフロードレース/, 'motocross'],
+  [/オフロード|アドベンチャー/, 'adventure'], [/スノー|ウインター/, 'snow'], [/オンロード/, 'street-sport'],
+];
+const seriesOf = (items) => {
+  const m = items.find((h) => h.m?.genre || h.m?.cat)?.m;
+  return (GENRE_SERIES.find(([re]) => re.test(m?.genre || m?.cat || '')) || [])[1] || null;
+};
+// 1行の大きさ表記(110/70-12 47P)
+const sizeKey = (h) => h.m?.size || sizeOf(h);   // マスターの商品サイズ(110/70-12)
+const sizeLabel = (h) => (h.m?.size ? `${h.m.size}${h.m.load ? ` ${h.m.load}` : ''}` : sizeOf(h));
+
+// 商品マスターを読み、在庫だけCJ APIの最新を重ねる(APIが使えないときは在庫表示なし)
+async function loadItems() {
+  const [mres, cres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()), fetchCatalog()]);
+  if (mres.status !== 'fulfilled') throw mres.reason;
+  const live = new Map(cres.status === 'fulfilled' ? cres.value.map((h) => [String(h.id), h]) : []);
+  ASOF = mres.value.asOf;
+  return mres.value.items.map((m) => ({
+    id: m.id, name: m.name, m,
+    img: { l: m.imgs?.[0], s: m.imgs?.[0] },
+    price: { regular: { pc: { taxIn: m.price } } },
+    status: live.get(String(m.id))?.status,
+  }));
+}
 
 // 型番ごとにまとめる
 function groupPatterns(items) {
@@ -25,16 +52,18 @@ function groupPatterns(items) {
   for (const h of items) {
     const b = baseOf(h.name);
     if (!b) continue;
-    // data.js に未登録の新しい型番も詳細ページは作る(一覧にはシリーズが決まってから並べる)
+    // data.js に未登録の新しい型番も、マスターのジャンルとキャッチから一覧・詳細を作る
     if (!map.has(b)) map.set(b, { id: b, s: null, d: '', ...PATTERNS[b], items: [] });
     map.get(b).items.push(h);
   }
   for (const p of map.values()) {
     const singles = p.items.filter((h) => !isSet(h));
     const prices = singles.map(priceOf).filter(Boolean);
-    p.shg = p.items.some((h) => isSHG(h.name));
+    p.shg = p.items.some((h) => isSHG(h.name) || h.m?.grade === 'ストリートハイグリップ');
+    if (!p.s) p.s = seriesOf(p.items);
+    if (!p.d) p.d = p.items.find((h) => h.m?.catch)?.m.catch || '';
     p.variants = [...new Set(singles.map((h) => variantOf(h.name)).filter(Boolean))].sort();
-    p.sizes = new Set(singles.map(sizeOf).filter(Boolean)).size;
+    p.sizes = new Set(singles.map(sizeKey).filter(Boolean)).size;
     p.from = prices.length ? Math.min(...prices) : null;
     p.img = (singles.find((h) => h.img?.l) || p.items[0])?.img?.l;
   }
@@ -105,8 +134,8 @@ function fitOf(items) {
   return MAKERS.filter((m) => out.get(m.id)?.size).map((m) => ({ ...m, bodies: [...out.get(m.id)].sort((a, b) => a.localeCompare(b, 'ja')) }));
 }
 
-function pickCard(h, o) {
-  const sp = SIZE_SPEC[h.id];
+function pickCard(h) {
+  const sp = h.m || {};
   const row = (k, v) => (v ? `<div><dt>${k}</dt><dd>${v}</dd></div>` : '');
   return `
     <section class="pd-pick" aria-label="選んだサイズ">
@@ -114,7 +143,7 @@ function pickCard(h, o) {
         <img src="${IMG}${esc(h.img?.l || h.img?.s || '')}" alt="" width="200" height="200">
         <div class="pd-pick-main">
           <p class="pd-pick-k">選んだサイズ</p>
-          <p class="pd-pick-size en">${esc(isSet(h) ? setParts(h).size : o?.size || sizeOf(h))}</p>
+          <p class="pd-pick-size en">${esc(isSet(h) ? setParts(h).size : sizeLabel(h))}</p>
           <p class="pd-pick-sub">${esc(variantOf(h.name) || '')}・${esc(posOf(h))}${typeOf(h) ? `・<span class="en">${typeOf(h)}</span>` : ''}・品番 <span class="en">${esc(h.id)}</span></p>
           <dl class="pd-pick-spec">
             ${row('標準リム幅', sp?.std && `<span class="en">${esc(sp.std)}</span>インチ`)}
@@ -124,7 +153,7 @@ function pickCard(h, o) {
           </dl>
         </div>
         <div class="pd-pick-buy">
-          ${o?.msrp ? `<p class="pd-pick-msrp">メーカー希望小売価格 <span class="en">${yen(o.msrp)}</span>(税込)</p>` : ''}
+          ${sp.msrp ? `<p class="pd-pick-msrp">メーカー希望小売価格 <span class="en">${yen(sp.msrp)}</span>(税込)</p>` : ''}
           <p class="pd-pick-price"><span class="en">${yen(priceOf(h))}</span><small>オンラインストア・税込</small></p>
           <p class="pd-pick-st">${esc(h.status?.txt || '')}</p>
           <a class="btn" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">オンラインストアで購入</a>
@@ -136,30 +165,41 @@ function pickCard(h, o) {
 
 function renderDetail(p, pickId) {
   const s = SERIES.find((x) => x.id === p.s) || { id: '', ja: 'その他', en: 'Other' };
-  const copy = PATTERN_COPY[p.id] || [];
-  // 一行の説明: data.js に無い新しい型番は、説明文の最初の一文を使う
-  const lead = p.d || (copy[0]?.text ? `${copy[0].text.split('。')[0]}。` : `TIMSUN ${p.id}`);
-  const official = new Map(copy.flatMap((c) => c.rows.map((r) => [r.code, { ...r, v: c.v }])));
   document.title = `${p.id}|${s.ja}|TIMSUN(ティムソン)日本公式サイト`;
   const singles = p.items.filter((h) => !isSet(h));
+  // 説明文(マスターの説明文サブのうちパターン固有の文)。同じ文の型番の表記はまとめる
+  const copy = [];
+  singles.forEach((h) => {
+    const t = h.m?.copy; if (!t) return;
+    const v = h.m.type || variantOf(h.name) || p.id;
+    const c = copy.find((x) => x.text === t);
+    if (c) { if (!c.vs.includes(v)) c.vs.push(v); } else copy.push({ vs: [v], text: t });
+  });
+  copy.forEach((c) => { c.v = c.vs.join(' / '); });
+  const seriesCopy = singles.find((h) => h.m?.seriesCopy)?.m;   // シリーズ(グレード)共通の文
+  // 一行の説明: data.js に無い型番は、マスターのキャッチか説明文の最初の一文
+  const lead = p.d || (copy[0]?.text ? `${copy[0].text.split('。')[0]}。` : `TIMSUN ${p.id}`);
   // 写真: 型番の表記ごとに1枚目(全体)と3枚目(トレッド面)
   const byVar = new Map();
   singles.forEach((h) => { const v = variantOf(h.name) || p.id; if (!byVar.has(v) && h.img?.l) byVar.set(v, h); });
   const shots = [...byVar.entries()].flatMap(([v, h]) => {
-    const base = h.img.l.replace(/_1\.jpg$/, '');
-    return [{ src: `${IMG}${base}_1.jpg`, cap: v }, { src: `${IMG}${base}_3.jpg`, cap: `${v} トレッド面`, tread: true }];
+    const im = h.m?.imgs || [h.img.l];
+    const full = im.find((x) => /_1\.jpg$/.test(x)) || im[0];
+    const tr = im.find((x) => /_3\.jpg$/.test(x));
+    return [{ src: `${IMG}${full}`, cap: v }, ...(tr ? [{ src: `${IMG}${tr}`, cap: `${v} トレッド面`, tread: true }] : [])];
   });
   const first = byVar.values().next().value || p.items[0];
   // ?i=商品ID: 適合検索などから選んだサイズ。上にまとめて見せ、サイズ表の行に印を付ける
   const pick = pickId && p.items.find((h) => String(h.id) === String(pickId));
-  const infoBase = first?.img?.l ? `${IMG}${first.img.l.replace(/_1\.jpg$/, '')}` : null;
+  // 製品の特長画像: マスターの商品画像4枚目以降
+  const infos = (first?.m?.imgs || []).filter((x) => /_([4-9]|1\d)\.jpg$/.test(x));
   const tread = shots.find((x) => x.tread);
   const groups = POS_ORDER.map((pos) => ({ pos, rows: p.items.filter((h) => posOf(h) === pos)
-    .sort((a, b) => sizeOf(a).localeCompare(sizeOf(b), 'en', { numeric: true })) })).filter((g) => g.rows.length);
+    .sort((a, b) => sizeKey(a).localeCompare(sizeKey(b), 'en', { numeric: true })) })).filter((g) => g.rows.length);
   const others = [...PATS.values()].filter((x) => x.s === p.s && x.id !== p.id)
     .sort((a, b) => Number(b.shg) - Number(a.shg) || a.id.localeCompare(b.id)).slice(0, 8);
   const types = [...new Set(singles.map(typeOf).filter(Boolean))];
-  const inches = [...new Set(singles.map((h) => (sizeOf(h).match(/-(\d+)/) || [])[1]).filter(Boolean))].map(Number).sort((a, b) => a - b);
+  const inches = [...new Set(singles.map((h) => (sizeKey(h).match(/-(\d+)/) || [])[1]).filter(Boolean))].map(Number).sort((a, b) => a - b);
   const hasF = singles.some((h) => posOf(h).includes('フロント')), hasR = singles.some((h) => posOf(h).includes('リア'));
   const poss = [hasF && 'フロント', hasR && 'リア'].filter(Boolean);
 
@@ -190,7 +230,7 @@ function renderDetail(p, pickId) {
         </ul>
       </nav>
 
-    ${pick ? pickCard(pick, official.get(String(pick.id))) : ''}
+    ${pick ? pickCard(pick) : ''}
     <section class="pd-hero" aria-label="製品写真">
       <div class="wrap pd-gallery">
         <figure class="pd-main"><img id="pdMain" src="${esc(pick?.img?.l ? IMG + pick.img.l : shots[0]?.src || IMG + p.img)}" alt="TIMSUN ${p.id}" width="640" height="640"></figure>
@@ -219,13 +259,17 @@ function renderDetail(p, pickId) {
               ${copy.length > 1 ? `<p class="pd-copy-v en">${esc(c.v)}</p>` : ''}
               ${c.text.split('\n').map((t) => `<p>${esc(t)}</p>`).join('')}
             </div>`).join('') : `<p>${esc(lead)}</p>`}
-          ${copy.length ? `<p class="note">出典: ${copy.some((c) => c.src === 'cj') ? 'カスタムジャパン オンラインストアの商品ページ' : 'TIMSUN日本公式サイトの商品ページ'}</p>` : ''}
+          ${seriesCopy ? `
+            <div class="pd-series">
+              <p class="pd-copy-v">${esc(seriesCopy.grade || (p.shg ? 'ストリートハイグリップ' : 'スタンダード'))}シリーズについて</p>
+              ${seriesCopy.seriesCopy.split('\n').filter(Boolean).map((t) => `<p>${esc(t)}</p>`).join('')}
+            </div>` : ''}
         </div>
       </div>
-      ${infoBase ? `
+      ${infos.length ? `
       <div class="wrap pd-info">
         <h3 class="pd-h3">製品の特長<small>画像を押すと大きく表示します</small></h3>
-        <div class="pd-info-rail">${[4, 5, 6, 7].map((n) => `<a class="pd-info-i" href="${infoBase}_${n}.jpg" target="_blank" rel="noopener"><img src="${infoBase}_${n}.jpg" alt="${p.id} 製品の特長 ${n - 3}" width="600" height="600" loading="lazy" onerror="const b=this.closest('.pd-info');this.parentElement.remove();if(b&&!b.querySelector('.pd-info-i'))b.remove()"></a>`).join('')}</div>
+        <div class="pd-info-rail">${infos.map((x, n) => `<a class="pd-info-i" href="${IMG}${esc(x)}" target="_blank" rel="noopener"><img src="${IMG}${esc(x)}" alt="${p.id} 製品の特長 ${n + 1}" width="600" height="600" loading="lazy" onerror="const b=this.closest('.pd-info');this.parentElement.remove();if(b&&!b.querySelector('.pd-info-i'))b.remove()"></a>`).join('')}</div>
       </div>` : ''}
     </section>
 
@@ -252,17 +296,16 @@ function renderDetail(p, pickId) {
               <table class="spec sizes pd-table">
                 <thead><tr><th>サイズ</th><th>構造</th><th>品番</th><th class="num">標準リム幅<br><small>インチ</small></th><th>許容リム幅<br><small>インチ</small></th><th class="num">外径<br><small>mm</small></th><th class="num">トレッド幅<br><small>mm</small></th><th class="num">メーカー希望小売価格<br><small>税込</small></th><th class="num">オンラインストア<br><small>税込</small></th><th>在庫</th><th></th></tr></thead>
                 <tbody>${g.rows.map((h) => {
-                  const o = official.get(String(h.id));
-                  const sp = SIZE_SPEC[h.id];
+                  const sp = h.m || {};
                   return `<tr${pick && h === pick ? ' class="pick" id="pdPickRow"' : ''}>
-                  <td class="en pd-size">${isSet(h) ? `${esc(setParts(h).size)}${setParts(h).for ? `<small>${esc(setParts(h).for)}</small>` : ''}` : `${esc(o?.size || sizeOf(h))}<small class="en">${esc(variantOf(h.name) || '')}</small>`}</td>
+                  <td class="en pd-size">${isSet(h) ? `${esc(setParts(h).size)}${setParts(h).for ? `<small>${esc(setParts(h).for)}</small>` : ''}` : `${esc(sizeLabel(h))}<small class="en">${esc(h.m?.type || variantOf(h.name) || '')}</small>`}</td>
                   <td class="en">${typeOf(h)}</td>
                   <td class="en">${esc(h.id)}</td>
                   <td class="num en">${esc(sp?.std || '—')}</td>
                   <td class="en pd-rims">${sp?.rims?.length ? sp.rims.map(esc).join(' / ') : '—'}</td>
                   <td class="num en">${sp?.od ? `${esc(sp.od)}${sp.odr ? `<small>${esc(sp.odr.replace('-', '–'))}</small>` : ''}` : '—'}</td>
                   <td class="num en">${sp?.tw ? `${esc(sp.tw)}${sp.twr ? `<small>${esc(sp.twr.replace('-', '–'))}</small>` : ''}` : '—'}</td>
-                  <td class="num">${o?.msrp ? yen(o.msrp) : o ? 'オープン価格' : '—'}</td>
+                  <td class="num">${sp.msrp ? yen(sp.msrp) : '—'}</td>
                   <td class="num">${yen(priceOf(h))}</td>
                   <td class="st">${esc(h.status?.txt || '')}</td>
                   <td><a class="link" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">購入</a></td></tr>`;
@@ -270,7 +313,7 @@ function renderDetail(p, pickId) {
               </table>
             </div>
           </div>`).join('')}
-        <p class="note sizes-note">リム幅・外径・トレッド幅はカスタムジャパン オンラインストアの商品ページの値です(括弧内は製品の許容範囲)。メーカー希望小売価格はTIMSUN日本公式サイト、オンラインストアの価格・在庫は日本総代理店カスタムジャパンのオンラインストアの情報です${ASOF ? `(${fmtDate(ASOF)}時点。最新はリンク先の商品ページでご確認ください)` : ''}。取扱店での価格は店舗にお問い合わせください。</p>
+        <p class="note sizes-note">寸法(括弧内は製品の許容範囲)・メーカー希望小売価格・オンラインストア価格はTIMSUN商品マスター${ASOF ? `(${fmtDate(ASOF)}時点)` : ''}、在庫は日本総代理店カスタムジャパンのオンラインストアの情報です。最新の価格・在庫はリンク先の商品ページでご確認ください。取扱店での価格は店舗にお問い合わせください。</p>
         <p class="pd-links"><a class="link" href="/magazine?a=size">タイヤサイズ表記の見方</a><a class="link" href="/shops">取扱店を探す</a></p>
       </div>
     </section>
@@ -309,7 +352,16 @@ async function renderFit(p) {
     const ids = new Set(p.items.map((h) => String(h.id)));
     fits = fitOf((await fetchFitmentIndex()).filter((h) => ids.has(String(h.id))));
   } catch (e) { console.error(e); }
-  if (!fits.length) return;
+  if (!fits.length) {
+    // 適合データが無いとき: マスターの代表適合車種を並べる
+    const reps = [...new Set(p.items.flatMap((h) => h.m?.fits || []))].sort((a, b) => a.localeCompare(b, 'ja'));
+    if (!reps.length) return;
+    document.getElementById('pdFitBody').innerHTML = `<div class="pd-fit-list"><ul class="${reps.length > FIT_SHOW ? 'fold' : ''}">${reps.map((b) => `<li><a href="/fitment?q=${encodeURIComponent(b.replace(/\(.*$/, ''))}">${esc(b)}</a></li>`).join('')}</ul>${reps.length > FIT_SHOW ? `<button type="button" class="btn btn-ghost pd-fit-more">${reps.length}車種をすべて表示</button>` : ''}</div>`;
+    document.querySelectorAll('.pd-fit-more').forEach((b) => b.addEventListener('click', () => { b.previousElementSibling.classList.remove('fold'); b.remove(); }));
+    document.getElementById('pdFit').hidden = false;
+    document.getElementById('pdFitNav').hidden = false;
+    return;
+  }
   document.getElementById('pdFitBody').innerHTML = `
     <div class="pd-fit-tabs" role="tablist">${fits.map((m, i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-mk="${m.id}">${esc(m.name)}<small>${m.bodies.length}</small></button>`).join('')}</div>
     ${fits.map((m, i) => `<div class="pd-fit-list" data-mk="${m.id}"${i ? ' hidden' : ''}>
@@ -341,8 +393,7 @@ function route() {
 
 async function main() {
   try {
-    PATS = groupPatterns(await fetchCatalog());
-    ASOF = await dataAsOf();
+    PATS = groupPatterns(await loadItems());
   } catch (e) {
     console.error(e);
     $('#seriesList').innerHTML = '<div class="wrap"><p class="err">製品情報を読み込めませんでした。時間をおいて再度お試しください。</p></div>';
