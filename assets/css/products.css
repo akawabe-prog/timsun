@@ -157,3 +157,8 @@
 @media(max-width:820px){.pd-pick-in{grid-template-columns:auto 1fr}.pd-pick-buy{grid-column:1/-1;justify-items:start;text-align:left}}
 .pd-table tr.pick td{background:var(--g-tint)!important}
 .pd-table tr.pick td:first-child{box-shadow:inset 3px 0 0 var(--g)}
+
+/* シリーズ(グレード)共通の説明文 */
+.pd-series{margin-top:6px;padding:18px 20px;border-radius:12px;background:var(--paper-2)}
+.pd-series p{font-size:13.5px;line-height:1.95;color:var(--sub)}
+.pd-series .pd-copy-v{color:var(--g-ink);font-size:13px;margin-bottom:4px}

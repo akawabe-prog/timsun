@@ -12,3 +12,6 @@ _site/
 # 調査メモと調査レポート(公開しない)
 research_notes/
 reports/
+
+# 商品マスター(社内データ。仕入単価などを含むため公開しない)
+dev/master/
