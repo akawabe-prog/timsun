@@ -8,3 +8,7 @@ dev/fitment-snapshot.json
 .claude/
 # GitHub Pages 用に生成する公開フォルダ
 _site/
+
+# 調査メモと調査レポート(公開しない)
+research_notes/
+reports/
