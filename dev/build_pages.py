@@ -34,7 +34,7 @@ for html in ROOT.glob("*.html"):
     (OUT / html.name).write_text(rewrite(html.read_text(encoding="utf-8")), encoding="utf-8")
 shutil.copytree(ROOT / "assets", OUT / "assets")
 for f in (OUT / "assets").rglob("*"):
-    if f.suffix in (".js", ".css"):
+    if f.suffix in (".js", ".css", ".webmanifest"):
         f.write_text(rewrite(f.read_text(encoding="utf-8")), encoding="utf-8")
 (OUT / ".nojekyll").write_text("")
 print(f"_site/ を作成しました(base: {base})")
