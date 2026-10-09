@@ -17,6 +17,9 @@ import pathlib, re
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGES = ROOT / "dev" / "pages"
 SITE = "TIMSUN(ティムソン)日本公式サイト"
+# 共有(OGP)・canonical に使う公開ドメイン。GitHub Pages 用の書き出しでは build_pages.py がテスト公開のURLに置き換える
+ORIGIN = "https://www.timsun-japan.com"
+OG_IMAGE = "/assets/img/ogp.jpg"   # 1200×630
 
 NAV = [
     ("/fitment", "タイヤを探す"),
@@ -100,11 +103,21 @@ HEAD = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<meta property="og:type" content="website">
+<link rel="canonical" href="{url}">
+<meta property="og:type" content="{ogtype}">
 <meta property="og:site_name" content="{site}">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<!-- og:url / og:image / canonical は公開ドメイン確定後に絶対URLで追加する -->
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="{image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TIMSUN 日本公式サイト">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{image}">
 <meta name="theme-color" content="#0f110e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -168,7 +181,9 @@ def build(path):
         anav = f'<nav class="anav" aria-label="このページの内容">\n  <ul class="anav-in">{links}</ul>\n</nav>\n'
         body = body.replace("<!--ANCHOR-->", anav)
     body = body.replace("<!--ANCHOR-->", "")
-    html = (HEAD.format(title=title, desc=desc, site=SITE, css=css)
+    url = ORIGIN + ("/" if path.stem == "index" else f"/{path.stem}")
+    html = (HEAD.format(title=title, desc=desc, site=SITE, css=css, url=url, image=ORIGIN + OG_IMAGE,
+                        ogtype="website" if path.stem == "index" else "article")
             + HEADER.format(nav=nav)
             + f'<main id="main">\n{body}\n</main>\n'
             + FOOTER + js + "</body>\n</html>\n")

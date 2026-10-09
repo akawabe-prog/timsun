@@ -13,14 +13,19 @@ PAGES = ["assets", "fitment", "products", "technology", "brand", "shops", "suppo
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--base", default="/timsun")
-base = ap.parse_args().base.rstrip("/")
+ap.add_argument("--origin", default="https://akawabe-prog.github.io")   # 共有(OGP)・canonical の絶対URLの置き換え先
+args = ap.parse_args()
+base = args.base.rstrip("/")
+PROD = "https://www.timsun-japan.com"   # build.py の ORIGIN
 
 # 引用符・括弧の直後にある /assets や /products などだけを書き換える(外部URLの途中には触れない)
 PATH_RE = re.compile(r'(["\'`(=])/(' + "|".join(PAGES) + r')(?=[/"\'`?#)\s])')
 
 def rewrite(text):
     text = PATH_RE.sub(lambda m: f"{m.group(1)}{base}/{m.group(2)}", text)
-    return text.replace('href="/"', f'href="{base}/"')
+    text = text.replace('href="/"', f'href="{base}/"')
+    # OGP・canonical の本番ドメインを、テスト公開のURLに置き換える
+    return text.replace(f'"{PROD}/', f'"{args.origin}{base}/').replace(f'"{PROD}"', f'"{args.origin}{base}/"')
 
 if OUT.exists():
     shutil.rmtree(OUT)

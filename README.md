@@ -195,3 +195,10 @@ python3 dev/build.py
 - `data.js` の `PATTERNS` に無い型番は、マスターのジャンル(スクーター/ビジネス/オンロード/オフロード…)でシリーズを決め、キャッチを一行の説明にする
 - 在庫だけはCJ APIの最新を重ねる(マスターに在庫は無い)
 - TOPの注目のタイヤと適合タイヤ検索は、今もCJ APIの商品情報を使っている
+
+## 共有(OGP)
+
+- 全ページの `<head>` に canonical・OGP(og:title / description / url / image など)・X(Twitter)のカードを `dev/build.py` で入れている
+- 共有画像は `assets/img/ogp.jpg`(1200×630、ヒーローの写真+ロゴ+「日本公式サイト」)
+- 絶対URLは本番ドメイン `https://www.timsun-japan.com` で書き、GitHub Pages 用の書き出し(`dev/build_pages.py`)ではテスト公開のURLに置き換える。本番ドメインが違う場合は `build.py` の `ORIGIN` と `build_pages.py` の `PROD` を直す
+- 商品詳細(`/products?p=…`)は画面をJavaScriptで作るため、共有時は製品一覧の内容・画像で表示される
