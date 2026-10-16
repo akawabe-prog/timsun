@@ -42,16 +42,22 @@ const ALIAS = [
   [/^PCX\s*(\d+|e[:：]?HEV)?$/i, 'PCX'], [/^NMAX\s*\d*$/i, 'NMAX'], [/^BW[’']S\s*(\d*)$/i, 'BW’S$1'], [/^V-?STROM\s*(\d+)$/i, 'Vストローム$1'],
 ];
 const nameOf = (n) => {   // 「シグナスX(SE12J/…)」→「シグナスX」
-  const s = String(n).replace(/[(（].*$/, '').trim();
+  const s = String(n).replace(/[(（].*$/, '').split('/')[0].trim();   // 「シグナスX/SR」「エイプ50/タイプD」は「/」の前を車種名に
   const a = ALIAS.find(([re]) => re.test(s));
   return a ? s.replace(a[0], a[1]) : s;
 };
 const scoreOf = (n) => POP.get(keyOf(nameOf(n))) || POP.get(keyOf(n)) || 0;
 // 車種名の一覧を、人気の高い順(同点は登場回数の多い順)に並べ替え、重複をまとめる
 function rankModels(names) {
-  const cnt = new Map();
-  names.forEach((n) => { const k = nameOf(n); if (k) cnt.set(k, (cnt.get(k) || 0) + 1); });
-  return [...cnt.keys()].sort((a, b) => scoreOf(b) - scoreOf(a) || cnt.get(b) - cnt.get(a) || a.localeCompare(b, 'ja'));
+  const cnt = new Map(), label = new Map();   // 空白の有無だけ違う表記(CT110 ハンターカブ/CT110ハンターカブ)も同じ車種として数える
+  names.forEach((n) => {
+    const v = nameOf(n); if (!v) return;
+    const k = keyOf(v);
+    if (!label.has(k)) label.set(k, v);
+    cnt.set(k, (cnt.get(k) || 0) + 1);
+  });
+  return [...cnt.keys()].sort((a, b) => scoreOf(label.get(b)) - scoreOf(label.get(a)) || cnt.get(b) - cnt.get(a) || label.get(a).localeCompare(label.get(b), 'ja'))
+    .map((k) => label.get(k));
 }
 
 // 商品マスターを読み、在庫だけCJ APIの最新を重ねる(APIが使えないときは在庫表示なし)
