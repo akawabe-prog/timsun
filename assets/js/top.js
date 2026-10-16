@@ -144,17 +144,14 @@ function renderNews() {
     </a></li>`).join('');
 }
 
-// ヒーロー映像: 一時停止ボタン。動きを減らす設定なら止めておく。画面外では停止
 const video = document.querySelector('.hero-video');
-const pause = document.querySelector('.hero-pause');
-if (video && pause) {
-  let paused = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const sync = () => { pause.setAttribute('aria-pressed', String(paused)); pause.setAttribute('aria-label', paused ? '映像を再生' : '映像を一時停止'); };
-  if (paused) video.pause();
-  sync();
-  pause.addEventListener('click', () => { paused = !paused; paused ? video.pause() : video.play().catch(() => {}); sync(); });
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([e]) => { if (!e.isIntersecting) video.pause(); else if (!paused) video.play().catch(() => {}); }, { threshold: 0.2 }).observe(video);
+// ヒーロー動画: 自動再生(ボタンは出さない)。画面から外れている間だけ止めて、戻ったら再開する。
+// OSで「視差効果を減らす」を選んでいる人には動かさず、静止画(poster)を見せる
+if (video) {
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (still) video.pause();
+  else if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { if (!e.isIntersecting) video.pause(); else video.play().catch(() => {}); }, { threshold: 0.2 }).observe(video);
   }
 }
 
