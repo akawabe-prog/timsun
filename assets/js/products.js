@@ -32,9 +32,33 @@ const seriesOf = (items) => {
 const sizeKey = (h) => h.m?.size || sizeOf(h);   // マスターの商品サイズ(110/70-12)
 const sizeLabel = (h) => (h.m?.size ? `${h.m.size}${h.m.load ? ` ${h.m.load}` : ''}` : sizeOf(h));
 
+// 車種の人気度(0〜100。新車販売・中古の流通量・累計台数から付けた点数。dev/make_popular.py)
+const POP = new Map();
+const keyOf = (n) => String(n).replace(/[(（].*$/, '').replace(/\s+/g, '').toLowerCase();
+// 同じ車種の表記ゆれを1つの名前にまとめる(英字表記→カタカナ、排気量違いのPCX・NMAXなど)
+const ALIAS = [
+  [/^JOG$/i, 'ジョグ'], [/^DIO$/i, 'ディオ'], [/^DIO\s*(\d+)$/i, 'ディオ$1'], [/^TODAY$/i, 'トゥデイ'], [/^TACT$/i, 'タクト'],
+  [/^VINO$/i, 'ビーノ'], [/^GIORNO$/i, 'ジョルノ'], [/^ZOOMER$/i, 'ズーマー'], [/^LET'?S$/i, 'レッツ'],
+  [/^PCX\s*(\d+|e[:：]?HEV)?$/i, 'PCX'], [/^NMAX\s*\d*$/i, 'NMAX'], [/^BW[’']S\s*(\d*)$/i, 'BW’S$1'], [/^V-?STROM\s*(\d+)$/i, 'Vストローム$1'],
+];
+const nameOf = (n) => {   // 「シグナスX(SE12J/…)」→「シグナスX」
+  const s = String(n).replace(/[(（].*$/, '').trim();
+  const a = ALIAS.find(([re]) => re.test(s));
+  return a ? s.replace(a[0], a[1]) : s;
+};
+const scoreOf = (n) => POP.get(keyOf(nameOf(n))) || POP.get(keyOf(n)) || 0;
+// 車種名の一覧を、人気の高い順(同点は登場回数の多い順)に並べ替え、重複をまとめる
+function rankModels(names) {
+  const cnt = new Map();
+  names.forEach((n) => { const k = nameOf(n); if (k) cnt.set(k, (cnt.get(k) || 0) + 1); });
+  return [...cnt.keys()].sort((a, b) => scoreOf(b) - scoreOf(a) || cnt.get(b) - cnt.get(a) || a.localeCompare(b, 'ja'));
+}
+
 // 商品マスターを読み、在庫だけCJ APIの最新を重ねる(APIが使えないときは在庫表示なし)
 async function loadItems() {
-  const [mres, cres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()), fetchCatalog()]);
+  const [mres, cres, pres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()), fetchCatalog(),
+    fetch('/assets/data/popular.json').then((r) => r.json())]);
+  if (pres.status === 'fulfilled') Object.entries(pres.value.scores || {}).forEach(([n, v]) => POP.set(keyOf(n), v));
   if (mres.status !== 'fulfilled') throw mres.reason;
   const live = new Map(cres.status === 'fulfilled' ? cres.value.map((h) => [String(h.id), h]) : []);
   ASOF = mres.value.asOf;
@@ -62,6 +86,8 @@ function groupPatterns(items) {
     p.shg = p.items.some((h) => isSHG(h.name) || h.m?.grade === 'ストリートハイグリップ');
     if (!p.s) p.s = seriesOf(p.items);
     if (!p.d) p.d = p.items.find((h) => h.m?.catch)?.m.catch || '';
+    // 代表車種: マスターの代表適合車種を、市場で多い・人気の車種から順に
+    p.reps = rankModels(singles.flatMap((h) => h.m?.fits || []));
     p.variants = [...new Set(singles.map((h) => variantOf(h.name)).filter(Boolean))].sort();
     p.sizes = new Set(singles.map(sizeKey).filter(Boolean)).size;
     p.from = prices.length ? Math.min(...prices) : null;
@@ -78,6 +104,7 @@ function patternCard(p) {
       <b class="en nm">${p.id}</b>
       ${p.variants.length > 1 ? `<span class="vars en">${p.variants.map(esc).join(' / ')}</span>` : ''}
       <span class="d">${esc(p.d)}</span>
+      ${p.reps?.length ? `<span class="reps"><small>主な車種</small>${p.reps.slice(0, 3).map(esc).join(' / ')}</span>` : ''}
       <span class="foot"><span>${p.sizes}サイズ</span>${p.from ? `<span class="en">${yen(p.from)}〜</span>` : ''}</span>
     </span>
   </a>`;
@@ -131,8 +158,11 @@ function fitOf(items) {
       }
     }
   }
-  return MAKERS.filter((m) => out.get(m.id)?.size).map((m) => ({ ...m, bodies: [...out.get(m.id)].sort((a, b) => a.localeCompare(b, 'ja')) }));
+  return MAKERS.filter((m) => out.get(m.id)?.size).map((m) => ({ ...m, bodies: rankModels([...out.get(m.id)]) }));
 }
+
+const REPS_SHOW = 8;
+const repsHtml = (list) => list.slice(0, REPS_SHOW).map((n) => `<li><a href="/fitment?q=${encodeURIComponent(n)}">${esc(n)}</a></li>`).join('');
 
 function pickCard(h) {
   const sp = h.m || {};
@@ -145,6 +175,7 @@ function pickCard(h) {
           <p class="pd-pick-k">選んだサイズ</p>
           <p class="pd-pick-size en">${esc(isSet(h) ? setParts(h).size : sizeLabel(h))}</p>
           <p class="pd-pick-sub">${esc(variantOf(h.name) || '')}・${esc(posOf(h))}${typeOf(h) ? `・<span class="en">${typeOf(h)}</span>` : ''}・品番 <span class="en">${esc(h.id)}</span></p>
+          ${h.m?.fits?.length ? `<p class="pd-pick-fits">主な適合車種: ${rankModels(h.m.fits).slice(0, 4).map(esc).join(' / ')}</p>` : ''}
           <dl class="pd-pick-spec">
             ${row('標準リム幅', sp?.std && `<span class="en">${esc(sp.std)}</span>インチ`)}
             ${row('許容リム幅', sp?.rims?.length && `<span class="en">${sp.rims.map(esc).join(' / ')}</span>`)}
@@ -244,6 +275,7 @@ function renderDetail(p, pickId) {
         <div>
           <p class="eyebrow">Feature</p>
           <h2 class="pd-catch">${esc(lead)}</h2>
+          ${p.reps?.length ? `<div class="pd-reps" id="pdReps"><p class="pd-reps-h">代表車種<small>市場で多い・人気の車種から順に</small></p><ul>${repsHtml(p.reps)}</ul></div>` : '<div class="pd-reps" id="pdReps" hidden></div>'}
           <ul class="pd-chips">
             <li><small>シリーズ</small><span>${esc(s.ja)}</span></li>
             <li><small>グレード</small><span>${p.shg ? 'ストリートハイグリップ' : 'スタンダード'}</span></li>
@@ -321,7 +353,7 @@ function renderDetail(p, pickId) {
     <section class="sec alt pd-fit" id="pdFit" hidden>
       <div class="wrap">
         <div class="sec-head en-head"><h2 class="title-en">Fitment<span class="sr">適合車種</span></h2><a class="more" href="/fitment">適合タイヤ検索</a></div>
-        <p class="pd-fit-lead">${p.id}が適合する主な車種です。型式・年式によってサイズが異なるため、ご購入前に適合タイヤ検索でお確かめください。</p>
+        <p class="pd-fit-lead">${p.id}が適合する車種です(市場で多い・人気の車種から順に表示)。型式・年式によってサイズが異なるため、ご購入前に適合タイヤ検索でお確かめください。</p>
         <div id="pdFitBody"></div>
       </div>
     </section>
@@ -352,6 +384,13 @@ async function renderFit(p) {
     const ids = new Set(p.items.map((h) => String(h.id)));
     fits = fitOf((await fetchFitmentIndex()).filter((h) => ids.has(String(h.id))));
   } catch (e) { console.error(e); }
+  // 代表車種を、適合データの全車種も含めて人気順に選び直す
+  const all = rankModels([...p.items.flatMap((h) => h.m?.fits || []), ...fits.flatMap((m) => m.bodies)]).filter((n) => scoreOf(n) > 0);
+  const box = document.getElementById('pdReps');
+  if (box && all.length) {
+    box.hidden = false;
+    box.innerHTML = `<p class="pd-reps-h">代表車種<small>市場で多い・人気の車種から順に</small></p><ul>${repsHtml(all)}</ul>`;
+  }
   if (!fits.length) {
     // 適合データが無いとき: マスターの代表適合車種を並べる
     const reps = [...new Set(p.items.flatMap((h) => h.m?.fits || []))].sort((a, b) => a.localeCompare(b, 'ja'));
