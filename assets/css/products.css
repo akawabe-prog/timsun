@@ -73,14 +73,14 @@
 .pd-anav .anav-in{justify-content:flex-start;max-width:calc(var(--maxw,1200px) + 2 * clamp(8px,2vw,32px))}
 
 .pd-hero{background:linear-gradient(180deg,#f3f4f1,#e9ebe6);padding:clamp(28px,4vw,56px) 0}
-.pd-gallery{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.pd-gallery{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center}
 .pd-main{margin:0;height:clamp(300px,42vw,560px);display:flex;justify-content:center;align-items:center;overflow:hidden}
 .pd-main img{max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;mix-blend-mode:multiply}
 .pd-thumbs{display:grid;gap:10px;align-content:center}
 .pd-th{width:84px;height:84px;padding:6px;border-radius:12px;background:#fff;border:1px solid var(--line);transition:border-color .2s}
 .pd-th img{width:100%;height:100%;object-fit:contain}
 .pd-th.on{border-color:var(--g);box-shadow:inset 0 0 0 1px var(--g)}
-@media(max-width:700px){.pd-gallery{grid-template-columns:1fr}.pd-thumbs{display:flex;justify-content:center}.pd-th{width:64px;height:64px}}
+@media(max-width:700px){.pd-gallery{grid-template-columns:minmax(0,1fr)}.pd-thumbs{display:flex;justify-content:safe center;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.pd-th{flex:none;width:64px;height:64px}}
 
 .pd-feat{display:grid;grid-template-columns:5fr 7fr;gap:clamp(32px,6vw,88px);align-items:start}
 .pd-catch{font-size:clamp(22px,2.4vw,32px);font-weight:800;line-height:1.5;margin:12px 0 28px}
@@ -162,3 +162,14 @@
 .pd-series{margin-top:6px;padding:18px 20px;border-radius:12px;background:var(--paper-2)}
 .pd-series p{font-size:13.5px;line-height:1.95;color:var(--sub)}
 .pd-series .pd-copy-v{color:var(--g-ink);font-size:13px;margin-bottom:4px}
+
+/* 代表車種(市場で多い・人気の車種から順に) */
+.pt .reps{display:block;font-size:12px;line-height:1.6;color:var(--ink)}
+.pt .reps small{display:inline-block;margin-right:6px;padding:0 6px;border-radius:4px;background:var(--g-tint);color:var(--g-ink);font-size:10.5px;font-weight:700}
+.pd-reps{margin:0 0 24px}
+.pd-reps-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-weight:800;font-size:14px;margin-bottom:10px}
+.pd-reps-h small{font-size:11px;font-weight:500;color:var(--sub)}
+.pd-reps ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.pd-reps a{display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:700;transition:border-color .2s,color .2s}
+.pd-reps a:hover{border-color:var(--g);color:var(--g-ink)}
+.pd-pick-fits{margin-top:8px;font-size:13px;font-weight:700}

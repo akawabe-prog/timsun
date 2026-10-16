@@ -203,3 +203,11 @@ python3 dev/build.py
 - 絶対URLは本番ドメイン `https://www.timsun-japan.com` で書き、GitHub Pages 用の書き出し(`dev/build_pages.py`)ではテスト公開のURLに置き換える。本番ドメインが違う場合は `build.py` の `ORIGIN` と `build_pages.py` の `PROD` を直す
 - 商品詳細(`/products?p=…`)は画面をJavaScriptで作るため、共有時は製品一覧の内容・画像で表示される
 - ファビコン: `assets/img/favicon.ico`(16/32/48)、`apple-touch-icon.png`(180)、`icon-192.png`・`icon-512.png` と `assets/site.webmanifest`。現行の日本公式サイト(timsun-japan.com)と同じミスターティムソンの画像を使用
+
+## 代表車種(人気・流通量の多い順)
+
+- 製品一覧のカード(主な車種3件)、商品詳細の「代表車種」(8件)、選んだサイズ(4件)、適合車種の一覧を、市場で多い・人気の車種から順に並べる
+- 車種ごとの点数(0〜100)は `assets/data/popular.json`。`python3 dev/make_popular.py` で調査データ(`research_notes/車種の人気度/popularity.json`、公開しない)から作る
+- 点数の根拠: 新車販売台数(二輪車新聞の推計)、中古車の掲載台数(グーバイク)をクラス別の保有台数で補正した流通指数、累計台数。車種別の保有台数は公開資料が無いため、流通量は推定の指標
+- 候補は商品マスターの代表適合車種。商品詳細では適合データの全車種も加えて選び直す
+- 表記ゆれ(JOG/ジョグ、Dio/ディオ、PCX125/PCX160 など)は `products.js` の `ALIAS` でまとめる
