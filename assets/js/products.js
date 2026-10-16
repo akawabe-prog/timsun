@@ -34,12 +34,13 @@ const sizeLabel = (h) => (h.m?.size ? `${h.m.size}${h.m.load ? ` ${h.m.load}` : 
 
 // 車種の人気度(0〜100。新車販売・中古の流通量・累計台数から付けた点数。dev/make_popular.py)
 const POP = new Map();
+const CURRENT = new Set();   // 国内4社の現行車種(古いメーカーと思われないよう、代表車種では先に並べる)
 const keyOf = (n) => String(n).replace(/[(（].*$/, '').replace(/\s+/g, '').toLowerCase();
 // 同じ車種の表記ゆれを1つの名前にまとめる(英字表記→カタカナ、排気量違いのPCX・NMAXなど)
 const ALIAS = [
   [/^JOG$/i, 'ジョグ'], [/^DIO$/i, 'ディオ'], [/^DIO\s*(\d+)$/i, 'ディオ$1'], [/^TODAY$/i, 'トゥデイ'], [/^TACT$/i, 'タクト'],
   [/^VINO$/i, 'ビーノ'], [/^GIORNO$/i, 'ジョルノ'], [/^ZOOMER$/i, 'ズーマー'], [/^LET'?S$/i, 'レッツ'],
-  [/^PCX\s*(\d+|e[:：]?HEV)?$/i, 'PCX'], [/^NMAX\s*\d*$/i, 'NMAX'], [/^BW[’']S\s*(\d*)$/i, 'BW’S$1'], [/^V-?STROM\s*(\d+)$/i, 'Vストローム$1'],
+  [/^PCX\s*(\d+|e[:：]?HEV)?$/i, 'PCX'], [/^NMAX\s*\d*$/i, 'NMAX'], [/^BW[’']S\s*(\d*)$/i, 'BW’S$1'], [/^V-?STROM\s*(\d+)$/i, 'Vストローム$1'], [/^NINJA\s*/i, 'ニンジャ'],
 ];
 const nameOf = (n) => {   // 「シグナスX(SE12J/…)」→「シグナスX」
   const s = String(n).replace(/[(（].*$/, '').split('/')[0].trim();   // 「シグナスX/SR」「エイプ50/タイプD」は「/」の前を車種名に
@@ -47,7 +48,8 @@ const nameOf = (n) => {   // 「シグナスX(SE12J/…)」→「シグナスX�
   return a ? s.replace(a[0], a[1]) : s;
 };
 const scoreOf = (n) => POP.get(keyOf(nameOf(n))) || POP.get(keyOf(n)) || 0;
-// 車種名の一覧を、人気の高い順(同点は登場回数の多い順)に並べ替え、重複をまとめる
+const isCurrent = (n) => CURRENT.has(keyOf(nameOf(n))) || CURRENT.has(keyOf(n));
+// 車種名の一覧を、現行車種を先に、その中で人気の高い順(同点は登場回数の多い順)に並べ替え、重複をまとめる
 function rankModels(names) {
   const cnt = new Map(), label = new Map();   // 空白の有無だけ違う表記(CT110 ハンターカブ/CT110ハンターカブ)も同じ車種として数える
   names.forEach((n) => {
@@ -56,7 +58,7 @@ function rankModels(names) {
     if (!label.has(k)) label.set(k, v);
     cnt.set(k, (cnt.get(k) || 0) + 1);
   });
-  return [...cnt.keys()].sort((a, b) => scoreOf(label.get(b)) - scoreOf(label.get(a)) || cnt.get(b) - cnt.get(a) || label.get(a).localeCompare(label.get(b), 'ja'))
+  return [...cnt.keys()].sort((a, b) => Number(isCurrent(label.get(b))) - Number(isCurrent(label.get(a))) || scoreOf(label.get(b)) - scoreOf(label.get(a)) || cnt.get(b) - cnt.get(a) || label.get(a).localeCompare(label.get(b), 'ja'))
     .map((k) => label.get(k));
 }
 
@@ -64,7 +66,10 @@ function rankModels(names) {
 async function loadItems() {
   const [mres, cres, pres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()), fetchCatalog(),
     fetch('/assets/data/popular.json').then((r) => r.json())]);
-  if (pres.status === 'fulfilled') Object.entries(pres.value.scores || {}).forEach(([n, v]) => POP.set(keyOf(n), v));
+  if (pres.status === 'fulfilled') {
+    Object.entries(pres.value.scores || {}).forEach(([n, v]) => POP.set(keyOf(n), v));
+    (pres.value.current || []).forEach((n) => CURRENT.add(keyOf(nameOf(n))));
+  }
   if (mres.status !== 'fulfilled') throw mres.reason;
   const live = new Map(cres.status === 'fulfilled' ? cres.value.map((h) => [String(h.id), h]) : []);
   ASOF = mres.value.asOf;
@@ -281,7 +286,7 @@ function renderDetail(p, pickId) {
         <div>
           <p class="eyebrow">Feature</p>
           <h2 class="pd-catch">${esc(lead)}</h2>
-          ${p.reps?.length ? `<div class="pd-reps" id="pdReps"><p class="pd-reps-h">代表車種<small>市場で多い・人気の車種から順に</small></p><ul>${repsHtml(p.reps)}</ul></div>` : '<div class="pd-reps" id="pdReps" hidden></div>'}
+          ${p.reps?.length ? `<div class="pd-reps" id="pdReps"><p class="pd-reps-h">代表車種<small>現行の人気車種から順に</small></p><ul>${repsHtml(p.reps)}</ul></div>` : '<div class="pd-reps" id="pdReps" hidden></div>'}
           <ul class="pd-chips">
             <li><small>シリーズ</small><span>${esc(s.ja)}</span></li>
             <li><small>グレード</small><span>${p.shg ? 'ストリートハイグリップ' : 'スタンダード'}</span></li>
@@ -359,7 +364,7 @@ function renderDetail(p, pickId) {
     <section class="sec alt pd-fit" id="pdFit" hidden>
       <div class="wrap">
         <div class="sec-head en-head"><h2 class="title-en">Fitment<span class="sr">適合車種</span></h2><a class="more" href="/fitment">適合タイヤ検索</a></div>
-        <p class="pd-fit-lead">${p.id}が適合する車種です(市場で多い・人気の車種から順に表示)。型式・年式によってサイズが異なるため、ご購入前に適合タイヤ検索でお確かめください。</p>
+        <p class="pd-fit-lead">${p.id}が適合する車種です(現行の人気車種から順に表示)。型式・年式によってサイズが異なるため、ご購入前に適合タイヤ検索でお確かめください。</p>
         <div id="pdFitBody"></div>
       </div>
     </section>
@@ -391,11 +396,11 @@ async function renderFit(p) {
     fits = fitOf((await fetchFitmentIndex()).filter((h) => ids.has(String(h.id))));
   } catch (e) { console.error(e); }
   // 代表車種を、適合データの全車種も含めて人気順に選び直す
-  const all = rankModels([...p.items.flatMap((h) => h.m?.fits || []), ...fits.flatMap((m) => m.bodies)]).filter((n) => scoreOf(n) > 0);
+  const all = rankModels([...p.items.flatMap((h) => h.m?.fits || []), ...fits.flatMap((m) => m.bodies)]).filter((n) => scoreOf(n) > 0 || isCurrent(n));
   const box = document.getElementById('pdReps');
   if (box && all.length) {
     box.hidden = false;
-    box.innerHTML = `<p class="pd-reps-h">代表車種<small>市場で多い・人気の車種から順に</small></p><ul>${repsHtml(all)}</ul>`;
+    box.innerHTML = `<p class="pd-reps-h">代表車種<small>現行の人気車種から順に</small></p><ul>${repsHtml(all)}</ul>`;
   }
   if (!fits.length) {
     // 適合データが無いとき: マスターの代表適合車種を並べる
