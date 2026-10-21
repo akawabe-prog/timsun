@@ -131,10 +131,11 @@ async function renderResults() {
 
 async function showResults(heading, items, pre = '') {
   const box = $('#results');
+  items = items.filter((h) => !/^【セット品】/.test(h.name));   // 前後セットは掲載しない
   const master = await loadMaster();
   const asofNote = '<p class="note">価格はメーカー希望小売価格(税込)です。販売価格・在庫・お取り付けは、お近くの取扱店にお問い合わせください。</p>';
   const sort = (a, b) => sizeOf(a).localeCompare(sizeOf(b), 'en', { numeric: true });
-  const groups = [['front', 'フロント'], ['rear', 'リア'], ['set', '前後セット'], ['other', 'その他']]
+  const groups = [['front', 'フロント'], ['rear', 'リア'], ['other', 'その他']]
     .map(([k, label]) => [label, items.filter((h) => posOf(h).includes(k)).sort(sort)])
     .filter(([, list]) => list.length);
   box.hidden = false;
