@@ -19,15 +19,8 @@ const posOf = (h) => {
 };
 const typeOf = (h) => { if (h.m?.tube) return h.m.tube; const v = (h.spec?.values || []).join(' '); return /TL/.test(v) ? 'TL' : /WT|TT/.test(v) ? 'TT' : ''; };
 
-// マスターのジャンル(またはカテゴリ)→ シリーズ。data.js に未登録の型番に使う
-const GENRE_SERIES = [
-  [/ビジネス/, 'business'], [/スクーター/, 'scooter'], [/オフロードレース/, 'motocross'],
-  [/オフロード|アドベンチャー/, 'adventure'], [/スノー|ウインター/, 'snow'], [/オンロード/, 'street-sport'],
-];
-const seriesOf = (items) => {
-  const m = items.find((h) => h.m?.genre || h.m?.cat)?.m;
-  return (GENRE_SERIES.find(([re]) => re.test(m?.genre || m?.cat || '')) || [])[1] || null;
-};
+// data.js に未登録の型番のシリーズ(商品マスターのジャンルから dev/make_master.py で決めたもの)
+const seriesOf = (items) => items.find((h) => h.m?.series)?.m.series || null;
 // 1行の大きさ表記(110/70-12 47P)
 const sizeKey = (h) => h.m?.size || sizeOf(h);   // マスターの商品サイズ(110/70-12)
 const sizeLabel = (h) => (h.m?.mainSize && !isSet(h) ? h.m.mainSize : h.m?.size ? `${h.m.size}${h.m.load ? ` ${h.m.load}` : ''}` : sizeOf(h));   // 表示は商品マスターのメインサイズ

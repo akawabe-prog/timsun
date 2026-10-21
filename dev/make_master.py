@@ -6,10 +6,10 @@
 CSVそのものは公開しない(dev/master/ は .gitignore で除外)。
 ここで「公開してよい項目」だけを取り出して JSON にする。新しい項目を出すときは PUBLIC の考え方に沿って足すこと。
 
-公開する項目: 品番・商品名・型番・シリーズ(グレード)・カテゴリ・装着位置・サイズ・仕様(構造・速度記号/荷重・
-リム幅・トレッド幅・外径)・チューブタイプ・キャッチ・説明文・注意・商品画像・希望小売価格・公開通常価格・
-代表適合車種・対応メーカー・セットの構成品番
-公開しない項目: 仕入先・仕入単価・発注・在庫数量・倉庫・社内メモ・ABC分類・担当者・ASIN・JAN など
+公開する項目(サイトの表示に使うものだけ。SHOW): 品番・商品名・型番・グレード・装着位置・サイズ・メインサイズ・速度記号/荷重・
+チューブタイプ・リム幅・トレッド幅・外径・キャッチ・説明文・商品画像・希望小売価格・代表適合車種・シリーズ(ジャンルから決めたもの)
+公開しない項目: 仕入先・仕入単価・発注・在庫数量・倉庫・社内メモ・ABC分類・担当者・ASIN・JAN、
+オンラインストアの公開価格・カテゴリ・ジャンル・対応メーカー・構造・注意 など(表示に使わないもの)
 """
 import csv, io, json, pathlib, re, sys
 from datetime import date
@@ -68,6 +68,20 @@ def spec_of(s):
                     out[key + "r"] = f"{m.group(2)}-{m.group(3)}"
     return out
 
+# サイトの表示に使う項目(master.json に書き出すのはこれだけ)
+SHOW = ["id", "name", "type", "grade", "pos", "size", "mainSize", "load", "tube", "std", "rims", "tw", "twr", "od", "odr",
+        "catch", "copy", "seriesCopy", "imgs", "msrp", "fits", "series"]
+
+# ジャンル(またはカテゴリ)→ シリーズ。products.js の SERIES の id
+GENRE_SERIES = [(r"ビジネス", "business"), (r"スクーター", "scooter"), (r"オフロードレース", "motocross"),
+                (r"オフロード|アドベンチャー", "adventure"), (r"スノー|ウインター", "snow"), (r"オンロード", "street-sport")]
+
+def series_of(genre):
+    for pat, sid in GENRE_SERIES:
+        if genre and re.search(pat, genre):
+            return sid
+    return None
+
 def main_size(s):
     """メインサイズ(「2.25-17 4PR WT F_2.25-17 4PR WT R」)を表示用に整える。
     装着位置の F/R は表で分かるので外し、同じサイズの重複はまとめる(前後で違えば「 / 」でつなぐ)"""
@@ -125,8 +139,11 @@ for r in rows:
         "parts": [r[f"構成品番{i}"] for i in range(1, 10) if is_set and r.get(f"構成品番{i}")],
         "outlet": r["アウトレット"] == "1",
     }
-    # 空の項目は書き出さない(希望小売価格の 0 は「オープン価格」の意味なので残す)
-    items.append({k: v for k, v in item.items() if not (v is None or v is False or v == "" or v == [])})
+    # シリーズの振り分け(data.js に未登録の型番用)は、ジャンル・カテゴリからここで決めておく
+    item["series"] = series_of(item.get("genre") or item.get("cat"))
+    # サイトに表示する項目だけを書き出す(オンラインストア価格・カテゴリ・対応メーカーなどは出さない)。
+    # 空の項目も書き出さない(希望小売価格の 0 は「オープン価格」の意味なので残す)
+    items.append({k: v for k, v in item.items() if k in SHOW and not (v is None or v is False or v == "" or v == [])})
 
 OUT.write_text(json.dumps({"asOf": date.today().isoformat(), "source": SRC.name, "items": items},
                           ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
