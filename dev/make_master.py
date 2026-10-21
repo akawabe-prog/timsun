@@ -27,6 +27,8 @@ for enc in ("utf-8-sig", "cp932"):
     except UnicodeDecodeError:
         continue
 rows = list(csv.DictReader(io.StringIO(text)))
+# 希望小売価格が空欄でも「オープン」と表示する品番(dev/open-price.json)
+OPEN_IDS = set(json.loads((ROOT / "dev/open-price.json").read_text(encoding="utf-8"))["ids"])
 
 def fix(s):
     # 改行が「\\n」という文字で入っているので戻す。cp932 で失われた文字も戻す
@@ -89,6 +91,9 @@ for r in rows:
     # Webに出している商品のうち、タイヤだけ(チューブ・販促物・訳ありは除く)
     if r["アウトレット"] == "1":
         continue
+    # 前後セットは掲載しない(2026年10月22日の依頼)
+    if r["セット"] == "1" or r["商品名前"] == "【セット品】" or r["商品名"].startswith("【セット品】"):
+        continue
     if r["Web非表示"] != "0" or r["メインカテゴリ名"] != "タイヤ" or r["カテゴリ名"] == "チューブ":
         continue
     series_text, pattern_text = copy_of(r["商品説明サブ"])
@@ -111,7 +116,8 @@ for r in rows:
         "seriesCopy": series_text,
         "note": fix(r["注意"]),
         "imgs": imgs,
-        "msrp": int(r["希望小売価格(税込)"]) if r["希望小売価格(税込)"] else None,
+        # 0 は「オープン」。空欄でも OPEN_IDS の品番は 0(オープン)として扱う
+        "msrp": int(r["希望小売価格(税込)"]) if r["希望小売価格(税込)"] else (0 if r["品番"] in OPEN_IDS else None),
         "price": int(r["公開通常価格(税込)"]) if r["公開通常価格(税込)"] else None,
         "fits": [x for x in fix(r["代表適合車種"]).split("｜") if x],
         "makers": [x for x in r["対応メーカー"].split("_") if x],
