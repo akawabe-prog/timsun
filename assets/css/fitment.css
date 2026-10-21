@@ -84,6 +84,7 @@
 .tire .sz{font-family:var(--en);font-size:13px;color:var(--sub)}
 .tire .pr{font-family:var(--en);font-weight:800;font-size:20px}
 .tire .pr small{font-family:var(--ja);font-size:11px;font-weight:500;color:var(--sub);margin-left:4px}
+.tire .pr .pr-k{display:block;margin:0 0 2px}
 .tire .st{font-size:12px;color:var(--sub)}
 .tire .go{margin-top:6px;font-size:13px;font-weight:700;color:var(--g-ink)}
 .results .note{margin-top:12px}

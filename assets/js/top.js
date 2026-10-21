@@ -1,12 +1,13 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ一覧・注目製品・使い方から選ぶ・取扱店数・ニュース・読みもの
-import { fetchCatalog, fetchFitmentIndex, dataAsOf } from './cj-api.js';
+import { fetchCatalog, fetchFitmentIndex } from './cj-api.js';
 import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, MOVIES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
 import { esc, yen, reveal, IMG, eventCard } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
 // ── 注目のタイヤ(Featured Tyres): 型番ごとのカードを横に流す。売れ筋データがないため「人気」バッジは付けない ──
 const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `${y}年${m}月${day}日`; };
-function patternsOf(items) {
+// 価格はメーカー希望小売価格(商品マスター)。0(オープン価格)と空欄は「〜円から」に含めない
+function patternsOf(items, master = new Map()) {
   const map = new Map();
   for (const h of items) {
     const b = baseOf(h.name); if (!b || !PATTERNS[b] || /^【セット品】/.test(h.name)) continue;
@@ -14,19 +15,19 @@ function patternsOf(items) {
     map.get(b).push(h);
   }
   return new Map([...map].map(([id, hs]) => {
-    const prices = hs.map((h) => h.price?.regular?.pc?.taxIn).filter(Boolean);
+    const prices = hs.map((h) => master.get(String(h.id))?.msrp).filter(Boolean);
     return [id, { id, ...PATTERNS[id], from: prices.length ? Math.min(...prices) : null, sizes: new Set(hs.map(sizeOf)).size,
-      shg: hs.some((h) => isSHG(h.name)), quick: hs.some((h) => (h.icons || []).some((i) => i.cd === 'INS')), img: hs.find((h) => h.img?.l)?.img.l }];
+      shg: hs.some((h) => isSHG(h.name)), img: hs.find((h) => h.img?.l)?.img.l }];
   }));
 }
 function renderItems(pats) {
   document.getElementById('itemsRail').innerHTML = FEATURED.map((id) => pats.get(id)).filter(Boolean).map((p) => {
     const s = SERIES.find((x) => x.id === p.s);
     const badges = [NEW_PATTERNS.includes(p.id) ? '<span class="tag badge-new">NEW</span>' : '',
-      p.shg ? '<span class="tag shg">STREET HIGH GRIP</span>' : '', p.quick ? '<span class="tag">即納あり</span>' : ''].join('');
+      p.shg ? '<span class="tag shg">STREET HIGH GRIP</span>' : ''].join('');
     return `<a class="icard" href="/products?p=${p.id}">
       <span class="ph"><img src="${IMG}${esc(p.img)}" alt="TIMSUN ${p.id}" width="320" height="320" loading="lazy" decoding="async"><span class="badges">${badges}</span></span>
-      <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr">${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
+      <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr"><small>希望小売価格</small> ${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
     </a>`;
   }).join('');
 }
@@ -44,7 +45,7 @@ function renderShg(pats) {
     const s = SERIES.find((x) => x.id === p.s);
     return `<a class="icard" href="/products?p=${p.id}">
       <span class="ph"><img src="${IMG}${esc(p.img)}" alt="TIMSUN ${p.id}" width="320" height="320" loading="lazy" decoding="async"><span class="badges">${NEW_PATTERNS.includes(p.id) ? '<span class="tag badge-new">NEW</span>' : ''}</span></span>
-      <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr">${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
+      <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr"><small>希望小売価格</small> ${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
     </a>`;
   }).join('');
 }
@@ -103,17 +104,18 @@ async function renderCatalogParts() {
     }
     renderSeries(Object.fromEntries(Object.entries(pats).map(([k, v]) => [k, v.size])));
     fillSizeSelects(items);
-    const pmap = patternsOf(items);
+    const master = await fetch('/assets/data/master.json').then((r) => r.json()).catch(() => null);
+    const mmap = new Map((master?.items || []).map((m) => [String(m.id), m]));
+    const pmap = patternsOf(items, mmap);
     renderItems(pmap);
     renderShg(pmap);
-    const asof = await dataAsOf();
-    if (asof) { const n = document.getElementById('itemsAsof'); n.hidden = false; n.textContent = `価格は${fmtDate(asof)}時点のものです。`; }
+    if (master?.asOf) { const n = document.getElementById('itemsAsof'); n.hidden = false; n.textContent = `価格はメーカー希望小売価格(${fmtDate(master.asOf)}時点)です。`; }
     // 注目製品(TS720)のサイズ数と価格帯
     const ts = items.filter((h) => baseOf(h.name) === 'TS720' && !/^【セット品】/.test(h.name));
-    const prices = ts.map((h) => h.price?.regular?.pc?.taxIn).filter(Boolean);
+    const prices = ts.map((h) => mmap.get(String(h.id))?.msrp).filter(Boolean);
     const spec = document.getElementById('tsSpec');
     if (ts.length) spec.querySelector('[data-k="sizes"]').textContent = `${ts.length}サイズ`;
-    if (prices.length) spec.querySelector('[data-k="price"]').textContent = `${yen(Math.min(...prices))}〜(税込・1本)`;
+    if (prices.length) spec.querySelector('[data-k="price"]').textContent = `希望小売価格 ${yen(Math.min(...prices))}〜(税込・1本)`;
   } catch (e) { console.error(e); }
 }
 

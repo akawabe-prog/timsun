@@ -51,11 +51,11 @@ def spec_of(s):
         elif k == "標準リム幅":
             out["std"] = (re.search(r"\d+(?:\.\d+)?", v) or [None])[0]
         elif k == "許容リム幅":
+            # 区切りの無い書き方(「1.201.351.401.501.60」)もあるので、小数2けたの数字として拾う
             rims = []
-            for t in re.split(r"[,/、]", v):
-                m = re.search(r"\d+(?:\.\d+)?", t)
-                if m and m.group(0) not in rims:
-                    rims.append(m.group(0))
+            for m in re.findall(r"\d+\.\d{2}", v):
+                if m not in rims:
+                    rims.append(m)
             out["rims"] = rims
         elif k.startswith("トレッド幅") or k.startswith("外形") or k.startswith("外径"):
             key = "tw" if k.startswith("トレッド幅") else "od"
@@ -65,6 +65,16 @@ def spec_of(s):
                 if m.group(2):
                     out[key + "r"] = f"{m.group(2)}-{m.group(3)}"
     return out
+
+def main_size(s):
+    """メインサイズ(「2.25-17 4PR WT F_2.25-17 4PR WT R」)を表示用に整える。
+    装着位置の F/R は表で分かるので外し、同じサイズの重複はまとめる(前後で違えば「 / 」でつなぐ)"""
+    out = []
+    for part in (s or "").split("_"):
+        t = re.sub(r"\s+[FR]$", "", part.strip())
+        if t and t not in out:
+            out.append(t)
+    return " / ".join(out)
 
 def copy_of(sub):
     """説明文サブを、シリーズ共通の文とパターン固有の文に分ける"""
@@ -93,6 +103,7 @@ for r in rows:
         "cat": r["カテゴリ名"],
         "pos": r["サブタイプ"] or r["用途"].replace("用", ""),
         "size": r["商品サイズ"],
+        "mainSize": main_size(r["メインサイズ"]),   # サイト上のサイズ表記はこれを使う
         "tube": "TL" if "TL" in r["備考"] or r["サブサイズ"] == "チューブレス" else ("TT" if r["備考"] or r["サブサイズ"] else ""),
         **sp,
         "catch": fix(r["キャッチ"]),
@@ -108,7 +119,8 @@ for r in rows:
         "parts": [r[f"構成品番{i}"] for i in range(1, 10) if is_set and r.get(f"構成品番{i}")],
         "outlet": r["アウトレット"] == "1",
     }
-    items.append({k: v for k, v in item.items() if v not in ("", None, [], False)})
+    # 空の項目は書き出さない(希望小売価格の 0 は「オープン価格」の意味なので残す)
+    items.append({k: v for k, v in item.items() if not (v is None or v is False or v == "" or v == [])})
 
 OUT.write_text(json.dumps({"asOf": date.today().isoformat(), "source": SRC.name, "items": items},
                           ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
