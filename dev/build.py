@@ -12,7 +12,7 @@
   <!--js: /assets/js/xxx.js-->    (ページ専用JS。複数可)
   <!--anchors: #id ラベル | #id ラベル-->  (ページ内アンカーメニュー。本文の <!--ANCHOR--> の位置に入る)
 """
-import pathlib, re
+import json, pathlib, re, shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGES = ROOT / "dev" / "pages"
@@ -54,7 +54,7 @@ MEGA = {
                   ("/products#motocross", "モトクロス", "img", "/assets/img/series/motocross.webp"), ("/products#vintage", "ビンテージ", "img", "/assets/img/series/vintage.webp"),
                   ("/products#cruising", "クルーザー", "img", "/assets/img/series/cruising.webp"), ("/products#business", "ビジネス", "img", "/assets/img/series/business.webp"),
                   ("/products#snow", "スノー", "img", "/assets/img/series/snow.webp")],
-        "banners": [("/products?p=TS720", "/assets/video/hero-poster.webp", "NEW — STREET HIGH GRIP", "TS720 GECKO"),
+        "banners": [("/products/ts720", "/assets/video/hero-poster.webp", "NEW — STREET HIGH GRIP", "TS720 GECKO"),
                     ("https://cdn.customjapan.net/catalog/490_timsun_catalog_2025.pdf", "/assets/img/banner/factory.webp", "CATALOG", "総合カタログ2025(PDF)")]},
     "/technology": {"label": "Technology & Quality", "all": ("/technology", "テクノロジー&品質へ"),
         "tiles": [("/technology#rd", "開発体制", "img", "/assets/video/factory-poster.webp"), ("/technology#quality", "品質マネジメント", "img", "/assets/img/banner/factory.webp"),
@@ -166,10 +166,46 @@ FOOTER = """<footer class="ft">
 def meta(src, key):
     return re.findall(rf"<!--{key}:\s*(.*?)\s*-->", src)
 
-def build(path):
+# ── 商品データの埋め込み ──
+# 商品データ(dev/master/master.json、dev/make_master.py が作る)は公開ファイルとして置かず、
+# 各ページに必要な項目だけを <script type="application/json" id="site-data"> で埋め込む。
+MASTER = ROOT / "dev" / "master" / "master.json"
+LITE = ["id", "name", "type", "grade", "size", "mainSize", "imgs", "msrp", "catch", "series", "fits", "pos"]   # 製品一覧に要る項目
+
+def load_master():
+    return json.loads(MASTER.read_text(encoding="utf-8")) if MASTER.exists() else None
+
+def lite(m):
+    d = {k: m[k] for k in LITE if k in m}
+    if d.get("imgs"):
+        d["imgs"] = d["imgs"][:1]
+    return d
+
+def embed(obj):
+    js = json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    return f'<script type="application/json" id="site-data">{js}</script>\n'
+
+def base_of(name):
+    m = re.search(r"TS\d{3}", name)
+    return m.group(0) if m else None
+
+def page_data(stem, master):
+    """ページごとに埋め込むデータ(表示に使う項目だけ)"""
+    if not master:
+        return None
+    items = master["items"]
+    if stem == "products":
+        return {"asOf": master["asOf"], "items": [lite(m) for m in items]}
+    if stem == "fitment":
+        return {"items": [{k: m[k] for k in ("id", "mainSize", "msrp") if k in m} for m in items]}
+    if stem == "index":
+        return {"asOf": master["asOf"], "items": [{k: m[k] for k in ("id", "msrp") if k in m} for m in items]}
+    return None
+
+def build(path, out=None, data=None, title=None, desc=None, url_path=None):
     src = path.read_text(encoding="utf-8")
-    title = (meta(src, "title") or [SITE])[0]
-    desc = (meta(src, "desc") or [""])[0]
+    title = title or (meta(src, "title") or [SITE])[0]
+    desc = desc or (meta(src, "desc") or [""])[0]
     cur = (meta(src, "nav") or [""])[0]
     css = "".join(f'<link rel="stylesheet" href="{c}">\n' for c in meta(src, "css"))
     js = "".join(f'<script type="module" src="{j}"></script>\n' for j in ["/assets/js/site.js", *meta(src, "js")])
@@ -185,16 +221,48 @@ def build(path):
         anav = f'<nav class="anav" aria-label="このページの内容">\n  <ul class="anav-in">{links}</ul>\n</nav>\n'
         body = body.replace("<!--ANCHOR-->", anav)
     body = body.replace("<!--ANCHOR-->", "")
-    url = ORIGIN + ("/" if path.stem == "index" else f"/{path.stem}")
+    url_path = url_path or ("/" if path.stem == "index" else f"/{path.stem}")
+    url = ORIGIN + url_path
     html = (HEAD.format(title=title, desc=desc, site=SITE, css=css, url=url, image=ORIGIN + OG_IMAGE,
                         ogtype="website" if path.stem == "index" else "article")
             + HEADER.format(nav=nav)
             + f'<main id="main">\n{body}\n</main>\n'
+            + (embed(data) if data else "")
             + FOOTER + js + "</body>\n</html>\n")
-    out = ROOT / path.name
+    out = out or ROOT / path.name
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
-    return out.name
+    return str(out.relative_to(ROOT))
+
+def build_products(master):
+    """型番ごとの商品詳細ページ(/products/ts689)を書き出す。そのページには、その型番の商品だけ全項目を埋め込む"""
+    outdir = ROOT / "products"
+    if outdir.exists():
+        shutil.rmtree(outdir)
+    if not master:
+        return []
+    tpl = PAGES / "products.html"
+    groups = {}
+    for m in master["items"]:
+        b = base_of(m["name"])
+        if b:
+            groups.setdefault(b, []).append(m)
+    names = [build(tpl, out=outdir / "index.html", data=page_data("products", master), url_path="/products")]
+    lites = [lite(m) for m in master["items"]]
+    for b, ms in sorted(groups.items()):
+        grade = "ストリートハイグリップ" if any(m.get("grade") == "ストリートハイグリップ" for m in ms) else "スタンダード"
+        sizes = sorted({m.get("mainSize") or m.get("size") or "" for m in ms} - {""})
+        lead = next((m["catch"] for m in ms if m.get("catch")), "")
+        title = f"{b}({grade})|TIMSUN(ティムソン)日本公式サイト"
+        desc = f"TIMSUN(ティムソン){b}。{lead} サイズ: {'、'.join(sizes[:8])}{' ほか' if len(sizes) > 8 else ''}。メーカー希望小売価格・寸法・適合車種。"
+        data = {"asOf": master["asOf"], "pattern": b, "items": lites, "full": ms}
+        names.append(build(tpl, out=outdir / f"{b.lower()}.html", data=data, title=title, desc=desc, url_path=f"/products/{b.lower()}"))
+    return names
 
 if __name__ == "__main__":
-    names = [build(p) for p in sorted(PAGES.glob("*.html"))]
-    print("生成:", ", ".join(names))
+    master = load_master()
+    if not master:
+        print("注意: dev/master/master.json が無いため、商品データを埋め込めません(python3 dev/make_master.py を先に実行)")
+    names = [build(p, data=page_data(p.stem, master)) for p in sorted(PAGES.glob("*.html"))]
+    names += build_products(master)
+    print(f"生成: {len(names)}ページ(うち型番ページ {len(names) - len(list(PAGES.glob('*.html'))) - 1})")

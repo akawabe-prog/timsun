@@ -23,7 +23,7 @@ CJ開発ガイドに準拠(ルート相対パス、拡張子なしURL、init は
 |---|---|---|---|
 | TOP | `index.html` | `/` | 本国映像のヒーロー、数字と認証、車種/サイズ検索、9シリーズ、新製品、ヤモリ、品質、取扱店、ニュース |
 | タイヤを探す | `fitment.html` | `/fitment` | 車種・型式から/サイズから(`?tab=size&w=120&a=70&r=12`) |
-| 製品 | `products.html` | `/products` | シリーズ別パターン一覧。詳細は `?p=TS689` |
+| 製品 | `products.html`(`products/index.html` も同じ内容) | `/products` | シリーズ別パターン一覧。詳細は型番ごとのページ `/products/ts689`(`dev/build.py` が `products/ts689.html` を書き出す。旧URL `?p=TS689` は転送) |
 | テクノロジー&品質 | `technology.html` | `/technology` | 国の認定、IATF 16949等、製品認証、製造 |
 | ブランド | `brand.html` | `/brand` | 約束、世界のTIMSUN、ミスターティムソン(`#gecko`)、日本総代理店 |
 | 取扱店 | `shops.html` | `/shops` | 都道府県・店舗名で絞り込み(`?pref=東京`) |
@@ -112,7 +112,7 @@ TOPの「車種から探す」タブと、適合タイヤ検索ページの上�
 | 主な輸出先・Gecko Knight | 本国 [Company News](https://timsun.cn/enews/86.aspx) |
 | ティムソンの約束・FAQ・販売店の声・ニュース・型番の説明・取扱店 | 日本公式 timsun-japan.com |
 | ミスターティムソンの紹介動画(ブランドページ `assets/video/mr-timsun.mp4`) | カスタムジャパン customjapan.net/b/timsun |
-| 製品一覧・商品詳細の商品情報(`assets/data/master.json`) | TIMSUN商品マスター(カスタムジャパン)。`dev/make_master.py` で生成 |
+| 製品一覧・商品詳細・TOP・適合検索の商品情報(ページに埋め込み) | TIMSUN商品マスター(カスタムジャパン)。`dev/make_master.py` で `dev/master/master.json`(非公開)を作り、`dev/build.py` が各ページへ埋め込む |
 | ムービー(`assets/video/movies/`) | Instagram @timsun_japan_gram、カスタムジャパン |
 | バナー背景(`assets/img/banner/`) | 本国映像のコマ(タイヤ接写・流し撮り・工場)。透かしの入らない範囲を横長に切り取り。文字はHTMLで載せる |
 | ヒーロー映像(`assets/video/hero.mp4`、16:9・約6.8秒ループ。ヒーローは画面いっぱいの高さ) | 本国サイトの映像を編集: 2021新品発布(ヤモリ刻印・タイヤ接写)、企業映像 `Timsun.mp4`(レーサー。工場の場面は2026年10月に外した)、特技巡演北京站(流し撮り・バーンアウト)。字幕・ロゴ透かしの入らない区間だけを使い、透かしは画面下を切り取って除去 |
@@ -162,7 +162,7 @@ npx http-server . -p 8100 -c-1
 - ミスターティムソンの紹介動画: 1280×720・45秒・音声つきで約6.8MB。押すまで読み込まない
 - WebM(VP9)・AV1も試したが、この素材ではH.264より重くなったため使っていない
 
-## 商品詳細ページ(`/products?p=TS689`)
+## 商品詳細ページ(`/products/ts689`)
 
 ブリヂストン(二輪用タイヤ BATTLAX RACING STREET RS12 の商品詳細)の構成に倣う。上から:
 
@@ -181,19 +181,20 @@ npx http-server . -p 8100 -c-1
 
 ## 商品マスターから商品ページを作る
 
-製品一覧と商品詳細(`/products`、`/products?p=TS720`)は、商品マスター(CSV)から作った `assets/data/master.json` を表示している。マスターを更新したら:
+製品一覧と商品詳細(`/products`、`/products/ts720`)は、商品マスター(CSV)から作った商品データを表示している。マスターを更新したら、必ずこの2つを続けて実行する:
 
 ```
 python3 dev/make_master.py ~/Downloads/ItemList_〇〇.csv   # または dev/master/ItemList.csv に置いて引数なし
 python3 dev/build.py
 ```
 
-- **マスターのCSVは公開しない。** 仕入単価・仕入先・社内メモ・担当者名などを含むため、`dev/master/` は `.gitignore` で除外している。`master.json` には公開してよい項目だけを書き出す(項目の一覧は `dev/make_master.py` の冒頭)
+- **マスターのCSVは公開しない。** 仕入単価・仕入先・社内メモ・担当者名などを含むため、`dev/master/` は `.gitignore` で除外している。`dev/make_master.py` は表示に使う項目だけを `dev/master/master.json` に書き出す(項目の一覧は冒頭の `SHOW`)。これも公開しない
+- **商品データをまとめたファイルは公開しない。** `dev/build.py` が、各ページに必要な分だけを `<script type="application/json" id="site-data">` として埋め込む(製品一覧=全商品の要約、型番ページ=要約+その型番の全項目、適合タイヤ検索=品番・メインサイズ・希望小売価格、TOP=品番・希望小売価格)。JavaScriptは `site.js` の `siteData()` で読む
+- 型番ページ(`products/ts〇〇〇.html`)は `dev/build.py` が毎回作り直す(手で編集しない)。型番ごとにタイトル・説明文・canonical が入る
 - 対象は「Web非表示=0」のタイヤ(チューブ・販促物・訳ありは除く)
 - 説明文サブは「毎日走るあなたへ、もっと安心を!」の前をシリーズ共通の文、後をパターン固有の文として分ける
 - マスターの「?」になった波ダッシュ(250cc?400cc)と CO₂ は生成時に直す
 - `data.js` の `PATTERNS` に無い型番は、マスターのジャンル(スクーター/ビジネス/オンロード/オフロード…)でシリーズを決め、キャッチを一行の説明にする
-- 在庫だけはCJ APIの最新を重ねる(マスターに在庫は無い)
 - TOPの注目のタイヤと適合タイヤ検索は、今もCJ APIの商品情報を使っている
 
 ## 共有(OGP)
@@ -201,7 +202,7 @@ python3 dev/build.py
 - 全ページの `<head>` に canonical・OGP(og:title / description / url / image など)・X(Twitter)のカードを `dev/build.py` で入れている
 - 共有画像は `assets/img/ogp.jpg`(1200×630、ヒーローの写真+ロゴ+「日本公式サイト」)
 - 絶対URLは本番ドメイン `https://www.timsun-japan.com` で書き、GitHub Pages 用の書き出し(`dev/build_pages.py`)ではテスト公開のURLに置き換える。本番ドメインが違う場合は `build.py` の `ORIGIN` と `build_pages.py` の `PROD` を直す
-- 商品詳細(`/products?p=…`)は画面をJavaScriptで作るため、共有時は製品一覧の内容・画像で表示される
+- 商品詳細は型番ごとのページ(`/products/ts689`)なので、共有時のタイトル・説明文は型番ごとのものになる(画像は共通の `ogp.jpg`)
 - ファビコン: `assets/img/favicon.ico`(16/32/48)、`apple-touch-icon.png`(180)、`icon-192.png`・`icon-512.png` と `assets/site.webmanifest`。現行の日本公式サイト(timsun-japan.com)と同じミスターティムソンの画像を使用
 
 ## 代表車種(現行の人気車種から順)

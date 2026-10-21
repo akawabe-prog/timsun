@@ -1,9 +1,9 @@
-// TIMSUN 製品: シリーズ別のパターン一覧と、パターン詳細(?p=TS689)
-// 商品(型番・サイズ・仕様・説明文・画像・価格)は商品マスターから作った assets/data/master.json(dev/make_master.py)。
+// TIMSUN 製品: シリーズ別のパターン一覧(/products)と、型番ごとの詳細ページ(/products/ts689)
+// 商品(型番・サイズ・仕様・説明文・画像・価格)は商品マスターから作り、dev/build.py がページに埋め込んだもの(#site-data)。
 // 価格はメーカー希望小売価格のみ(0はオープン価格)。オンラインストアの価格・在庫・購入リンクは出さない。型番→シリーズは data.js の PATTERNS、未登録の型番はマスターのジャンルから決める。
 import { fetchFitmentIndex } from './cj-api.js';
 import { SERIES, PATTERNS, baseOf, variantOf, isSHG, sizeOf } from './data.js';
-import { esc, yen, reveal, IMG, spyAnchors } from './site.js';
+import { esc, yen, reveal, IMG, spyAnchors, siteData, productURL } from './site.js';
 import { MAKERS } from './fittree.js';
 
 const $ = (s) => document.querySelector(s);
@@ -59,15 +59,17 @@ function rankModels(names) {
 
 // 商品マスターを読む
 async function loadItems() {
-  const [mres, pres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()),
-    fetch('/assets/data/popular.json').then((r) => r.json())]);
+  const [pres] = await Promise.allSettled([fetch('/assets/data/popular.json').then((r) => r.json())]);
+  const D = siteData();   // 製品一覧は全商品の要約、型番ページはその型番だけ全項目(full)
   if (pres.status === 'fulfilled') {
     Object.entries(pres.value.scores || {}).forEach(([n, v]) => POP.set(keyOf(n), v));
     (pres.value.current || []).forEach((n) => CURRENT.add(keyOf(nameOf(n))));
   }
-  if (mres.status !== 'fulfilled') throw mres.reason;
-  ASOF = mres.value.asOf;
-  return mres.value.items.map((m) => ({
+  if (!D) throw new Error('商品データがありません');
+  ASOF = D.asOf;
+  PATTERN = D.pattern || null;
+  const full = new Map((D.full || []).map((m) => [String(m.id), m]));
+  return D.items.map((x) => full.get(String(x.id)) || x).map((m) => ({
     id: m.id, name: m.name, m,
     img: { l: m.imgs?.[0], s: m.imgs?.[0] },
     price: { regular: { pc: { taxIn: m.msrp || null } } },   // 「〜円から」はメーカー希望小売価格で出す
@@ -101,7 +103,7 @@ function groupPatterns(items) {
 }
 
 function patternCard(p) {
-  return `<a class="pt rv" href="/products?p=${p.id}">
+  return `<a class="pt rv" href="${productURL(p.id)}">
     <span class="ph"><img src="${IMG}${esc(p.img)}" alt="" width="320" height="320" loading="lazy" decoding="async"></span>
     <span class="meta">
       <span class="tags">${p.shg ? '<span class="tag shg">STREET HIGH GRIP</span>' : '<span class="tag muted">STANDARD</span>'}</span>
@@ -415,17 +417,21 @@ async function renderFit(p) {
 }
 
 let PATS = null;
+let PATTERN = null;   // 型番ページのときの型番
 let ASOF = null;
 const fmtDate = (d) => { const [y, m, day] = d.split('-').map(Number); return `${y}年${m}月${day}日`; };
 function route() {
-  const id = new URLSearchParams(location.search).get('p');
+  const q = new URLSearchParams(location.search);
+  // 旧URL(/products?p=TS689&i=…)は型番ページへ
+  if (!PATTERN && q.get('p')) { location.replace(productURL(q.get('p'), q.get('i'))); return; }
+  const id = PATTERN;
   const p = id && PATS.get(id.toUpperCase());
   const pickId = new URLSearchParams(location.search).get('i');
   $('#listView').hidden = !!p;
   $('#listHero').hidden = !!p;
   $('#detailView').hidden = !p;
   if (p) { renderDetail(p, pickId); scrollTo(0, 0); dispatchEvent(new Event('scroll')); } // 上の黒い帯を隠したのでヘッダーを白に
-  else if (id) { location.replace('/products'); }
+  else if (id) { location.replace('/products'); }   // 該当の型番が無いとき
 }
 
 async function main() {
@@ -438,7 +444,7 @@ async function main() {
   }
   // ?grade=shg: ストリートハイグリップだけを表示
   const grade = new URLSearchParams(location.search).get('grade');
-  if (grade === 'shg' && !new URLSearchParams(location.search).get('p')) {
+  if (grade === 'shg' && !PATTERN) {
     document.title = 'ストリートハイグリップ|製品一覧|TIMSUN(ティムソン)日本公式サイト';
     $('#crumb').innerHTML = '<li><a href="/">TOP</a></li><li><a href="/products">製品</a></li><li>ストリートハイグリップ</li>';
     $('#pheroBody').innerHTML = `<p class="eyebrow detail-eyebrow">TIMSUN Premium Line</p>

@@ -30,8 +30,10 @@ def rewrite(text):
 if OUT.exists():
     shutil.rmtree(OUT)
 OUT.mkdir()
-for html in ROOT.glob("*.html"):
-    (OUT / html.name).write_text(rewrite(html.read_text(encoding="utf-8")), encoding="utf-8")
+for html in [*ROOT.glob("*.html"), *ROOT.glob("products/*.html")]:   # products/ は型番ごとの商品詳細ページ
+    dest = OUT / html.relative_to(ROOT)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(rewrite(html.read_text(encoding="utf-8")), encoding="utf-8")
 shutil.copytree(ROOT / "assets", OUT / "assets")
 for f in (OUT / "assets").rglob("*"):
     if f.suffix in (".js", ".css", ".webmanifest"):
