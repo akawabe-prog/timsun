@@ -6,7 +6,7 @@ import { fetchFitmentIndex, fetchItems, fetchCatalog } from './cj-api.js';
 import { sizeOf, parseSize, isSHG, baseOf } from './data.js';
 
 import { MAKERS, GROUP_LABEL, GROUP_ORDER, norm, fold, buildTree } from './fittree.js';
-import { IMG, esc, yen } from './site.js';
+import { IMG, esc, yen, siteData, productURL } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -92,7 +92,7 @@ const posOf = (h) => {
 const typeOf = (h) => { const v = (h.spec?.values || []).join(' '); return /TL/.test(v) ? 'チューブレス' : /WT/.test(v) ? 'チューブタイプ' : ''; };
 // 商品マスター(サイズ表記=メインサイズ、メーカー希望小売価格。0はオープン価格)。オンラインストアの価格・在庫は出さない
 let MASTER = null;
-const loadMaster = () => (MASTER ??= fetch('/assets/data/master.json').then((r) => r.json()).then((d) => new Map(d.items.map((m) => [String(m.id), m]))).catch(() => new Map()));
+const loadMaster = async () => (MASTER ??= new Map((siteData()?.items || []).map((m) => [String(m.id), m])));
 const msrpLabel = (m) => (m?.msrp === 0 ? 'オープン' : m?.msrp ? yen(m.msrp) : '');
 
 function card(h, master) {
@@ -109,7 +109,7 @@ function card(h, master) {
       ${price ? `<span class="pr"><small class="pr-k">希望小売価格</small>${esc(price)}${price === 'オープン' ? '' : '<small>(税込・1本)</small>'}</span>` : ''}
       ${b ? '<span class="go">詳しく見る →</span>' : ''}
     </span>`;
-  return b ? `<a class="tire" href="/products?p=${b}&i=${encodeURIComponent(h.id)}">${inner}</a>` : `<div class="tire">${inner}</div>`;
+  return b ? `<a class="tire" href="${productURL(b, h.id)}">${inner}</a>` : `<div class="tire">${inner}</div>`;
 }
 
 let reqSeq = 0;

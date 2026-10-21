@@ -1,7 +1,7 @@
 // TIMSUN TOP: 注目のタイヤ・シリーズ一覧・注目製品・使い方から選ぶ・取扱店数・ニュース・読みもの
 import { fetchCatalog, fetchFitmentIndex } from './cj-api.js';
 import { SERIES, PATTERNS, NEWS, NEWS_CAT, ARTICLES, USECASES, MOVIES, FEATURED, NEW_PATTERNS, baseOf, sizeOf, parseSize, isSHG } from './data.js';
-import { esc, yen, reveal, IMG, eventCard } from './site.js';
+import { esc, yen, reveal, IMG, eventCard, siteData, productURL } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
 // ── 注目のタイヤ(Featured Tyres): 型番ごとのカードを横に流す。売れ筋データがないため「人気」バッジは付けない ──
@@ -25,7 +25,7 @@ function renderItems(pats) {
     const s = SERIES.find((x) => x.id === p.s);
     const badges = [NEW_PATTERNS.includes(p.id) ? '<span class="tag badge-new">NEW</span>' : '',
       p.shg ? '<span class="tag shg">STREET HIGH GRIP</span>' : ''].join('');
-    return `<a class="icard" href="/products?p=${p.id}">
+    return `<a class="icard" href="${productURL(p.id)}">
       <span class="ph"><img src="${IMG}${esc(p.img)}" alt="TIMSUN ${p.id}" width="320" height="320" loading="lazy" decoding="async"><span class="badges">${badges}</span></span>
       <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr"><small>希望小売価格</small> ${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
     </a>`;
@@ -43,7 +43,7 @@ function renderShg(pats) {
   document.getElementById('shgCount').textContent = `${list.length}パターン・${sizes}サイズ`;
   document.getElementById('shgRail').innerHTML = list.map((p) => {
     const s = SERIES.find((x) => x.id === p.s);
-    return `<a class="icard" href="/products?p=${p.id}">
+    return `<a class="icard" href="${productURL(p.id)}">
       <span class="ph"><img src="${IMG}${esc(p.img)}" alt="TIMSUN ${p.id}" width="320" height="320" loading="lazy" decoding="async"><span class="badges">${NEW_PATTERNS.includes(p.id) ? '<span class="tag badge-new">NEW</span>' : ''}</span></span>
       <span class="meta"><b class="nm">${p.id}</b><span class="srs">${esc(s?.ja || '')}・${p.sizes}サイズ</span>${p.from ? `<span class="pr"><small>希望小売価格</small> ${yen(p.from)}〜<small>(税込・1本)</small></span>` : ''}</span>
     </a>`;
@@ -104,7 +104,7 @@ async function renderCatalogParts() {
     }
     renderSeries(Object.fromEntries(Object.entries(pats).map(([k, v]) => [k, v.size])));
     fillSizeSelects(items);
-    const master = await fetch('/assets/data/master.json').then((r) => r.json()).catch(() => null);
+    const master = siteData();   // 希望小売価格(ページに埋め込んだもの)
     const mmap = new Map((master?.items || []).map((m) => [String(m.id), m]));
     const pmap = patternsOf(items, mmap);
     renderItems(pmap);

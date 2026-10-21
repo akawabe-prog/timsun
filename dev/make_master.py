@@ -1,4 +1,4 @@
-"""商品マスター(CSV)から、サイトで使う商品データ assets/data/master.json を作る。
+"""商品マスター(CSV)から、サイトで使う商品データ dev/master/master.json を作る(非公開。dev/build.py が各ページに必要な分だけ埋め込む)。
 
   python3 dev/make_master.py [マスターCSVのパス]   (省略時は dev/master/ItemList.csv)
 
@@ -16,7 +16,7 @@ from datetime import date
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dev/master/ItemList.csv"
-OUT = ROOT / "assets/data/master.json"
+OUT = ROOT / "dev/master/master.json"   # 公開しない。まとめてダウンロードできるファイルを残さないため
 SEP = "毎日走るあなたへ、もっと安心を！"   # 説明文サブの「シリーズ共通の文」と「パターン固有の文」の区切り
 
 raw = SRC.read_bytes()

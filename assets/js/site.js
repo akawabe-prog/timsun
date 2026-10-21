@@ -48,6 +48,10 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&a
 export const yen = (n) => (n == null ? '' : `¥${Number(n).toLocaleString('ja-JP')}`);
 export const IMG = 'https://img.customjapan.net';
 export const ITEM_URL = (id) => `https://moto.customjapan.net/i/${id}`;
+// ページに埋め込んだ商品データ(dev/build.py が必要な項目だけを入れる。まとめてダウンロードできるファイルは置かない)
+export const siteData = () => { try { return JSON.parse(document.getElementById('site-data')?.textContent || 'null'); } catch { return null; } };
+// 型番ごとの商品詳細ページのURL(/products/ts689)
+export const productURL = (id, itemId) => `/products/${String(id).toLowerCase()}${itemId ? `?i=${encodeURIComponent(itemId)}` : ''}`;
 export const STORE_URL = 'https://www.customjapan.net/search?filter-maker=490&maker=490';
 
 // イベントのサムネイルカード(TOPとニュースページで共通)。写真がないイベントは英語名の文字サムネイル
