@@ -1,9 +1,9 @@
 // TIMSUN 製品: シリーズ別のパターン一覧と、パターン詳細(?p=TS689)
 // 商品(型番・サイズ・仕様・説明文・画像・価格)は商品マスターから作った assets/data/master.json(dev/make_master.py)。
-// 在庫だけはCJ APIの最新を重ねる。型番→シリーズは data.js の PATTERNS、未登録の型番はマスターのジャンルから決める。
-import { fetchCatalog, fetchFitmentIndex } from './cj-api.js';
+// 価格はメーカー希望小売価格のみ(0はオープン価格)。オンラインストアの価格・在庫・購入リンクは出さない。型番→シリーズは data.js の PATTERNS、未登録の型番はマスターのジャンルから決める。
+import { fetchFitmentIndex } from './cj-api.js';
 import { SERIES, PATTERNS, baseOf, variantOf, isSHG, sizeOf } from './data.js';
-import { esc, yen, reveal, IMG, ITEM_URL, spyAnchors } from './site.js';
+import { esc, yen, reveal, IMG, spyAnchors } from './site.js';
 import { MAKERS } from './fittree.js';
 
 const $ = (s) => document.querySelector(s);
@@ -30,7 +30,9 @@ const seriesOf = (items) => {
 };
 // 1行の大きさ表記(110/70-12 47P)
 const sizeKey = (h) => h.m?.size || sizeOf(h);   // マスターの商品サイズ(110/70-12)
-const sizeLabel = (h) => (h.m?.size ? `${h.m.size}${h.m.load ? ` ${h.m.load}` : ''}` : sizeOf(h));
+const sizeLabel = (h) => (h.m?.mainSize && !isSet(h) ? h.m.mainSize : h.m?.size ? `${h.m.size}${h.m.load ? ` ${h.m.load}` : ''}` : sizeOf(h));   // 表示は商品マスターのメインサイズ
+// メーカー希望小売価格の表示(0はオープン価格、空欄は「—」)
+const msrpLabel = (m) => (m?.msrp === 0 ? 'オープン' : m?.msrp ? yen(m.msrp) : '—');
 
 // 車種の人気度(0〜100。新車販売・中古の流通量・累計台数から付けた点数。dev/make_popular.py)
 const POP = new Map();
@@ -62,22 +64,20 @@ function rankModels(names) {
     .map((k) => label.get(k));
 }
 
-// 商品マスターを読み、在庫だけCJ APIの最新を重ねる(APIが使えないときは在庫表示なし)
+// 商品マスターを読む
 async function loadItems() {
-  const [mres, cres, pres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()), fetchCatalog(),
+  const [mres, pres] = await Promise.allSettled([fetch('/assets/data/master.json').then((r) => r.json()),
     fetch('/assets/data/popular.json').then((r) => r.json())]);
   if (pres.status === 'fulfilled') {
     Object.entries(pres.value.scores || {}).forEach(([n, v]) => POP.set(keyOf(n), v));
     (pres.value.current || []).forEach((n) => CURRENT.add(keyOf(nameOf(n))));
   }
   if (mres.status !== 'fulfilled') throw mres.reason;
-  const live = new Map(cres.status === 'fulfilled' ? cres.value.map((h) => [String(h.id), h]) : []);
   ASOF = mres.value.asOf;
   return mres.value.items.map((m) => ({
     id: m.id, name: m.name, m,
     img: { l: m.imgs?.[0], s: m.imgs?.[0] },
-    price: { regular: { pc: { taxIn: m.price } } },
-    status: live.get(String(m.id))?.status,
+    price: { regular: { pc: { taxIn: m.msrp || null } } },   // 「〜円から」はメーカー希望小売価格で出す
   }));
 }
 
@@ -116,7 +116,7 @@ function patternCard(p) {
       ${p.variants.length > 1 ? `<span class="vars en">${p.variants.map(esc).join(' / ')}</span>` : ''}
       <span class="d">${esc(p.d)}</span>
       ${p.reps?.length ? `<span class="reps"><small>主な車種</small>${p.reps.slice(0, 3).map(esc).join(' / ')}</span>` : ''}
-      <span class="foot"><span>${p.sizes}サイズ</span>${p.from ? `<span class="en">${yen(p.from)}〜</span>` : ''}</span>
+      <span class="foot"><span>${p.sizes}サイズ</span>${p.from ? `<span><small>希望小売価格</small> <span class="en">${yen(p.from)}〜</span></span>` : ''}</span>
     </span>
   </a>`;
 }
@@ -195,11 +195,9 @@ function pickCard(h) {
           </dl>
         </div>
         <div class="pd-pick-buy">
-          ${sp.msrp ? `<p class="pd-pick-msrp">メーカー希望小売価格 <span class="en">${yen(sp.msrp)}</span>(税込)</p>` : ''}
-          <p class="pd-pick-price"><span class="en">${yen(priceOf(h))}</span><small>オンラインストア・税込</small></p>
-          <p class="pd-pick-st">${esc(h.status?.txt || '')}</p>
-          <a class="btn" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">オンラインストアで購入</a>
-          <a class="link" href="/shops">取扱店で相談する</a>
+          <p class="pd-pick-msrp">メーカー希望小売価格(税込)</p>
+          <p class="pd-pick-price"><span class="en">${esc(msrpLabel(sp))}</span></p>
+          <a class="btn" href="/shops">取扱店を探す</a>
         </div>
       </div>
     </section>`;
@@ -256,7 +254,7 @@ function renderDetail(p, pickId) {
             <p class="pd-sub"><span class="en">${esc(s.en)}</span>${esc(s.ja)}${p.variants.length > 1 ? `<span class="pd-vars en">${p.variants.map(esc).join(' / ')}</span>` : ''}</p>
           </div>
           <div class="pd-cta">
-            ${p.from ? `<p class="pd-from"><span class="en">${yen(p.from)}〜</span><small>税込・1本</small></p>` : ''}
+            ${p.from ? `<p class="pd-from"><small>メーカー希望小売価格</small><span class="en">${yen(p.from)}〜</span><small>税込・1本</small></p>` : ''}
             <a class="btn" href="#pdSizes">サイズと価格を見る</a>
           </div>
         </div>
@@ -337,26 +335,22 @@ function renderDetail(p, pickId) {
             <h3 class="pd-grp-h"><span class="en">${POS_EN[g.pos]}</span>${esc(g.pos)}<small>${g.rows.length}</small></h3>
             <div class="sizes-wrap">
               <table class="spec sizes pd-table">
-                <thead><tr><th>サイズ</th><th>構造</th><th>品番</th><th class="num">標準リム幅<br><small>インチ</small></th><th>許容リム幅<br><small>インチ</small></th><th class="num">外径<br><small>mm</small></th><th class="num">トレッド幅<br><small>mm</small></th><th class="num">メーカー希望小売価格<br><small>税込</small></th><th class="num">オンラインストア<br><small>税込</small></th><th>在庫</th><th></th></tr></thead>
+                <thead><tr><th>サイズ</th><th>品番</th><th class="num">標準リム幅<br><small>インチ</small></th><th>許容リム幅<br><small>インチ</small></th><th class="num">外径<br><small>mm</small></th><th class="num">トレッド幅<br><small>mm</small></th><th class="num">メーカー希望小売価格<br><small>税込</small></th></tr></thead>
                 <tbody>${g.rows.map((h) => {
                   const sp = h.m || {};
                   return `<tr${pick && h === pick ? ' class="pick" id="pdPickRow"' : ''}>
                   <td class="en pd-size">${isSet(h) ? `${esc(setParts(h).size)}${setParts(h).for ? `<small>${esc(setParts(h).for)}</small>` : ''}` : `${esc(sizeLabel(h))}<small class="en">${esc(h.m?.type || variantOf(h.name) || '')}</small>`}</td>
-                  <td class="en">${typeOf(h)}</td>
                   <td class="en">${esc(h.id)}</td>
                   <td class="num en">${esc(sp?.std || '—')}</td>
                   <td class="en pd-rims">${sp?.rims?.length ? sp.rims.map(esc).join(' / ') : '—'}</td>
                   <td class="num en">${sp?.od ? `${esc(sp.od)}${sp.odr ? `<small>${esc(sp.odr.replace('-', '–'))}</small>` : ''}` : '—'}</td>
                   <td class="num en">${sp?.tw ? `${esc(sp.tw)}${sp.twr ? `<small>${esc(sp.twr.replace('-', '–'))}</small>` : ''}` : '—'}</td>
-                  <td class="num">${sp.msrp ? yen(sp.msrp) : '—'}</td>
-                  <td class="num">${yen(priceOf(h))}</td>
-                  <td class="st">${esc(h.status?.txt || '')}</td>
-                  <td><a class="link" href="${ITEM_URL(h.id)}" target="_blank" rel="noopener">購入</a></td></tr>`;
+                  <td class="num">${esc(msrpLabel(sp))}</td></tr>`;
                 }).join('')}</tbody>
               </table>
             </div>
           </div>`).join('')}
-        <p class="note sizes-note">寸法(括弧内は製品の許容範囲)・メーカー希望小売価格・オンラインストア価格はTIMSUN商品マスター${ASOF ? `(${fmtDate(ASOF)}時点)` : ''}、在庫は日本総代理店カスタムジャパンのオンラインストアの情報です。最新の価格・在庫はリンク先の商品ページでご確認ください。取扱店での価格は店舗にお問い合わせください。</p>
+        <p class="note sizes-note">サイズ・寸法(括弧内は製品の許容範囲)・メーカー希望小売価格は、TIMSUN商品マスター${ASOF ? `(${fmtDate(ASOF)}時点)` : ''}の情報です。販売価格・在庫・お取り付けは、お近くの取扱店にお問い合わせください。</p>
         <p class="pd-links"><a class="link" href="/magazine?a=size">タイヤサイズ表記の見方</a><a class="link" href="/shops">取扱店を探す</a></p>
       </div>
     </section>
@@ -463,7 +457,7 @@ async function main() {
   } else {
     renderList(PATS);
   }
-  if (ASOF) $('#seriesList').insertAdjacentHTML('afterbegin', `<div class="wrap"><p class="note asof">価格は${fmtDate(ASOF)}時点のものです。</p></div>`);
+  if (ASOF) $('#seriesList').insertAdjacentHTML('afterbegin', `<div class="wrap"><p class="note asof">価格はメーカー希望小売価格(税込)で、${fmtDate(ASOF)}時点のものです。</p></div>`);
   route();
   addEventListener('popstate', () => location.reload());
 }

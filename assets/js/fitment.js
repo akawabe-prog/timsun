@@ -2,11 +2,11 @@
 // 車種から: 車両メーカー → 排気量(海外はブランド) → 車種 → 型式 → 適合するTIMSUNタイヤ
 //   車種一覧は「TIMSUNタイヤが持つ適合データ」から組み立てるため、TIMSUNが合う車種しか出ない。
 // サイズから: TIMSUNの取扱サイズだけを選択肢にし、該当する商品を表示する。
-import { fetchFitmentIndex, fetchItems, fetchCatalog, dataAsOf } from './cj-api.js';
+import { fetchFitmentIndex, fetchItems, fetchCatalog } from './cj-api.js';
 import { sizeOf, parseSize, isSHG, baseOf } from './data.js';
 
 import { MAKERS, GROUP_LABEL, GROUP_ORDER, norm, fold, buildTree } from './fittree.js';
-import { IMG, ITEM_URL, esc, yen } from './site.js';
+import { IMG, esc, yen } from './site.js';
 import { mountFitSelect } from './fitselect.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -90,25 +90,26 @@ const posOf = (h) => {
   return p.length ? p : ['other'];
 };
 const typeOf = (h) => { const v = (h.spec?.values || []).join(' '); return /TL/.test(v) ? 'チューブレス' : /WT/.test(v) ? 'チューブタイプ' : ''; };
-const STOCK_RANK = { '◯在庫あり': 0, '△残りわずか': 1, '★在庫限り': 2, '別倉庫': 3, '入荷待': 4 };
+// 商品マスター(サイズ表記=メインサイズ、メーカー希望小売価格。0はオープン価格)。オンラインストアの価格・在庫は出さない
+let MASTER = null;
+const loadMaster = () => (MASTER ??= fetch('/assets/data/master.json').then((r) => r.json()).then((d) => new Map(d.items.map((m) => [String(m.id), m]))).catch(() => new Map()));
+const msrpLabel = (m) => (m?.msrp === 0 ? 'オープン' : m?.msrp ? yen(m.msrp) : '');
 
-function card(h) {
-  const price = h.price?.regular?.pc?.taxIn;
-  const quick = (h.icons || []).some((i) => i.cd === 'INS');
-  // 自社の商品詳細(選んだサイズを開く)へ。詳細ページの無い型番だけオンラインストアへ
+function card(h, master) {
+  const m = master.get(String(h.id));
+  const price = msrpLabel(m);
+  // 自社の商品詳細(選んだサイズを開く)へ
   const b = baseOf(h.name);
-  const own = !!b; // 型番があれば自社の詳細ページがある(未登録の新しい型番も自動で作る)
-  return `<a class="tire" href="${own ? `/products?p=${b}&i=${encodeURIComponent(h.id)}` : ITEM_URL(h.id)}"${own ? '' : ' target="_blank" rel="noopener"'}>
+  const inner = `
     <span class="ph"><img src="${IMG}${esc(h.img?.l || h.img?.s || '')}" alt="" width="320" height="320" loading="lazy" decoding="async"></span>
     <span class="meta">
-      <span class="tags">${isSHG(h.name) ? '<span class="tag shg">STREET HIGH GRIP</span>' : ''}${quick ? '<span class="tag">即納</span>' : ''}</span>
+      <span class="tags">${isSHG(h.name) ? '<span class="tag shg">STREET HIGH GRIP</span>' : ''}</span>
       <b class="nm">${esc(h.name)}</b>
-      <span class="sz">${esc(sizeOf(h))}${typeOf(h) ? ` / ${typeOf(h)}` : ''}</span>
-      <span class="pr">${yen(price)}<small>(税込・1本)</small></span>
-      <span class="st">${esc(h.status?.txt || '')}</span>
-      <span class="go">${own ? '詳しく見る' : 'オンラインストアで見る'} →</span>
-    </span>
-  </a>`;
+      <span class="sz">${esc(m?.mainSize || sizeOf(h))}${typeOf(h) ? ` / ${typeOf(h)}` : ''}</span>
+      ${price ? `<span class="pr"><small class="pr-k">希望小売価格</small>${esc(price)}${price === 'オープン' ? '' : '<small>(税込・1本)</small>'}</span>` : ''}
+      ${b ? '<span class="go">詳しく見る →</span>' : ''}
+    </span>`;
+  return b ? `<a class="tire" href="/products?p=${b}&i=${encodeURIComponent(h.id)}">${inner}</a>` : `<div class="tire">${inner}</div>`;
 }
 
 let reqSeq = 0;
@@ -130,9 +131,9 @@ async function renderResults() {
 
 async function showResults(heading, items, pre = '') {
   const box = $('#results');
-  const asof = await dataAsOf();
-  const asofNote = asof ? `<p class="note">価格・在庫は${asof.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, '$1年$2月$3日')}時点のものです。最新は商品ページでご確認ください。</p>` : '';
-  const sort = (a, b) => (STOCK_RANK[a.status?.txt] ?? 9) - (STOCK_RANK[b.status?.txt] ?? 9) || (a.price?.regular?.pc?.taxIn ?? 0) - (b.price?.regular?.pc?.taxIn ?? 0);
+  const master = await loadMaster();
+  const asofNote = '<p class="note">価格はメーカー希望小売価格(税込)です。販売価格・在庫・お取り付けは、お近くの取扱店にお問い合わせください。</p>';
+  const sort = (a, b) => sizeOf(a).localeCompare(sizeOf(b), 'en', { numeric: true });
   const groups = [['front', 'フロント'], ['rear', 'リア'], ['set', '前後セット'], ['other', 'その他']]
     .map(([k, label]) => [label, items.filter((h) => posOf(h).includes(k)).sort(sort)])
     .filter(([, list]) => list.length);
@@ -140,8 +141,8 @@ async function showResults(heading, items, pre = '') {
   box.innerHTML = items.length ? `
     <h2 class="res-h">${heading}<span>${items.length}点</span></h2>
     ${pre}
-    ${groups.map(([label, list]) => `<section class="grp"><h3>${label}<small>${list.length}点</small></h3><div class="tires">${list.map(card).join('')}</div></section>`).join('')}
-    <p class="note">年式・仕様により適合が異なる場合があります。ご購入前に商品ページの適合車種をご確認ください。</p>${asofNote}`
+    ${groups.map(([label, list]) => `<section class="grp"><h3>${label}<small>${list.length}点</small></h3><div class="tires">${list.map((h) => card(h, master)).join('')}</div></section>`).join('')}
+    <p class="note">年式・仕様により適合が異なる場合があります。ご購入前に、商品詳細の適合車種またはお近くの取扱店でご確認ください。</p>${asofNote}`
     : `<h2 class="res-h">${heading}</h2><p class="note">該当するTIMSUNタイヤが見つかりませんでした。条件を変えてお試しください。</p>`;
   box.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
