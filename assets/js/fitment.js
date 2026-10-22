@@ -131,8 +131,9 @@ async function renderResults() {
 
 async function showResults(heading, items, pre = '') {
   const box = $('#results');
-  items = items.filter((h) => !/^【セット品】/.test(h.name));   // 前後セットは掲載しない
   const master = await loadMaster();
+  // 掲載している商品(商品マスターから作った分)だけを出す。廃番・前後セット・Web非表示はマスター側で外してある
+  items = items.filter((h) => !/^【セット品】/.test(h.name) && (!master.size || master.has(String(h.id))));
   const asofNote = '<p class="note">価格はメーカー希望小売価格(税込)です。販売価格・在庫・お取り付けは、お近くの取扱店にお問い合わせください。</p>';
   const sort = (a, b) => sizeOf(a).localeCompare(sizeOf(b), 'en', { numeric: true });
   const groups = [['front', 'フロント'], ['rear', 'リア'], ['other', 'その他']]
