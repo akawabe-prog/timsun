@@ -54,12 +54,10 @@ def spec_of(s):
         elif k == "標準リム幅":
             out["std"] = (re.search(r"\d+(?:\.\d+)?", v) or [None])[0]
         elif k == "許容リム幅":
-            # 区切りの無い書き方(「1.201.351.401.501.60」)もあるので、小数2けたの数字として拾う
-            rims = []
-            for m in re.findall(r"\d+\.\d{2}", v):
-                if m not in rims:
-                    rims.append(m)
-            out["rims"] = rims
+            # 書き方がまちまちなので(「1.201.351.40」「1.401.50(MT1.50)」「2.5(MT2.5)」「MT3.50MT4.2」)、
+            # 小数2けたの数字と「MT」の後ろの数字(小数1けたもある)を両方拾い、小数2けたにそろえて小さい順に並べる
+            found = re.findall(r"\d+\.\d{2}", v) + re.findall(r"MT\s*(\d+(?:\.\d+)?)", v)
+            out["rims"] = sorted({f"{float(x):.2f}" for x in found}, key=float)
         elif k.startswith("トレッド幅") or k.startswith("外形") or k.startswith("外径"):
             key = "tw" if k.startswith("トレッド幅") else "od"
             m = re.match(r"([\d.]+)(?:\(([\d.]+)\s*[-~]\s*([\d.]+)\))?", v)

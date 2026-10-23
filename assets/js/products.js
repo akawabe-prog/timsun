@@ -76,6 +76,11 @@ async function loadItems() {
   }));
 }
 
+// 型番の表記(TS689F GECKO 2)。商品マスターのメーカータイプを使い、無ければ商品名から
+const varOf = (h) => (h.m?.type && !h.m.type.includes('_') ? h.m.type : variantOf(h.name));
+// 並び: TS689 / TS689F / TS689FA / TS689F GECKO 2 / TS689R GECKO 2(愛称付きは後ろ)
+const byVariant = (a, b) => Number(a.includes(' ')) - Number(b.includes(' ')) || a.localeCompare(b, 'en', { numeric: true });
+
 // 型番ごとにまとめる
 function groupPatterns(items) {
   const map = new Map();
@@ -94,7 +99,7 @@ function groupPatterns(items) {
     if (!p.d) p.d = p.items.find((h) => h.m?.catch)?.m.catch || '';
     // 代表車種: マスターの代表適合車種を、市場で多い・人気の車種から順に
     p.reps = rankModels(singles.flatMap((h) => h.m?.fits || []));
-    p.variants = [...new Set(singles.map((h) => variantOf(h.name)).filter(Boolean))].sort();
+    p.variants = [...new Set(singles.map(varOf).filter(Boolean))].sort(byVariant);
     p.sizes = new Set(singles.map(sizeKey).filter(Boolean)).size;
     p.from = prices.length ? Math.min(...prices) : null;
     p.img = (singles.find((h) => h.img?.l) || p.items[0])?.img?.l;
@@ -180,7 +185,7 @@ function pickCard(h) {
         <div class="pd-pick-main">
           <p class="pd-pick-k">選んだサイズ</p>
           <p class="pd-pick-size en">${esc(isSet(h) ? setParts(h).size : sizeLabel(h))}</p>
-          <p class="pd-pick-sub">${esc(variantOf(h.name) || '')}・${esc(posOf(h))}${typeOf(h) ? `・<span class="en">${typeOf(h)}</span>` : ''}・品番 <span class="en">${esc(h.id)}</span></p>
+          <p class="pd-pick-sub">${esc(varOf(h) || '')}・${esc(posOf(h))}${typeOf(h) ? `・<span class="en">${typeOf(h)}</span>` : ''}・品番 <span class="en">${esc(h.id)}</span></p>
           ${h.m?.fits?.length ? `<p class="pd-pick-fits">主な適合車種: ${rankModels(h.m.fits).slice(0, 4).map(esc).join(' / ')}</p>` : ''}
           <dl class="pd-pick-spec">
             ${row('標準リム幅', sp?.std && `<span class="en">${esc(sp.std)}</span>インチ`)}
@@ -206,7 +211,7 @@ function renderDetail(p, pickId) {
   const copy = [];
   singles.forEach((h) => {
     const t = h.m?.copy; if (!t) return;
-    const v = h.m.type || variantOf(h.name) || p.id;
+    const v = varOf(h) || p.id;
     const c = copy.find((x) => x.text === t);
     if (c) { if (!c.vs.includes(v)) c.vs.push(v); } else copy.push({ vs: [v], text: t });
   });
@@ -216,7 +221,7 @@ function renderDetail(p, pickId) {
   const lead = p.d || (copy[0]?.text ? `${copy[0].text.split('。')[0]}。` : `TIMSUN ${p.id}`);
   // 写真: 型番の表記ごとに1枚目(全体)と3枚目(トレッド面)
   const byVar = new Map();
-  singles.forEach((h) => { const v = variantOf(h.name) || p.id; if (!byVar.has(v) && h.img?.l) byVar.set(v, h); });
+  singles.forEach((h) => { const v = varOf(h) || p.id; if (!byVar.has(v) && h.img?.l) byVar.set(v, h); });
   const shots = [...byVar.entries()].flatMap(([v, h]) => {
     const im = h.m?.imgs || [h.img.l];
     const full = im.find((x) => /_1\.jpg$/.test(x)) || im[0];
