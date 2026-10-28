@@ -83,10 +83,12 @@ def series_of(genre):
 
 def main_size(s):
     """メインサイズ(「2.25-17 4PR WT F_2.25-17 4PR WT R」)を表示用に整える。
-    装着位置の F/R は表で分かるので外し、同じサイズの重複はまとめる(前後で違えば「 / 」でつなぐ)"""
+    装着位置の F/R は表で分かるので外し、同じサイズの重複はまとめる(前後で違えば「 / 」でつなぐ)。
+    チューブタイプはマスターでは WT だが、サイト上は TT で統一する(2026年10月28日の依頼)"""
     out = []
     for part in (s or "").split("_"):
         t = re.sub(r"\s+[FR]$", "", part.strip())
+        t = re.sub(r"\bWT\b", "TT", t)
         if t and t not in out:
             out.append(t)
     return " / ".join(out)
