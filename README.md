@@ -147,6 +147,11 @@ npx http-server . -p 8100 -c-1
 
 スナップショットの更新: `python3 dev/refresh-snapshot.py`
 
+公開用の適合データ(`assets/data/fitment.json`)の作り直し: `python3 dev/make_catalog.py`(スナップショットと商品マスターから作る)
+
+- 入るのは商品名・画像・サイズ・装着位置/チューブタイプ・適合車種だけ。**販売価格・在庫は入れない**
+- 商品はサイトに掲載している分(商品マスターから作った分)だけ。マスターを更新したら、これも作り直す
+
 **`dev/refresh-snapshot.py` と `dev/fitment-snapshot.json` は社内APIに関わるため、公開リポジトリには含めていない**(`.gitignore` で除外)。ローカルで確認する場合は社内で受け取って `dev/` に置く。ないときは localhost でも本番APIを呼びに行き、CORSで失敗する。
 
 ## 見出しの強弱

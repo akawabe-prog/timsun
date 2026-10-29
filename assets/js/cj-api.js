@@ -6,7 +6,7 @@
 // ※ CORSで許可されたオリジンからしか呼べない。公開ドメインはCJ側で許可リストへの追加が必要。
 //
 // APIを呼べない環境(localhost・GitHub Pages など、CORSの許可外)では、
-// 同梱の assets/data/catalog.json(表示用の商品データ。作成時点の価格・在庫)で表示する。
+// 同梱の assets/data/fitment.json(商品名・画像・サイズ・適合車種だけ。価格・在庫は入れていない)で表示する。
 // 許可されたドメインでAPIが失敗したときも、同じデータに切り替える。
 
 const INIT_URL = 'https://api-i.customjapan.net/api/v1/init';
@@ -62,10 +62,8 @@ async function search(params, retried = false) {
 
 // ── 同梱データ(APIが使えないとき) ──
 let staticPromise = null;
-let usedStatic = false;
 function loadStatic() {
-  if (!staticPromise) staticPromise = fetch(new URL('../data/catalog.json', import.meta.url)).then((r) => r.json());
-  usedStatic = true;
+  if (!staticPromise) staticPromise = fetch(new URL('../data/fitment.json', import.meta.url)).then((r) => r.json());
   return staticPromise;
 }
 async function viaApi(apiFn, staticFn) {
@@ -75,8 +73,6 @@ async function viaApi(apiFn, staticFn) {
     return staticFn(await loadStatic());
   }
 }
-/** 同梱データで表示しているときは、その時点(例: 2026-10-06)を返す。APIで表示しているときは null */
-export async function dataAsOf() { return usedStatic ? (await staticPromise).asOf : null; }
 
 // 他社タイヤを絶対に出さないための二重チェック(APIの絞り込みに加えて表示側でも弾く)
 const onlyTimsun = (hits) => hits.filter((h) => !h.maker || String(h.maker.id) === TIMSUN_MAKER_ID);

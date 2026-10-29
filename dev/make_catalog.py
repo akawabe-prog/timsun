@@ -1,33 +1,33 @@
-"""公開用の商品データ(assets/data/catalog.json)を作る。
+"""公開用の商品データ(assets/data/fitment.json)を作る。
 
-社内APIが使えない環境(GitHub Pages など)で製品ページ・適合検索を表示するためのデータ。
-dev/fitment-snapshot.json(社内で取得したもの。公開リポジトリには含めない)から、
-画面に表示する項目だけを抜き出す。価格・在庫は作成時点の値で固定される。
+社内APIが使えない環境(GitHub Pages など)で、適合タイヤ検索・車種選択・製品ページの「適合車種」を表示するためのデータ。
+dev/fitment-snapshot.json(社内で取得したもの。公開リポジトリには含めない)から、画面に要る項目だけを抜き出す。
+  - 入れるのは 商品名・画像・サイズ・装着位置/チューブタイプ・適合車種 だけ。販売価格・在庫・アイコンは入れない(2026年10月29日の依頼)
+  - 商品は、サイトに掲載している分(dev/master/master.json にある分)だけにする。廃番などは入れない
   python3 dev/make_catalog.py
 """
-import datetime, json, pathlib
+import json, pathlib
 
 DEV = pathlib.Path(__file__).resolve().parent
 SRC = DEV / "fitment-snapshot.json"
-OUT = DEV.parent / "assets" / "data" / "catalog.json"
+MASTER = DEV / "master" / "master.json"
+OUT = DEV.parent / "assets" / "data" / "fitment.json"
 
 hits = json.loads(SRC.read_text(encoding="utf-8"))
+listed = {str(m["id"]) for m in json.loads(MASTER.read_text(encoding="utf-8"))["items"]}
 items = []
 for h in hits:
-    if str(h.get("maker", {}).get("id")) != "490":   # TIMSUN以外は入れない
+    if str(h.get("maker", {}).get("id")) != "490" or str(h["id"]) not in listed:   # TIMSUN以外・掲載していない商品は入れない
         continue
+    spec = h.get("spec", {})
     items.append({
         "id": h["id"],
         "name": h["name"],
         "img": h.get("img", {}),
-        "price": {"regular": {"pc": {"taxIn": h.get("price", {}).get("regular", {}).get("pc", {}).get("taxIn")}}},
-        "status": {"txt": h.get("status", {}).get("txt", "")},
-        "icons": [{"cd": i.get("cd"), "txt": i.get("txt")} for i in h.get("icons", [])],
-        "spec": h.get("spec", {}),
+        "spec": {"3": spec.get("3", {}), "values": spec.get("values", [])},   # サイズ(3)と、装着位置・チューブタイプの判定に使う値
         "maker": {"id": "490"},
         "moto": h.get("moto", {}),
     })
 
-asof = datetime.date.fromtimestamp(SRC.stat().st_mtime).isoformat()
-OUT.write_text(json.dumps({"asOf": asof, "items": items}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-print(f"{OUT.name}: {len(items)}件 / {OUT.stat().st_size // 1024}KB / 時点 {asof}")
+OUT.write_text(json.dumps({"items": items}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+print(f"{OUT.name}: {len(items)}件 / {OUT.stat().st_size // 1024}KB")
